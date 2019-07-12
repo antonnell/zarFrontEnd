@@ -1,11 +1,15 @@
 import React, { Component } from 'react';
-import { CssBaseline, Grid, Typography } from "@material-ui/core";
+import { CssBaseline, Grid } from "@material-ui/core";
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 import ReactGA from 'react-ga';
+import MomentUtils from '@date-io/moment';
+import MuiPickersUtilsProvider from "material-ui-pickers/MuiPickersUtilsProvider";
+import Context from './context/Context';
+
+import curveTheme from './theme';
 
 import TheAppBar from './containers/applicationBar.jsx';
 import AppDrawer from './containers/drawer.jsx';
-import AppFooter from './containers/footer.jsx';
 
 import Welcome from './containers/welcome.jsx';
 import Accounts from './containers/accounts.jsx';
@@ -13,22 +17,19 @@ import Contacts from './containers/contacts.jsx';
 import SetUsername from './containers/setUsername.jsx';
 import Settings from './containers/settings.jsx';
 import Pooling from './containers/Pooling/index';
-import Transact from './containers/transact'; 
+import Transact from './containers/transact';
 import TokenSwap from './containers/tokenSwap.jsx';
-
-import curveTheme from './theme';
 
 import PoolCreate from './containers/PoolCreate/index';
 import PageLoader from './components/pageLoader';
-import Context from './context/Context';
 import WhitelistCreate from './containers/WhitelistCreate';
 import AppDialog from './containers/AppDialog/AppDialog';
 import PoolBrowse from './containers/PoolBrowse/index';
 import PoolDetails from './containers/PoolDetails/PoolDetails';
 import AppSnackBar from './containers/AppSnackBar/AppSnackBar';
 import VerifyAccount from './containers/VerifyAccount/VerifyAccount';
-import MuiPickersUtilsProvider from "material-ui-pickers/MuiPickersUtilsProvider";
-import MomentUtils from '@date-io/moment';
+
+import Staking from './containers/staking';
 
 import { poolingEmitter, poolingDispatcher } from './store/poolingStore';
 import PoolNoWallet from "./components/PoolNoWallet";
@@ -49,11 +50,23 @@ let wanDispatcher = require("./store/wanStore.js").default.dispatcher;
 let wanStore = require("./store/wanStore.js").default.store;
 
 let aionEmitter = require("./store/aionStore.js").default.emitter;
+let aionDispatcher = require('./store/aionStore.js').default.dispatcher;
 let aionStore = require("./store/aionStore.js").default.store;
+
 let tezosEmitter = require("./store/tezosStore.js").default.emitter;
+let tezosDispatcher = require('./store/tezosStore.js').default.dispatcher;
 let tezosStore = require("./store/tezosStore.js").default.store;
+
 let bitcoinEmitter = require('./store/bitcoinStore.js').default.emitter;
+let bitcoinDispatcher = require('./store/bitcoinStore.js').default.dispatcher;
 let bitcoinStore = require("./store/bitcoinStore.js").default.store;
+
+let binanceEmitter = require("./store/binanceStore.js").default.emitter;
+let binanceDispatcher = require('./store/binanceStore.js').default.dispatcher;
+let binanceStore = require("./store/binanceStore.js").default.store;
+
+let stakingDispatcher = require("./store/stakingStore.js").default.dispatcher;
+let stakingStore = require("./store/stakingStore.js").default.store;
 
 const setInitialUser = () => {
   const userString = sessionStorage.getItem("cc_user");
@@ -79,7 +92,9 @@ class App extends Component {
     transactOpen: false,
     transactCurrency: null,
     transactContact: null,
-    transactAccount: null
+    transactAccount: null,
+    stakeOpen: false,
+    stakingCurrency: null,
   };
 
   constructor(props) {
@@ -97,6 +112,8 @@ class App extends Component {
 
     this.transactClicked = this.transactClicked.bind(this);
     this.transactClosed = this.transactClosed.bind(this);
+    this.stakeClicked = this.stakeClicked.bind(this);
+    this.addStakeClosed = this.addStakeClosed.bind(this);
 
     this.contactsRefreshed = this.contactsRefreshed.bind(this);
     this.ethAccountsRefreshed = this.ethAccountsRefreshed.bind(this);
@@ -132,12 +149,10 @@ class App extends Component {
 
       if (
         user.verificationResult !== data.verificationResult ||
-        user.verificationUrl !== data.verificationUrl ||
-        user.whitelistStatus !== data.whitelistStatus
+        user.verificationUrl !== data.verificationUrl
       ) {
         user.verificationResult = data.verificationResult;
         user.verificationUrl = data.verificationUrl;
-        user.whitelistStatus = data.whitelistStatus;
 
         this.setUser(user);
       }
@@ -193,9 +208,9 @@ class App extends Component {
     tezosEmitter.removeAllListeners('Unauthorised');
     bitcoinEmitter.removeAllListeners('Unauthorised');
     accountEmitter.removeAllListeners('Unauthorised');
-    contactsEmitter.removeAllListeners('getContacts');
     accountEmitter.removeAllListeners('verificationResult');
     poolingEmitter.removeAllListeners('getAvailableFundingPools');
+    binanceEmitter.removeAllListeners('Unauthorised');
 
     contactsEmitter.on('Unauthorised', this.logUserOut);
     ethEmitter.on('Unauthorised', this.logUserOut);
@@ -205,9 +220,8 @@ class App extends Component {
     bitcoinEmitter.on('Unauthorised', this.logUserOut);
     accountEmitter.on('Unauthorised', this.logUserOut);
     poolingEmitter.on('Unauthorised', this.logUserOut);
+    binanceEmitter.on('Unauthorised', this.logUserOut);
 
-    contactsEmitter.on('contactsUpdated', this.contactsRefreshed);
-    contactsEmitter.on('contactsUpdated', this.contactsRefreshed);
     contactsEmitter.on('contactsUpdated', this.contactsRefreshed);
     accountEmitter.on('verificationResult', this.verificationResultReturned);
     wanEmitter.on("appAccountsUpdated", this.wanAccountsRefreshed);
@@ -320,12 +334,15 @@ class App extends Component {
   logUserOut = () => {
     this.resetStores()
     sessionStorage.removeItem("cc_user");
-    sessionStorage.removeItem("cc_whiteliststate");
     window.location.hash = "welcome";
   };
 
   resetStores() {
     aionStore.setStore({
+      accounts: null,
+      accountsCombined: null
+    })
+    binanceStore.setStore({
       accounts: null,
       accountsCombined: null
     })
@@ -348,6 +365,13 @@ class App extends Component {
       accountsCombined: null,
       wrc20Accounts: null,
       wrc20AccountsCombined: null
+    })
+    stakingStore.setStore({
+      stakeableCurrencies: [],
+      stakingNodes: [],
+      userStakes: null,
+      rewardHistory: [],
+      transactionHistory: []
     })
   }
 
@@ -413,13 +437,21 @@ class App extends Component {
       var content = {};
       const path = currentScreen.split('/')[0];
 
-      if (['accounts', 'aionAccounts', 'bitcoinAccounts', 'ethAccounts', 'tezosAccounts', 'wanAccounts'].includes(path) ) {
+      if (['accounts', 'aionAccounts', 'binanceAccounts', 'bitcoinAccounts', 'ethAccounts', 'tezosAccounts', 'wanAccounts', 'staking'].includes(path) ) {
         content = { id: this.state.user.id };
         contactsDispatcher.dispatch({
           type: "getContacts",
           content,
           token: this.state.user.token
         });
+
+        stakingDispatcher.dispatch({
+          type: 'getStakeableCurrencies',
+          content,
+          token: this.state.user.token
+        });
+
+        this.getAllAccounts()
 
         if(['accounts', 'ethAccounts', 'wanAccounts'].includes(path)) {
           ethDispatcher.dispatch({
@@ -437,26 +469,13 @@ class App extends Component {
 
       } else if (path === 'contacts') {
         content = { id: this.state.user.id };
-
         contactsDispatcher.dispatch({
           type: "getContacts",
           content,
           token: this.state.user.token
         });
-        if(this.state.ethAddresses == null) {
-          ethDispatcher.dispatch({
-            type: "getEthAddress",
-            content,
-            token: this.state.user.token
-          });
-        }
-        if(this.state.wanAddresses == null) {
-          wanDispatcher.dispatch({
-            type: "getWanAddress",
-            content,
-            token: this.state.user.token
-          });
-        }
+
+        this.getAllAccounts()
       } else if (['poolDetails', 'updatePool', 'createPool', 'pooling', 'browsePools'].includes(path)) {
         content = { id: this.state.user.id };
 
@@ -490,6 +509,42 @@ class App extends Component {
     ReactGA.pageview(window.location.pathname + window.location.hash);
 
     this.setState({ currentScreen, uriParameters });
+  }
+
+  getAllAccounts() {
+    const { user } = this.state;
+    const content = { id: user.id };
+
+    aionDispatcher.dispatch({
+      type: 'getAionAddress',
+      content,
+      token: user.token
+    });
+    binanceDispatcher.dispatch({
+      type: 'getBinanceAddress',
+      content,
+      token: user.token
+    });
+    bitcoinDispatcher.dispatch({
+      type: 'getBitcoinAddress',
+      content,
+      token: user.token
+    });
+    ethDispatcher.dispatch({
+      type: 'getEthAddress',
+      content,
+      token: user.token
+    });
+    tezosDispatcher.dispatch({
+      type: 'getTezosAddress',
+      content,
+      token: user.token
+    });
+    wanDispatcher.dispatch({
+      type: 'getWanAddress',
+      content,
+      token: user.token
+    });
   }
 
   renderAppBar() {
@@ -528,17 +583,6 @@ class App extends Component {
     return drawer;
   }
 
-  renderFooter() {
-    return (
-      <AppFooter
-        user={ this.state.user }
-        navClicked={ this.navClicked }
-        ipValid={ this.state.ipValid }
-        theme={ this.state.theme }
-      />
-    );
-  }
-
   renderTransact() {
     const { transactOpen, transactCurrency, transactContact, transactAccount, theme, user, supportedERC20Tokens, supportedWRC20Tokens } = this.state
 
@@ -564,11 +608,16 @@ class App extends Component {
   }
 
   stakeClicked(account) {
+    this.setState({ stakingCurrency: account.symbol, stakeOpen: true })
+    window.location.hash = "staking"
+  }
 
+  addStakeClosed() {
+    this.setState({ stakingCurrency: null, stakeOpen: false })
   }
 
   render() {
-    let background = "#fff";
+    let background = "#f9f7f9";
     let backgroundImage = null;
     if (this.state.currentTheme === "dark") {
       backgroundImage =
@@ -613,7 +662,7 @@ class App extends Component {
                 style={ {
                   minHeight: "924px",
                   position: "relative",
-                  flex: 1,
+                  width: ["xs", "sm"].includes(this.state.size) ? '100vw' : this.state.size === "md" ? 'calc(100vw - 325px)' : 'calc(100vw - 402px)',
                   marginLeft: ["xs", "sm"].includes(this.state.size) ? "0px" : this.state.size === "md" ? "24px" : "100px",
                   marginRight: ["xs", "sm"].includes(this.state.size) ? "0px" : '24px'
                 } }
@@ -640,7 +689,7 @@ class App extends Component {
   }
 
   renderScreen() {
-    const { ethAddresses, wanAddresses, currentScreen, width } = this.state;
+    const { ethAddresses, wanAddresses, currentScreen } = this.state;
     const path = currentScreen.split('/')[0];
     const params = currentScreen.split('/')[1] || null;
 
@@ -664,6 +713,8 @@ class App extends Component {
         return ( <Accounts token="Aion" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } stakeClicked={ this.stakeClicked } /> )
       case "tezosAccounts":
         return ( <Accounts token="Tezos" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } stakeClicked={ this.stakeClicked } /> )
+      case 'binanceAccounts':
+        return ( <Accounts token="Binance" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } stakeClicked={ this.stakeClicked } /> )
       case 'bitcoinAccounts':
         return ( <Accounts token="Bitcoin" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } stakeClicked={ this.stakeClicked } /> )
       case 'contacts':
@@ -737,6 +788,17 @@ class App extends Component {
             wanAddresses={ this.state.wanAddresses }
             theme={ this.state.theme }
           /> : <PageLoader />;
+        case "staking":
+          return (
+            <Staking
+              size={ this.state.size }
+              theme={ this.state.theme }
+              user={ this.state.user }
+              stakeOpen={ this.state.stakeOpen }
+              stakingCurrency={ this.state.stakingCurrency }
+              addStakeClosed={ this.addStakeClosed }
+            />
+        );
       case "settings":
         return (
           <Settings

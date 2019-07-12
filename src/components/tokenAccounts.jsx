@@ -42,7 +42,6 @@ class TokenAccounts extends Component {
     let {
       accounts,
       theme,
-      size,
       token,
       optionsAccount,
       loadingAccount,
@@ -63,6 +62,8 @@ class TokenAccounts extends Component {
       onEditAddressNameKeyDown,
       handleViewTokens,
       viewBitcoinKeysClicked,
+      stakeableCurrencies,
+      stakeClicked
     } = this.props
 
     if (!accounts) {
@@ -145,6 +146,12 @@ class TokenAccounts extends Component {
         }
       }
 
+      let stakeable = stakeableCurrencies ? stakeableCurrencies.filter((currency) => {
+        return currency.currency === account.symbol
+      }) : []
+
+      let stakeableBoolean = stakeable.length > 0
+
       return (
         <Grid item xs={12} lg={6} xl={4} key={account.address != null ? account.address : account.id} style={{ padding: '24px' }}>
           <Card>
@@ -160,12 +167,16 @@ class TokenAccounts extends Component {
                     <Typography
                       noWrap
                       variant="h3"
+                      style={{ maxWidth: 'calc(100% - 70px)' }}
                     >
                       {account.name}
                     </Typography>
                   )}
                   {account.editing !== true && account.isPrimary === true && (
                     <Typography variant='body1' style={theme.custom.primaryText}>Primary</Typography>
+                  )}
+                  {account.editing !== true && account.delegatable === true && (
+                    <Typography variant='body1' style={theme.custom.primaryText}>Staking</Typography>
                   )}
                   {account.editing === true && (
                     <TextField
@@ -234,7 +245,7 @@ class TokenAccounts extends Component {
                   >
                     <List component="nav">
                       {
-                        ["Ethereum", "Wanchain", "ERC20", "WRC20"].includes(token) && (<ListItem
+                        ["Ethereum", "Wanchain", "ERC20", "WRC20", "Binance", "BEP2"].includes(token) && (<ListItem
                           button
                           disabled={ !(account.tokens && account.tokens.length > 0) }
                           onClick={( ) => {
@@ -300,10 +311,13 @@ class TokenAccounts extends Component {
                     {account.balance + " " + token}
                   </Typography>
                   <Typography variant="h4" noWrap>
-                    {"$" + account.usdBalance.toFixed(2)}
+                    {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0.00')}
                   </Typography>
                 </Grid>
                 <Grid item xs={6} align="right" style={{ height: "42px" }}>
+                  { stakeableBoolean && <Button size="small" variant="contained" color="secondary" onClick={() => { stakeClicked(account) }}>
+                    Stake
+                  </Button>}
                   <Button
                     size="small"
                     variant="contained"
@@ -489,7 +503,15 @@ class TokenAccounts extends Component {
       error,
       tokens,
       tokenValue,
-      handleCreate
+      handleCreate,
+      accountTypeValue,
+      accountTypeError,
+      accountTypeErrorMessage,
+      accountTypes,
+      managerAddressValue,
+      managerAddressError,
+      managerAddressErrorMessage,
+      managerAddressOptions,
     } = this.props
 
     return <CreateModal
@@ -505,6 +527,14 @@ class TokenAccounts extends Component {
       handleSelectChange={ handleSelectChange }
       error={ error }
       handleCreate={ handleCreate }
+      accountTypeValue={ accountTypeValue }
+      accountTypeError={ accountTypeError }
+      accountTypeErrorMessage={ accountTypeErrorMessage }
+      accountTypeOptions={ accountTypes }
+      managerAddressValue={ managerAddressValue }
+      managerAddressError={ managerAddressError }
+      managerAddressErrorMessage={ managerAddressErrorMessage }
+      managerAddressOptions={ managerAddressOptions }
     />
   }
 

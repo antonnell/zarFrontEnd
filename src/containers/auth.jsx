@@ -173,8 +173,8 @@ let Auth = createReactClass({
     this.props.stopLoading()
 
     if (error) {
-      return this.setState({ error: error.toString() });
       this.props.setError(error.toString())
+      return this.setState({ error: error.toString() });
     }
 
     if (data.success) {

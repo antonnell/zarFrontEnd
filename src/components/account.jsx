@@ -1,7 +1,13 @@
 import React, { Component } from "react";
 import Grid from "@material-ui/core/Grid";
 
-import { Typography, Button, Card, CardContent, CardActionArea, CardActions, CardMedia, Avatar } from "@material-ui/core";
+import {
+  Typography,
+  Button,
+  Card,
+  CardContent,
+  CardActionArea,
+} from "@material-ui/core";
 
 class Account extends Component {
   render() {
@@ -13,15 +19,17 @@ class Account extends Component {
   }
 
   renderList() {
-    let { theme, account, cardClicked, transactClicked, stakeClicked } = this.props
+    let { account, cardClicked, transactClicked, stakeClicked, stakeableCurrencies } = this.props
 
     let logo = 'footer'
-    if(["Aion", "Bitcoin", "Ethereum", "Wanchain", "Tezos"].includes(account.type)) {
+    if(["Aion", "Bitcoin", "Ethereum", "Wanchain", "Tezos", "Binance"].includes(account.type)) {
       logo = account.type
     } else if (account.type === 'ERC20') {
       logo = 'Ethereum'
     } else if (account.type === 'WRC20') {
       logo = "Wanchain"
+    } else if (account.type === 'BEP2') {
+      logo = 'Binance'
     }
 
     let bodyStyle = {
@@ -43,11 +51,18 @@ class Account extends Component {
       width: 'calc( 100% - 42px)'
     }
 
+
+    let stakeable = stakeableCurrencies ? stakeableCurrencies.filter((currency) => {
+      return currency.currency === account.symbol
+    }) : []
+
+    let stakeableBoolean = stakeable.length > 0
+
     return(
       <Grid item xs={12} align='left'>
-        <Card style={{marginTop:'16px', borderRadius: '3px', cursor: 'pointer'}} onClick={cardClicked}>
+        <Card style={{marginTop:'16px', borderRadius: '3px', cursor: 'pointer'}}>
           <Grid container justify="center" alignItems="center" direction="row">
-            <Grid item xs={6} align='left' style={bodyStyle}>
+            <Grid item xs={6} align='left' style={bodyStyle} onClick={cardClicked}>
               <div style={iconStyle}>
                 <img
                   alt=""
@@ -62,7 +77,7 @@ class Account extends Component {
                 </Typography>
               </div>
             </Grid>
-            <Grid item xs={3} align='right' style={bodyStyle}>
+            <Grid item xs={2} align='right' style={bodyStyle} onClick={cardClicked}>
               <Typography variant="body1" noWrap style={textStyle}>
                 {account.balance.toFixed(4) + ' ' + account.symbol}
               </Typography>
@@ -70,8 +85,11 @@ class Account extends Component {
                 {"$" + account.usdBalance.toFixed(2)}
               </Typography>
             </Grid>
-            <Grid item xs={3} align='right' style={bodyStyle}>
-              <Button size="small" variant="outlined" color="primary" onClick={() => { transactClicked(account) }}>
+            <Grid item xs={4} align='right' style={bodyStyle}>
+              { stakeableBoolean && <Button size="small" variant="outlined" color="secondary" onClick={() => { stakeClicked(account) }}>
+                Stake
+              </Button>}
+              <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(account) }}>
                 Transact
               </Button>
             </Grid>
@@ -82,16 +100,24 @@ class Account extends Component {
   }
 
   renderGrid() {
-    let { theme, account, cardClicked, transactClicked, stakeClicked } = this.props
+    let { account, cardClicked, transactClicked, stakeClicked, stakeableCurrencies } = this.props
 
     let logo = 'footer'
-    if(["Aion", "Bitcoin", "Ethereum", "Wanchain", "Tezos"].includes(account.type)) {
+    if(["Aion", "Bitcoin", "Ethereum", "Wanchain", "Tezos", "Binance"].includes(account.type)) {
       logo = account.type
     } else if (account.type === 'ERC20') {
       logo = 'Ethereum'
     } else if (account.type === 'WRC20') {
       logo = "Wanchain"
+    } else if (account.type === 'BEP2') {
+      logo = 'Binance'
     }
+
+    let stakeable = stakeableCurrencies ? stakeableCurrencies.filter((currency) => {
+      return currency.currency === account.symbol
+    }) : []
+
+    let stakeableBoolean = stakeable.length > 0
 
     return (
 
@@ -131,9 +157,9 @@ class Account extends Component {
         <CardContent style={{ position: "relative" }}>
           <Grid container style={{marginTop: '12px'}}>
             <Grid item xs={6} align='left'>
-              {/* <Button size="small" variant="contained" color="secondary" onClick={() => { stakeClicked(account.type, account) }}>
+              { stakeableBoolean && <Button size="small" variant="contained" color="secondary" onClick={() => { stakeClicked(account) }}>
                 Stake
-              </Button> */}
+              </Button>}
             </Grid>
             <Grid item xs={6} align='right'>
               <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(account) }}>

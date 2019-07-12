@@ -48,9 +48,8 @@ class Accounts extends Component {
       loading,
       stakeClicked,
       transactClicked,
-      createLoading,
-      importLoading,
       user,
+      stakeableCurrencies,
       viewMode,
     } = this.props
 
@@ -68,18 +67,18 @@ class Accounts extends Component {
       </Grid>)
     }
 
-    return this.props.accounts.map((account) => {
-      if(["Aion", "Bitcoin", "Ethereum", "Tezos", "Wanchain"].includes(account.name) || account.balance > 0) {
+    return accounts.map((account) => {
+      if(["Aion", "Bitcoin", "Ethereum", "Tezos", "Wanchain", "Binance"].includes(account.name) || account.balance > 0) {
         if(viewMode === 'List') {
           return (
-            <Grid item xs={12} key={account.name} style={{ padding: '0px 24px' }}>
-              <Account user={ user } account={ account } theme={ theme } stakeClicked={ stakeClicked } transactClicked={ transactClicked } viewMode={ viewMode }/>
+            <Grid item xs={12} key={account.type+'_'+account.name} style={{ padding: '0px 24px' }}>
+              <Account user={ user } account={ account } theme={ theme } stakeClicked={ stakeClicked } transactClicked={ transactClicked } viewMode={ viewMode } stakeableCurrencies={ stakeableCurrencies }/>
             </Grid>
           )
         } else {
           return (
-            <Grid item xs={12} sm={6} lg={4} xl={3} key={account.name} style={{ padding: '24px' }}>
-              <Account user={ user } account={ account } theme={ theme } stakeClicked={ stakeClicked } transactClicked={ transactClicked } viewMode={ viewMode }/>
+            <Grid item xs={12} sm={6} lg={4} xl={3} key={account.type+'_'+account.name} style={{ padding: '24px' }}>
+              <Account user={ user } account={ account } theme={ theme } stakeClicked={ stakeClicked } transactClicked={ transactClicked } viewMode={ viewMode } stakeableCurrencies={ stakeableCurrencies }/>
             </Grid>
           )
         }
@@ -96,10 +95,8 @@ class Accounts extends Component {
       handleCreateOpen,
       handleImportOpen,
       loading,
-      transactOpen,
       createOpen,
       importOpen,
-      tokens,
       error,
       toggleViewClicked,
       viewMode
@@ -200,12 +197,12 @@ class Accounts extends Component {
               Token
             </Typography>
           </Grid>
-          <Grid item xs={3} align='right' style={headerStyle}>
+          <Grid item xs={2} align='right' style={headerStyle}>
             <Typography variant="body1" style={textStyle}>
               Balance
             </Typography>
           </Grid>
-          <Grid item xs={3} align='right' style={headerStyle}>
+          <Grid item xs={4} align='right' style={headerStyle}>
             <Typography variant="body1" style={textStyle}>
               Actions
             </Typography>
@@ -233,7 +230,15 @@ class Accounts extends Component {
       error,
       tokens,
       tokenValue,
-      handleCreate
+      handleCreate,
+      accountTypeValue,
+      accountTypeError,
+      accountTypeErrorMessage,
+      accountTypes,
+      managerAddressValue,
+      managerAddressError,
+      managerAddressErrorMessage,
+      managerAddressOptions,
     } = this.props
 
     return <CreateModal
@@ -249,6 +254,14 @@ class Accounts extends Component {
       handleSelectChange={ handleSelectChange }
       error={ error }
       handleCreate={ handleCreate }
+      accountTypeValue={ accountTypeValue }
+      accountTypeError={ accountTypeError }
+      accountTypeErrorMessage={ accountTypeErrorMessage }
+      accountTypeOptions={ accountTypes }
+      managerAddressValue={ managerAddressValue }
+      managerAddressError={ managerAddressError }
+      managerAddressErrorMessage={ managerAddressErrorMessage }
+      managerAddressOptions={ managerAddressOptions }
     />
   }
 

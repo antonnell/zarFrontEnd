@@ -1,7 +1,6 @@
 import React, { Component } from "react";
 import {
   Grid,
-  Button,
   Typography,
   SvgIcon,
 } from "@material-ui/core";
@@ -58,6 +57,9 @@ class CompletePayment extends Component {
       case 'Aion':
         url = config.aionscanURL + transactionID;
         break;
+      case 'Binance':
+        url = config.binancescanURL + transactionID;
+        break;
       case 'Bitcoin':
         url = config.bitcoinscanURL + transactionID;
         break;
@@ -70,7 +72,8 @@ class CompletePayment extends Component {
       case 'Wanchain':
         url = config.wanscanURL + transactionID;
         break;
-
+      default:
+        break;
     }
 
     return (

@@ -2,12 +2,6 @@ import React from "react";
 import createReactClass from "create-react-class";
 import AccountComponent from "../components/account";
 
-let aionDispatcher = require("../store/aionStore.js").default.dispatcher;
-let bitcoinDispatcher = require('../store/bitcoinStore.js').default.dispatcher;
-let ethDispatcher = require("../store/ethStore.js").default.dispatcher;
-let tezosDispatcher = require("../store/tezosStore.js").default.dispatcher;
-let wanDispatcher = require("../store/wanStore.js").default.dispatcher;
-
 let Account = createReactClass({
   getInitialState() {
     return {
@@ -17,12 +11,13 @@ let Account = createReactClass({
   render() {
     return (
       <AccountComponent
-        theme={this.props.theme}
-        account={this.props.account}
-        cardClicked={this.cardClicked}
-        transactClicked={this.props.transactClicked}
-        stakeClicked={this.props.stakeClicked}
-        viewMode={this.props.viewMode}
+        theme={ this.props.theme }
+        account={ this.props.account }
+        cardClicked={ this.cardClicked }
+        transactClicked={ this.props.transactClicked }
+        stakeClicked={ this.props.stakeClicked }
+        stakeableCurrencies={ this.props.stakeableCurrencies }
+        viewMode={ this.props.viewMode }
       />
     );
   },
@@ -33,6 +28,10 @@ let Account = createReactClass({
     switch(this.props.account.type) {
       case 'Aion':
         screen = 'aionAccounts'
+        break
+      case 'Binance':
+      case 'BEP2':
+        screen = 'binanceAccounts'
         break
       case 'Bitcoin':
         screen = 'bitcoinAccounts'
@@ -47,6 +46,8 @@ let Account = createReactClass({
       case 'Wanchain':
       case 'WRC20':
         screen = 'wanAccounts'
+        break
+      default:
         break
     }
 

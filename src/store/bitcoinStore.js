@@ -16,10 +16,6 @@ let apiUrl = config.apiUrl;
 
 class Store {
   constructor() {
-    //INITIAL STORE DATA
-
-    // let dummyAccounts = [{"type":"bitcoin","id":4,"displayName":"OK?","balance":0.18652264,"unconfirmedBalance":0.0,"finalBalance":0.18652264,"isPrimary":true,"usdBalance":741.0544487200000000},{"type":"bitcoin","id":8,"displayName":"This is my second account","balance":0.003,"unconfirmedBalance":0.0,"finalBalance":0.003,"isPrimary":false,"usdBalance":11.91900000000}]
-
     this.store = {
       accounts: null,
       accountsCombined: null
@@ -112,6 +108,7 @@ class Store {
               if(walletDetails.id === wallet.id) {
                 wallet.addresses = walletDetails.addresses
               }
+              return true
             })
             return wallet
           })
@@ -286,17 +283,14 @@ class Store {
         if (res.ok) {
           return res;
         } else {
-          throw Error(res.statusText);
+          callback(res.statusText)
         }
       })
       .then(res => res.json())
       .then(res => {
-        // emitter.emit(payload.type, null, res, extraData);
         callback(null, res)
       })
       .catch(error => {
-        console.log(error)
-        // emitter.emit(payload.type, error, null, extraData);
         callback(error, null)
       });
   };

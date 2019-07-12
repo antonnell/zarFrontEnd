@@ -16,9 +16,6 @@ let apiUrl = config.apiUrl;
 
 class Store {
   constructor() {
-    //INITIAL STORE DATA
-    // let dummyAccounts =  [{"type":"ethereum","id":26,"address":"0x3f7A04F39238acA1DD60eb39732FF21839fD2066","name":"Anton's account","isPrimary":true,"balance":0.66053638511,"usdBalance":90.71739013405557305880000000},{"type":"ethereum","id":17,"address":"0xDEAc5e7FaafD92E0220B5E2bEc7d546eFfa221cF","name":"My named address 1","isPrimary":false,"balance":0.31738883,"usdBalance":43.589856614040356400000000},{"type":"ethereum","id":25,"address":"0x2922D8061642787BBdf6098F52c8593e8cCb2c71","name":"Main Address","isPrimary":false,"balance":0.90591501589,"usdBalance":124.41743979191451402120000000},{"type":"ethereum","id":53,"address":"0xB7D0fB518a5b7bf8dc7ea19A715E8FD8BD983e27","name":"Abacus Test","isPrimary":false,"balance":0.701103095809436072,"usdBalance":96.28878060388299312126108576}]
-
     this.store = {
       accounts: null,
       accountsCombined: null,
@@ -65,6 +62,9 @@ class Store {
             break;
           case 'getEthTransactionHistory':
             this.getEthTransactionHistory(payload);
+            break;
+          case 'convertCurve':
+            this.convertCurve(payload);
             break;
           default: {
           }
@@ -123,6 +123,7 @@ class Store {
               if(accountTokens.payloadAddress === address.address) {
                 address.tokens = accountTokens.tokens
               }
+              return true
             })
             return address
           })
@@ -140,7 +141,7 @@ class Store {
             //itterate through each of the sub sections
             for(var j = 0; j < erc20data[i].tokens.length; j++) {
 
-              if(i == 0) {
+              if(i === 0) {
                 totals.push({
                   balance: erc20data[i].tokens[j].balance,
                   usdBalance: 0,
@@ -153,7 +154,7 @@ class Store {
 
                 //itterate through totals to add balance
                 for(var k = 0; k < totals.length; k++) {
-                  if(totals[k].address == erc20data[i].tokens[j].address) {
+                  if(totals[k].address === erc20data[i].tokens[j].address) {
                     totals[k].balance = totals[k].balance + erc20data[i].tokens[j].balance
                   }
                 }
@@ -325,6 +326,17 @@ class Store {
 
       this.setStore({ transactions: data.transactions });
       emitter.emit('transactionsUpdated');
+    });
+  };
+
+  convertCurve = function (payload) {
+    var url = 'ethereum/convertCurve';
+    var postJson = payload.content
+
+    console.log(postJson)
+    this.callApi(url, 'POST', postJson, payload, (err, data) => {
+      emitter.emit(payload.type, err, data);
+      this.getEthAddress(payload)
     });
   };
 

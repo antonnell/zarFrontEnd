@@ -44,8 +44,6 @@ class Contacts extends Component {
       );
     }
 
-    let { theme, size } = this.props
-
     return this.props.contacts.map(contact => {
 
       return (
@@ -97,7 +95,7 @@ class Contacts extends Component {
   }
 
   render() {
-    let { error } = this.props
+    let { error, theme } = this.props
     return (
       <Grid
         container
@@ -121,7 +119,7 @@ class Contacts extends Component {
             alignItems="flex-start"
             direction="row"
             spacing={0}
-            style={this.props.theme.custom.sectionTitle}
+            style={ theme.custom.sectionTitle }
           >
             <Grid item xs={6} align='left' >
               <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Contacts</Typography>
@@ -144,7 +142,7 @@ class Contacts extends Component {
             justify="flex-start"
             alignItems="flex-start"
             direction="row"
-            style={this.props.theme.custom.accountsContainer}
+            style={ theme.custom.accountsContainer }
           >
             {this.renderContacts()}
           </Grid>
