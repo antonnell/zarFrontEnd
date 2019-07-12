@@ -129,11 +129,24 @@ class Store {
         //itterate through the responses.
         for(var i = 0; i < data.binanceAddresses.length; i++) {
 
+          console.log(data.binanceAddresses[i])
           //itterate through each of the sub sections
           for(var j = 0; j < data.binanceAddresses[i].balances.length; j++) {
 
             if(data.binanceAddresses[i].balances[j].symbol !== 'BNB') {
-              if(i === 0) {
+
+              let foundToken = false
+
+              //itterate through totals to add balance
+              for(var k = 0; k < totals.length; k++) {
+                if(totals[k].symbol === data.binanceAddresses[i].balances[j].symbol) {
+                  totals[k].balance = parseFloat(totals[k].balance) + parseFloat(data.binanceAddresses[i].balances[j].free)
+                  totals[k].usdBalance = parseFloat(totals[k].usdBalance) + parseFloat(data.binanceAddresses[i].balances[j].usdValue)
+                  foundToken = true
+                }
+              }
+
+              if(!foundToken) {
                 totals.push({
                   balance: parseFloat(data.binanceAddresses[i].balances[j].free),
                   usdBalance: parseFloat(data.binanceAddresses[i].balances[j].usdValue),
@@ -142,16 +155,6 @@ class Store {
                   symbol: data.binanceAddresses[i].balances[j].symbol,
                   address: data.binanceAddresses[i].balances[j].symbol
                 })
-              } else {
-
-                //itterate through totals to add balance
-                for(var k = 0; k < totals.length; k++) {
-                  if(totals[k].symbol === data.binanceAddresses[i].balances[j].symbol) {
-                    totals[k].balance = parseFloat(totals[k].balance) + parseFloat(data.binanceAddresses[i].balances[j].free)
-                    totals[k].usdBalance = parseFloat(totals[k].usdBalance) + parseFloat(data.binanceAddresses[i].balances[j].usdValue)
-                  }
-                }
-
               }
             }
           }
