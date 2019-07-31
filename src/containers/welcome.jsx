@@ -6,7 +6,7 @@ const createReactClass = require("create-react-class");
 let Welcome = createReactClass({
   getInitialState() {
     return {
-      currentScreen: this.props.initialScreen!=null?this.props.initialScreen:'login', // login, register, otp, registrationSuccessful, resendConfirmation, forgotPassword, verifyAccount
+      currentScreen: this.props.initialScreen!=null?this.props.initialScreen:'login', // login, register, otp, registrationSuccessful, resendConfirmation, forgotPassword
       email: "",
       loading: false,
       credentials: null,
@@ -38,7 +38,6 @@ let Welcome = createReactClass({
   },
 
   setError(error) {
-    console.log(error)
     this.setState({ error })
   },
 

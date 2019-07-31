@@ -13,7 +13,6 @@ import RegisterCompleted from '../containers/registerCompleted.jsx';
 import ForgotPassword from '../containers/forgotPassword.jsx';
 import ForgotPasswordDone from '../containers/forgotPasswordDone.jsx';
 import ResetPassword from '../containers/resetPassword.jsx';
-import VerifyAccount from '../containers/VerifyAccount/VerifyAccount';
 import Auth from '../containers/auth';
 import Snackbar from './snackbar';
 
@@ -37,7 +36,7 @@ class Welcome extends Component {
   }
 
   renderScreen() {
-    let { currentScreen, theme, navigate, setUser, email, setEmail, startLoading, stopLoading, uriParameters, token, code, credentials, setCredentials, setError } = this.props
+    let { currentScreen, theme, navigate, setUser, email, setEmail, startLoading, stopLoading, uriParameters, credentials, setCredentials, setError } = this.props
 
     switch(currentScreen) {
       case 'login' :
@@ -56,8 +55,6 @@ class Welcome extends Component {
         return (<ForgotPasswordDone theme={ theme } navigate={ navigate } />)
       case 'resetPassword' :
         return (<ResetPassword theme={ theme } navigate={ navigate } startLoading={ startLoading } stopLoading={ stopLoading } uriParameters={ uriParameters } setError={ setError } />)
-      case 'verifyAccount' :
-        return (<VerifyAccount theme={ theme } navigate={ navigate } startLoading={ startLoading } stopLoading={ stopLoading } token={ token } code={ code } />)
       default:
         return (<Login theme={ theme } navigate={ navigate } setUser={ setUser } startLoading={ startLoading } stopLoading={ stopLoading } />)
 
@@ -69,7 +66,7 @@ class Welcome extends Component {
 
     return (
       <Grid item xs={12} md={6} style={ { padding: '80px', backgroundImage: "url(" + WelcomeImage + ")", backgroundSize: 'cover', minHeight: '100%', position: 'relative' } }>
-        <Typography style={ theme.custom.welcomeCurve }>CryptoCurve</Typography>
+        <Typography style={ theme.custom.welcomeZar }>ZAR Network</Typography>
 
         {this.renderGenText()}
         {this.renderButton()}

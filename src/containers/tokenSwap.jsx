@@ -6,10 +6,6 @@ let ethEmitter = require("../store/ethStore.js").default.emitter;
 let ethDispatcher = require("../store/ethStore.js").default.dispatcher;
 let ethStore = require("../store/ethStore.js").default.store;
 
-let wanEmitter = require("../store/wanStore.js").default.emitter;
-let wanDispatcher = require("../store/wanStore.js").default.dispatcher;
-let wanStore = require("../store/wanStore.js").default.store;
-
 let bnbEmitter = require("../store/binanceStore.js").default.emitter;
 let bnbDispatcher = require("../store/binanceStore.js").default.dispatcher;
 let bnbStore = require("../store/binanceStore.js").default.store;
@@ -17,12 +13,10 @@ let bnbStore = require("../store/binanceStore.js").default.store;
 let TokenSwap = createReactClass({
   getInitialState() {
     const ethAccounts = ethStore.getStore('accounts')
-    const wanAccounts = wanStore.getStore('accounts')
     const bnbAccounts = bnbStore.getStore('accounts')
 
     return {
       ethLoading: true,
-      wanLoading: true,
       bnbLoading: true,
       error: null,
       message: '',
@@ -30,28 +24,22 @@ let TokenSwap = createReactClass({
       ethAccountError: false,
       ethAccountErrorMessage: '',
       ethAccountOptions: ethAccounts,
-      wanAccountValue: '',
-      wanAccountError: false,
-      wanAccountErrorMessage: '',
-      wanAccountOptions: wanAccounts,
       bnbAccountValue: '',
       bnbAccountError: false,
       bnbAccountErrorMessage: '',
       bnbAccountOptions: bnbAccounts,
-      amountValue: '',
-      amountError: false,
-      amountErrorMessage: '',
       curveBalance: null,
       ethCurveBalance: null,
       tabValue: 0,
       tokenOptions: [
         { value: 'Binance', description: "Binance", icon: "Binance"},
-        { value: 'Ethereum', description: "ERC-20", icon: "Ethereum"},
-        { value: 'Wanchain', description: "WRC-20", icon: "Wanchain"}
+        { value: 'Ethereum', description: "ERC-20", icon: "Ethereum"}
       ],
-      sendToken: 'Wanchain',
+      sendToken: 'Binance',
       receiveToken: "Ethereum",
       sendValue: '0',
+      sendError: false,
+      sendErrorMessage: '',
       receiveValue: '0'
     }
   },
@@ -60,24 +48,16 @@ let TokenSwap = createReactClass({
 
     const {
       ethLoading,
-      wanLoading,
       bnbLoading,
       error,
       ethAccountValue,
       ethAccountError,
       ethAccountErrorMessage,
       ethAccountOptions,
-      wanAccountValue,
-      wanAccountError,
-      wanAccountErrorMessage,
-      wanAccountOptions,
       bnbAccountValue,
       bnbAccountError,
       bnbAccountErrorMessage,
       bnbAccountOptions,
-      amountValue,
-      amountError,
-      amountErrorMessage,
       curveBalance,
       ethCurveBalance,
       message,
@@ -86,6 +66,8 @@ let TokenSwap = createReactClass({
       sendToken,
       receiveToken,
       sendValue,
+      sendError,
+      sendErrorMessage,
       receiveValue,
     } = this.state
 
@@ -106,22 +88,15 @@ let TokenSwap = createReactClass({
 
         error={ error }
         message={ message }
-        loading={ ethLoading || wanLoading || bnbLoading }
+        loading={ ethLoading || bnbLoading }
         ethAccountValue={ ethAccountValue }
         ethAccountError={ ethAccountError }
         ethAccountErrorMessage={ ethAccountErrorMessage }
         ethAccountOptions={ ethAccountOptions }
-        wanAccountValue={ wanAccountValue }
-        wanAccountError={ wanAccountError }
-        wanAccountErrorMessage={ wanAccountErrorMessage }
-        wanAccountOptions={ wanAccountOptions }
         bnbAccountValue={ bnbAccountValue }
         bnbAccountError={ bnbAccountError }
         bnbAccountErrorMessage={ bnbAccountErrorMessage }
         bnbAccountOptions={ bnbAccountOptions }
-        amountValue={ amountValue }
-        amountError={ amountError }
-        amountErrorMessage={ amountErrorMessage }
         curveBalance={ curveBalance }
         ethCurveBalance={ ethCurveBalance }
         tabValue={ tabValue }
@@ -129,6 +104,8 @@ let TokenSwap = createReactClass({
         sendToken={ sendToken }
         receiveToken={ receiveToken }
         sendValue={ sendValue }
+        sendError={ sendError }
+        sendErrorMessage={ sendErrorMessage }
         receiveValue={ receiveValue }
       />
     )
@@ -137,17 +114,13 @@ let TokenSwap = createReactClass({
 
   componentWillMount() {
     ethEmitter.removeAllListeners('accountsUpdated');
-    wanEmitter.removeAllListeners("accountsUpdated");
     bnbEmitter.removeAllListeners("accountsUpdated");
 
-    wanEmitter.on('accountsUpdated', this.wanAccountsRefreshed);
     ethEmitter.on('accountsUpdated', this.ethAccountsRefreshed);
     bnbEmitter.on('accountsUpdated', this.bnbAccountsRefreshed);
 
-    wanEmitter.removeAllListeners("convertCurve");
     ethEmitter.removeAllListeners("convertCurve");
     bnbEmitter.removeAllListeners("convertCurve")
-    wanEmitter.on('convertCurve', this.convertCurveReturned)
     ethEmitter.on('convertCurve', this.convertCurveReturned)
     bnbEmitter.on('convertCurve', this.convertCurveReturned)
 
@@ -156,7 +129,7 @@ let TokenSwap = createReactClass({
 
   convertCurveReturned(err, data) {
     if(data.success) {
-      this.setState({ message: 'Transaction successfully submitted', ethAccountValue: '', wanAccountValue: '', bnbAccountValue: '', amountValue: '', sendValue: '', receiveValue: '' })
+      this.setState({ message: 'Transaction successfully submitted', ethAccountValue: '', bnbAccountValue: '', sendValue: '', receiveValue: '' })
     } else {
       this.setState({ error: data.errorMsg })
     }
@@ -222,47 +195,12 @@ let TokenSwap = createReactClass({
     })
   },
 
-  wanAccountsRefreshed() {
-    const accounts = wanStore.getStore('accounts')
-    let val = null;
-    if(accounts) {
-      val = accounts.map((acc) => {
-        let token = acc.tokens.filter((tokenAccount) => {
-          return tokenAccount.name === 'Curve'
-        })
-
-        let balance = null
-
-        if(token.length > 0) {
-          balance = token[0].balance
-        }
-
-        return {
-          description: acc.name,
-          value: acc.publicAddress,
-          balance: balance,
-          symbol: 'CURV'
-        }
-      })
-    }
-    this.setState({
-      wanAccounts: accounts,
-      wanAccountOptions: val,
-      wanLoading: false,
-    })
-  },
-
   getAllAccounts() {
     const { user } = this.props;
     const content = { id: user.id };
 
     ethDispatcher.dispatch({
       type: 'getEthAddress',
-      content,
-      token: user.token
-    });
-    wanDispatcher.dispatch({
-      type: 'getWanAddress',
       content,
       token: user.token
     });
@@ -274,22 +212,39 @@ let TokenSwap = createReactClass({
   },
 
   handleSelectChange(event) {
-    let balance = 0
     switch (event.target.name) {
       case 'ethAccount':
-        this.setState({ ethAccountValue: event.target.value })
-        break;
-      case 'wanAccount':
-        this.setState({ wanAccountValue: event.target.value })
+        this.setState({ ethAccountValue: event.target.value, ethAccountError: false, ethAccountErrorMessage: '' })
         break;
       case 'bnbAccount':
-        this.setState({ bnbAccountValue: event.target.value })
+        this.setState({ bnbAccountValue: event.target.value, bnbAccountError: false, bnbAccountErrorMessage: '' })
         break;
       case 'sendToken':
-        this.setState({ sendToken: event.target.value })
+        let receiveToken = null
+
+        switch(event.target.value) {
+          case 'Ethereum':
+            receiveToken = 'Binance'
+            break;
+          case  'Binance':
+            receiveToken = 'Ethereum'
+            break;
+        }
+        this.setState({ sendToken: event.target.value, receiveToken })
         break;
       case 'receiveToken':
-        this.setState({ receiveToken: event.target.value })
+        let sendToken = null
+
+        switch(event.target.value) {
+          case 'Ethereum':
+            sendToken = 'Binance'
+            break;
+          case  'Binance':
+            sendToken = 'Ethereum'
+            break;
+        }
+
+        this.setState({ receiveToken: event.target.value, sendToken })
         break;
       default:
 
@@ -298,11 +253,8 @@ let TokenSwap = createReactClass({
 
   handleChange(event) {
     switch (event.target.name) {
-      case 'amount':
-        this.setState({ amountValue: event.target.value })
-        break;
       case 'send':
-        this.setState({ sendValue: event.target.value, receiveValue: event.target.value })
+        this.setState({ sendValue: event.target.value, receiveValue: event.target.value, sendError: false, sendErrorMessage: '' })
         break;
       default:
 
@@ -310,23 +262,37 @@ let TokenSwap = createReactClass({
   },
 
   validateSwap() {
-    // this.setState({ wanAccountError: false, wanAccountErrorMessage: "", ethAccountError: false, ethAccountErrorMessage: "", amountError: false, amountErrorMessage: ""})
+    this.setState({
+      sendError: false,
+      sendErrorMessage: "",
+      bnbAccountError: false,
+      bnbAccountErrorMessage: '',
+      ethAccountError: false,
+      ethAccountErrorMessage: ''
+    })
 
-    // const {
-    //   sendToken,
-    //   receiveToken,
-    //   sendValue,
-    //   ethAccountValue,
-    //   wanAccountValue,
-    //   bnbAccountValue
-    // } = this.state
+    const {
+      sendValue,
+      bnbAccountValue,
+      ethAccountValue
+    } = this.state
 
     let error = false
-    //
-    // if(sendValue === null || sendValue === "") {
-    //   this.setState({ sendError: true, sendErrorMessage: 'Amount is required' })
-    //   error = true
-    // }
+
+    if(sendValue === null || sendValue === "0") {
+      this.setState({ sendError: true, sendErrorMessage: 'Amount is required' })
+      error = true
+    }
+
+    if(ethAccountValue === null || ethAccountValue === "") {
+      this.setState({ ethAccountError: true, ethAccountErrorMessage: 'Eth account is required' })
+      error = true
+    }
+
+    if(bnbAccountValue === null || bnbAccountValue === "") {
+      this.setState({ bnbAccountError: true, bnbAccountErrorMessage: 'BNB account is required' })
+      error = true
+    }
 
     return !error
   },
@@ -341,7 +307,6 @@ let TokenSwap = createReactClass({
         receiveToken,
         sendValue,
         ethAccountValue,
-        wanAccountValue,
         bnbAccountValue
       } = this.state
 
@@ -352,7 +317,7 @@ let TokenSwap = createReactClass({
           content = {
             amount: sendValue,
             sourceAddress: ethAccountValue,
-            destinationAddress: receiveToken === 'Binance' ? bnbAccountValue : wanAccountValue,
+            destinationAddress: receiveToken === 'Binance' ? bnbAccountValue : null,
             destinationChain: receiveToken === 'Binance' ? "BINANCE" : "ETH",
             id: user.id
           }
@@ -365,29 +330,12 @@ let TokenSwap = createReactClass({
             token: user.token
           });
           break;
-        case 'Wanchain':
-          content = {
-            amount: sendValue,
-            sourceAddress: wanAccountValue,
-            destinationAddress: receiveToken === 'Ethereum' ? ethAccountValue : bnbAccountValue,
-            destinationChain: receiveToken === 'Ethereum' ? "ETH" : "BINANCE",
-            id: user.id
-          }
-
-          this.setState({ wanLoading: true, error: null })
-
-          wanDispatcher.dispatch({
-            type: "convertCurve",
-            content,
-            token: user.token
-          });
-          break;
         case 'Binance':
           content = {
             amount: sendValue,
             sourceAddress: bnbAccountValue,
-            destinationAddress: receiveToken === 'Ethereum' ? ethAccountValue : wanAccountValue,
-            destinationChain: receiveToken === 'Ethereum' ? "ETH" : "WAN",
+            destinationAddress: receiveToken === 'Ethereum' ? ethAccountValue : null,
+            destinationChain: receiveToken === 'Ethereum' ? "ETH" : 'BINANCE',
             id: user.id
           }
 

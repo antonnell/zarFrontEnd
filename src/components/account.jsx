@@ -51,13 +51,6 @@ class Account extends Component {
       width: 'calc( 100% - 42px)'
     }
 
-
-    let stakeable = stakeableCurrencies ? stakeableCurrencies.filter((currency) => {
-      return currency.currency === account.symbol
-    }) : []
-
-    let stakeableBoolean = stakeable.length > 0
-
     return(
       <Grid item xs={12} align='left'>
         <Card style={{marginTop:'16px', borderRadius: '3px', cursor: 'pointer'}}>
@@ -86,9 +79,6 @@ class Account extends Component {
               </Typography>
             </Grid>
             <Grid item xs={4} align='right' style={bodyStyle}>
-              { stakeableBoolean && <Button size="small" variant="outlined" color="secondary" onClick={() => { stakeClicked(account) }}>
-                Stake
-              </Button>}
               <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(account) }}>
                 Transact
               </Button>
@@ -112,12 +102,6 @@ class Account extends Component {
     } else if (account.type === 'BEP2') {
       logo = 'Binance'
     }
-
-    let stakeable = stakeableCurrencies ? stakeableCurrencies.filter((currency) => {
-      return currency.currency === account.symbol
-    }) : []
-
-    let stakeableBoolean = stakeable.length > 0
 
     return (
 
@@ -156,12 +140,7 @@ class Account extends Component {
         </CardActionArea>
         <CardContent style={{ position: "relative" }}>
           <Grid container style={{marginTop: '12px'}}>
-            <Grid item xs={6} align='left'>
-              { stakeableBoolean && <Button size="small" variant="contained" color="secondary" onClick={() => { stakeClicked(account) }}>
-                Stake
-              </Button>}
-            </Grid>
-            <Grid item xs={6} align='right'>
+            <Grid item xs={12} align='right'>
               <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(account) }}>
                 Transact
               </Button>

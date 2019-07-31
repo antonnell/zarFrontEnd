@@ -36,7 +36,7 @@ class CompletePayment extends Component {
         </Grid>
         <Grid item xs={10} align="left" style={{ marginTop: "12px" }}>
           <Typography variant="body1">
-            If the problem persists, please contact CryptoCurve support with the
+            If the problem persists, please contact ZAR support with the
             following error
           </Typography>
         </Grid>

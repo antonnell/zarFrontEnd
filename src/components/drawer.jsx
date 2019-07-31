@@ -46,7 +46,7 @@ class AppDrawer extends Component {
     if (theme.name === 'dark') {
       return (<Card style={ { padding: '24px', marginBottom: '8px' } }>
         <Grid container justify="center" alignItems="center" style={ { paddingTop: 24 } } direction="column">
-          <Typography variant="h1" style={ { paddingBottom: 16 } }>CryptoCurve</Typography>
+          <Typography variant="h1" style={ { paddingBottom: 16 } }>ZAR Network</Typography>
           <div style={ { width: '50px', height: '50px', borderRadius: '25px', background: '#dedede', position: 'relative', backgroundImage: 'url("' + user.profilePhoto + '")', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } }>
           </div>
           <Typography variant="h1" style={ { paddingTop: 16 } }>{ user.username }</Typography>
@@ -56,7 +56,7 @@ class AppDrawer extends Component {
       return (
         <div style={ { padding: '24px', marginBottom: '8px' } }>
           <Grid container justify="center" alignItems="center" style={ { paddingTop: 24 } } direction="column">
-            <Typography variant="h1" style={ { paddingBottom: 16 } }>CryptoCurve</Typography>
+            <Typography variant="h1" style={ { paddingBottom: 16 } }>ZAR Network</Typography>
             <div style={ { width: '50px', height: '50px', borderRadius: '25px', background: '#dedede', position: 'relative', backgroundImage: 'url("' + user.profilePhoto + '")', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } }>
             </div>
             <Typography variant="h1" style={ { paddingTop: 16 } }>{ user.username }</Typography>
@@ -82,31 +82,13 @@ class AppDrawer extends Component {
       <List style={ { height: "calc(100% - 173px)" } }>
         <ListSubheader disableSticky={ true }>MENU</ListSubheader>
         <ListItem
-          selected={ ['accounts', 'aionAccounts', 'binanceAccounts', 'bitcoinAccounts', 'ethAccounts', 'tezosAccounts', 'wanAccounts'].includes(path) }
+          selected={ ['accounts', 'binanceAccounts', 'ethAccounts'].includes(path) }
           button
           onClick={ event => {
             navClicked(event, 'accounts');
           } }
         >
           <ListItemText primary="Accounts" />
-        </ListItem>
-        <ListItem
-          selected={ ['browsePools', 'poolDetails', 'createPool', 'updatePool', 'pooling'].includes(path) }
-          button
-          onClick={ event => {
-            navClicked(event, 'browsePools');
-          } }
-        >
-          <ListItemText primary="Pooling" />
-        </ListItem>
-        <ListItem
-          selected={ ['staking'].includes(path) }
-          button
-          onClick={ event => {
-            navClicked(event, 'staking');
-          } }
-        >
-          <ListItemText primary="Staking" />
         </ListItem>
         <ListItem
           selected={ ['tokenSwap'].includes(path) }

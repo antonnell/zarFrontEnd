@@ -15,8 +15,6 @@ let Account = createReactClass({
         account={ this.props.account }
         cardClicked={ this.cardClicked }
         transactClicked={ this.props.transactClicked }
-        stakeClicked={ this.props.stakeClicked }
-        stakeableCurrencies={ this.props.stakeableCurrencies }
         viewMode={ this.props.viewMode }
       />
     );
@@ -26,26 +24,13 @@ let Account = createReactClass({
     let screen = ''
 
     switch(this.props.account.type) {
-      case 'Aion':
-        screen = 'aionAccounts'
-        break
       case 'Binance':
       case 'BEP2':
         screen = 'binanceAccounts'
         break
-      case 'Bitcoin':
-        screen = 'bitcoinAccounts'
-        break
       case 'Ethereum':
       case 'ERC20':
         screen = 'ethAccounts'
-        break
-      case 'Tezos':
-        screen = 'tezosAccounts'
-        break
-      case 'Wanchain':
-      case 'WRC20':
-        screen = 'wanAccounts'
         break
       default:
         break

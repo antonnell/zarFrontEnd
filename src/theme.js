@@ -506,7 +506,7 @@ let customTheme =  {
         bottom: '0px',
         position: 'absolute'
       },
-      welcomeCurve: {
+      welcomeZar: {
         fontSize: '40px',
         letterSpacing: '2px',
         color: colors.white,

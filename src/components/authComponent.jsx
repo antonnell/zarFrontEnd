@@ -23,7 +23,7 @@ class AuthComponent extends Component {
       >
         <Grid item xs={8} md={6} align='left'>
           <Typography variant="h5">Two Factor Authentication Required</Typography>
-          <Typography variant="body1" style={ { marginTop: '24px', lineHeight: '35px', fontSize: '15px' } }>Enter the 6 digit code that Google Authenticator generates for your CryptoCurve account</Typography>
+          <Typography variant="body1" style={ { marginTop: '24px', lineHeight: '35px', fontSize: '15px' } }>Enter the 6 digit code that Google Authenticator generates for your ZAR account</Typography>
           <Grid container justify="space-around" alignItems="center" direction="row" spacing={8}>
             <Grid item xs={2} style={{marginTop: '50px'}}>
               <TextField required autoFocus={true} fullWidth={true} color="textSecondary" disabled={this.props.loading} id="code1" value={this.props.code1}

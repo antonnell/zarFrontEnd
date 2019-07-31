@@ -5,13 +5,6 @@ import Button from "@material-ui/core/Button";
 import SvgIcon from "@material-ui/core/SvgIcon";
 import CircularProgress  from '@material-ui/core/CircularProgress';
 
-// function PositiveIcon(props) {
-//   return (
-//     <SvgIcon {...props}>
-//       <path fill='#19e564' d="M12,2A10,10 0 0,1 22,12A10,10 0 0,1 12,22A10,10 0 0,1 2,12A10,10 0 0,1 12,2M11,16.5L18,9.5L16.59,8.09L11,13.67L7.91,10.59L6.5,12L11,16.5Z" />
-//     </SvgIcon>
-//   );
-// }
 function NegativeIcon(props) {
   return (
     <SvgIcon {...props}>

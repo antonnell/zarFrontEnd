@@ -1,6 +1,4 @@
 const config = {
-  whitelistApiUrl: "",
-  whitelistApiHeader: "",
   apiUrl: "",
   etherscanUrl : "",
   wanscanURL: "",
