@@ -229,6 +229,8 @@ let TokenSwap = createReactClass({
           case  'Binance':
             receiveToken = 'Ethereum'
             break;
+          default:
+            break;
         }
         this.setState({ sendToken: event.target.value, receiveToken })
         break;
@@ -241,6 +243,8 @@ let TokenSwap = createReactClass({
             break;
           case  'Binance':
             sendToken = 'Ethereum'
+            break;
+          default:
             break;
         }
 

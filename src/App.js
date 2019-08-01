@@ -14,6 +14,7 @@ import SetUsername from './containers/setUsername.jsx';
 import Settings from './containers/settings.jsx';
 import Transact from './containers/transact';
 import TokenSwap from './containers/tokenSwap.jsx';
+import AssetManagement from './containers/assetManagement.jsx';
 
 let accountEmitter = require("./store/accountStore.js").default.emitter;
 let accountDispatcher = require("./store/accountStore.js").default.dispatcher;
@@ -310,7 +311,7 @@ class App extends Component {
             token: this.state.user.token
           });
         }
-      } else if (path === 'contacts') {
+      } else if (path === 'beneficiaries') {
         content = { id: this.state.user.id };
         contactsDispatcher.dispatch({
           type: "getContacts",
@@ -492,7 +493,7 @@ class App extends Component {
         return ( <Accounts token="Ethereum" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } /> )
       case 'binanceAccounts':
         return ( <Accounts token="Binance" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } /> )
-      case 'contacts':
+      case 'beneficiaries':
         return (
           <Contacts
             theme={ this.state.theme }
@@ -509,6 +510,13 @@ class App extends Component {
             user={ this.state.user }
           />
         );
+      case 'assetManagement':
+        return (
+          <AssetManagement
+            theme={ this.state.theme }
+            user={ this.state.user }
+          />
+        )
       case "settings":
         return (
           <Settings

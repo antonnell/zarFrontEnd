@@ -1,5 +1,6 @@
 const config = {
   apiUrl: "http://api.testnet.cryptocurve.network/",
+  assetApiUrl: "http://localhost:8000/",
   etherscanUrl: "https://ropsten.etherscan.io/tx/",
   wanscanURL: "https://explorer.cryptocurve.xyz/tx/",
   aionscanURL: "https://mastery.aion.network/#/transaction/",

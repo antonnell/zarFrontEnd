@@ -1,0 +1,297 @@
+import React, { Component } from "react";
+import {
+  Grid,
+  Typography,
+  Button,
+  IconButton,
+  SvgIcon,
+  Card
+ } from "@material-ui/core";
+
+import Snackbar from './snackbar';
+import PageTitle from "./pageTitle";
+import Asset from '../containers/asset';
+import PageLoader from './pageLoader';
+import IssueModal from './issueAssetModal';
+
+import { colors } from '../theme.js'
+
+function ListIcon(props) {
+  return (
+    <SvgIcon {...props}>
+      <path
+        fill={props.color}
+        d="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z"
+      />
+    </SvgIcon>
+  );
+}
+function GridIcon(props) {
+  return (
+    <SvgIcon {...props}>
+      <path
+        fill={props.color}
+        d="M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3"
+      />
+    </SvgIcon>
+  );
+}
+
+
+
+class AssetManagement extends Component {
+  renderAssets(assets) {
+    let {
+      theme,
+      loading,
+      viewMode,
+      user
+    } = this.props
+
+    if(!assets) {
+      return null
+    }
+
+    if(assets && assets.length === 0 && loading !== true) {
+      return (<Grid item xs={12} align="center" style={{ minHeight: "190px", paddingTop: "100px" }} >
+        <Typography variant="h2">
+          Oh no, we couldn't find any assets, you can issue a new asset my clicking on the Issue button
+        </Typography>
+      </Grid>)
+    }
+
+    return assets.map((asset) => {
+      if(viewMode === 'List') {
+        return (
+          <Grid item xs={12} key={asset.type+'_'+asset.name} style={{ padding: '0px 24px' }}>
+            <Asset user={ user } asset={ asset } theme={ theme } viewMode={ viewMode } />
+          </Grid>
+        )
+      } else {
+        return (
+          <Grid item xs={12} sm={6} lg={4} xl={3} key={asset.type+'_'+asset.name} style={{ padding: '24px' }}>
+            <Asset user={ user } asset={ asset } theme={ theme } viewMode={ viewMode } />
+          </Grid>
+        )
+      }
+    })
+  }
+
+  render() {
+
+    let {
+      theme,
+      issueAssetClicked,
+      loading,
+      issueOpen,
+      error,
+      toggleViewClicked,
+      viewMode,
+      allAssets,
+      myAssets
+    } = this.props
+
+    return (
+      <Grid container justify="center" alignItems="flex-start" direction="row">
+        <Grid
+          item
+          xs={12}
+          align="left"
+        >
+          <PageTitle theme={theme} root={null} screen={{ display: 'Asset Management', location: 'assetManagement' }} />
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="flex-start"
+            direction="row"
+            spacing={0}
+            style={theme.custom.sectionTitle}
+          >
+            <Grid item xs={6} align='left'>
+              <div style={theme.custom.inline}>
+                <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>My Assets</Typography>
+              </div>
+              <div style={{ marginLeft: '15px', display: 'inline-block' }}>
+                <IconButton
+                  color="primary"
+                  aria-label="Switch View"
+                  onClick={e => {
+                    toggleViewClicked();
+                  }}
+                >
+                  <GridIcon theme={theme} color={viewMode==='Grid'?colors.lightBlue:colors.darkGray} />
+                  <ListIcon theme={theme} color={viewMode==='List'?colors.lightBlue:colors.darkGray} />
+                </IconButton>
+              </div>
+            </Grid>
+            <Grid item xs={6} align='right'>
+              <Button
+                size="small"
+                variant="contained"
+                color="primary"
+                onClick={ issueAssetClicked }
+              >
+                Issue
+              </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="flex-start"
+            direction="row"
+            style={theme.custom.accountsContainer}
+          >
+            { viewMode === 'List' && this.renderHeader()}
+            {this.renderAssets(myAssets)}
+          </Grid>
+        </Grid>
+
+        <Grid item xs={12} align="center">
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="flex-start"
+            direction="row"
+            spacing={0}
+            style={theme.custom.sectionTitle}
+          >
+            <Grid item xs={12} align='left'>
+              <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>All Assets</Typography>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="flex-start"
+            direction="row"
+            style={theme.custom.accountsContainer}
+          >
+            { viewMode === 'List' && this.renderHeader()}
+            {this.renderAssets(allAssets)}
+          </Grid>
+        </Grid>
+        { loading && this.renderLoader() }
+        { error && <Snackbar open={true} type={'Error'} message={error} /> }
+        { issueOpen && this.renderIssueModal() }
+      </Grid>
+    );
+  }
+
+  renderHeader() {
+    let headerStyle = {
+      padding: '17px 24px',
+      backgroundColor: '#2f3031'
+    }
+    let textStyle = {
+      color: '#ffffff',
+      fontSize: '14px',
+      fontWeight: '600'
+    }
+
+    return (<Grid item xs={12} align='left' style={{ padding: '0px 24px' }}>
+      <Card style={{borderRadius: '3px'}}>
+        <Grid container>
+          <Grid item xs={4} align='left' style={headerStyle}>
+            <Typography variant="body1" style={textStyle}>
+              Name
+            </Typography>
+          </Grid>
+          <Grid item xs={2} align='right' style={headerStyle}>
+            <Typography variant="body1" style={textStyle}>
+              Total Supply
+            </Typography>
+          </Grid>
+          <Grid item xs={6} align='right' style={headerStyle}>
+            <Typography variant="body1" style={textStyle}>
+              Actions
+            </Typography>
+          </Grid>
+        </Grid>
+      </Card>
+    </Grid>)
+  }
+
+  renderLoader() {
+    return <PageLoader />
+  }
+
+  renderIssueModal() {
+
+    const {
+      issueAssetCloseClicked,
+      handleChange,
+      handelIssue,
+      handleSelectChange,
+
+      issueOpen,
+      error,
+      loading,
+
+      assetName,
+      assetNameError,
+      assetNameErrorMessage,
+
+      symbol,
+      symbolError,
+      symbolErrorMessage,
+
+      totalSupply,
+      totalSupplyError,
+      totalSupplyErrorMessage,
+
+      mintable,
+      mintableError,
+      mintableErrorMessage,
+
+      mintingAddressValue,
+      mintingAddressOptions,
+      mintingAddressError,
+      mintingAddressErrorMessage,
+    } = this.props
+
+    return (
+      <IssueModal
+
+        handleClose={ issueAssetCloseClicked }
+        handleChange={ handleChange }
+        handelIssue={ handelIssue }
+        handleSelectChange={ handleSelectChange }
+
+        isOpen={ issueOpen }
+        error={ error }
+        loading={ loading }
+
+        assetName={ assetName }
+        assetNameError={ assetNameError }
+        assetNameErrorMessage={ assetNameErrorMessage }
+
+        symbol={ symbol }
+        symbolError={ symbolError }
+        symbolErrorMessage={ symbolErrorMessage }
+
+        totalSupply={ totalSupply }
+        totalSupplyError={ totalSupplyError }
+        totalSupplyErrorMessage={ totalSupplyErrorMessage }
+
+        mintable={ mintable }
+        mintableError={ mintableError }
+        mintableErrorMessage={ mintableErrorMessage }
+
+        mintingAddressValue={ mintingAddressValue }
+        mintingAddressOptions={ mintingAddressOptions }
+        mintingAddressError={ mintingAddressError }
+        mintingAddressErrorMessage={ mintingAddressErrorMessage }
+      />
+    )
+  }
+
+}
+
+export default AssetManagement;

@@ -19,15 +19,13 @@ class Account extends Component {
   }
 
   renderList() {
-    let { account, cardClicked, transactClicked, stakeClicked, stakeableCurrencies } = this.props
+    let { account, cardClicked, transactClicked } = this.props
 
     let logo = 'footer'
-    if(["Aion", "Bitcoin", "Ethereum", "Wanchain", "Tezos", "Binance"].includes(account.type)) {
+    if(["Ethereum", "Binance"].includes(account.type)) {
       logo = account.type
     } else if (account.type === 'ERC20') {
       logo = 'Ethereum'
-    } else if (account.type === 'WRC20') {
-      logo = "Wanchain"
     } else if (account.type === 'BEP2') {
       logo = 'Binance'
     }
@@ -90,15 +88,13 @@ class Account extends Component {
   }
 
   renderGrid() {
-    let { account, cardClicked, transactClicked, stakeClicked, stakeableCurrencies } = this.props
+    let { account, cardClicked, transactClicked } = this.props
 
     let logo = 'footer'
-    if(["Aion", "Bitcoin", "Ethereum", "Wanchain", "Tezos", "Binance"].includes(account.type)) {
+    if(["Ethereum", "Binance"].includes(account.type)) {
       logo = account.type
     } else if (account.type === 'ERC20') {
       logo = 'Ethereum'
-    } else if (account.type === 'WRC20') {
-      logo = "Wanchain"
     } else if (account.type === 'BEP2') {
       logo = 'Binance'
     }

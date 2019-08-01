@@ -1,18 +1,18 @@
 
 export const colors = {
-  white: "#fff",
-  dodgerBlue: "#3cabff",
-  "robin-s-egg": "#6be6fd",
+  black: "#000000",
   text: "#29292A",
-  dark: "#29292A",
-  black: '#000',
-  lightBlue: "#0FCEF3",
-  darkBlue: "#2B323C",
-  gray: "#ababab",
-  darkGray: "#888888",
-  orange: '#EF8D24',
-  green: '#21F14A',
-  red: '#EE144C'
+  lightBlack: "#2f3031",
+  darkGray: "#9B9B9B",
+  gray: "#ECECEC",
+  white: "#FFFFFF",
+
+  darkBlue: "#212C41",
+  lightBlue: "#046DC2",
+
+  orange: "#EF8D24",
+  green: "#21F14A",
+  red: "#EE144C"
 };
 
 // const defaultTheme = createMuiTheme();
@@ -77,7 +77,7 @@ let customTheme =  {
         },
         body2: {
           letterSpacing: '0.5px',
-          color: colors.gray,
+          color: colors.darkGray,
           fontSize: '14px'
         },
         subtitle1: {
@@ -99,7 +99,7 @@ let customTheme =  {
             paddingBottom: '24px',
           },
           root: {
-            backgroundImage: "linear-gradient(#2B323C, #39495F)"
+            backgroundImage: "linear-gradient("+colors.darkBlue+", #39495F)"
           }
         },
         MuiListItem: {
@@ -113,7 +113,7 @@ let customTheme =  {
             paddingRight: '24px'
           },
           selected: {
-            backgroundColor: '#1e849e !important'
+            backgroundColor: colors.lightBlue+' !important'
           }
         },
         MuiListItemText: {
@@ -203,7 +203,7 @@ let customTheme =  {
         },
         MuiFormLabel: {
           root: {
-            color: '#c0c0c0',
+            color: colors.darkGray,
             fontSize: '15px',
             letterSpacing: '0.5px'
           }
@@ -317,7 +317,7 @@ let customTheme =  {
         MuiTableHead: {
           root: {
             padding: '16px',
-            backgroundColor: '#2f3031'
+            backgroundColor: colors.lightBlack
           }
         },
         MuiTableSortLabel: {
@@ -381,11 +381,6 @@ let customTheme =  {
             padding: '0px 12px 12px 32px'
           }
         },
-        MuiCardContent: {
-          root: {
-            padding: '30px 40px'
-          }
-        },
         MuiExpansionPanel: {
           root: {
             boxShadow: 'none',
@@ -421,14 +416,14 @@ let customTheme =  {
           contrastText: colors.white
         },
         secondary: {
-          main: colors.text
+          main: colors.darkBlue
         },
         background:{
           paper: colors.white,
         },
         text: {
           primary: colors.text,
-          secondary: colors.gray
+          secondary: colors.darkGray
         }
       }
     },
@@ -456,10 +451,10 @@ let customTheme =  {
         color: colors.darkBlue
       },
       footer: {
-        background: '#2b323c'
+        background: colors.darkBlue
       },
       logout: {
-        border: '1px solid #1e849e',
+        border: '1px solid '+colors.lightBlue,
         marginTop: '60px'
       },
       logoutText: {
@@ -496,7 +491,6 @@ let customTheme =  {
         color: colors.darkGray
       },
       appBar: {
-        background: colors.darkBlue,
         padding: '12px'
       },
       welcomeBase: {

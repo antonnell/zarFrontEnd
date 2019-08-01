@@ -1,5 +1,6 @@
 const config = {
   apiUrl: "",
+  assetApiUrl: "",
   etherscanUrl : "",
   wanscanURL: "",
   aionscanURL: "",

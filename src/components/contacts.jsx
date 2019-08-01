@@ -38,7 +38,7 @@ class Contacts extends Component {
           style={{ minHeight: "190px", paddingTop: "100px" }}
         >
           <Typography variant="h2">
-            Oh no, we couldn't find any contacts for you. Why don't you add one?
+            Oh no, we couldn't find any beneficiaries for you. Why don't you add one?
           </Typography>
         </Grid>
       );
@@ -110,7 +110,7 @@ class Contacts extends Component {
           xs={12}
           align="left"
         >
-          <PageTItle theme={this.props.theme} root={null} screen={{display: 'Contacts', location: 'contacts'}} />
+          <PageTItle theme={this.props.theme} root={null} screen={{display: 'Beneficiaries', location: 'beneficiaries'}} />
         </Grid>
         <Grid item xs={12} align="center">
           <Grid
@@ -122,7 +122,7 @@ class Contacts extends Component {
             style={ theme.custom.sectionTitle }
           >
             <Grid item xs={6} align='left' >
-              <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Contacts</Typography>
+              <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Beneficiaries</Typography>
             </Grid>
             <Grid item xs={6} align='right' >
               <Button

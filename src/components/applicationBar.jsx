@@ -19,10 +19,7 @@ class ApplicationBar extends Component {
     if(this.props.size === 'xs' || this.props.size === 'sm') {
       return (
         <div style={this.props.theme.custom.appBar}>
-          {this.props.menuClicked != null ? (<IconButton aria-label="Menu" onClick={this.props.menuClicked}>
-            <MenuIcon />
-          </IconButton>) : null}
-          <img style={{verticalAlign: 'middle',height:43,width:164}} src={require("../assets/images/cryptocurve-logo-white2.png")} alt="ZarNetwork.io" />
+          <img onClick={this.props.menuClicked ? this.props.menuClicked : null} style={{ verticalAlign: 'middle', height:43, width:200, cursor:'pointer' }} src={require("../assets/images/zarnetwork_logo_collapsed.png")} alt="ZarNetwork.io" />
         </div>
       )
     }

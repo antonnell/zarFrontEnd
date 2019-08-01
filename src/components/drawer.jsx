@@ -42,36 +42,21 @@ class AppDrawer extends Component {
   }
 
   renderTop() {
-    let { theme, user } = this.props
-    if (theme.name === 'dark') {
-      return (<Card style={ { padding: '24px', marginBottom: '8px' } }>
+    let { user } = this.props
+    return (
+      <div style={ { padding: '24px', marginBottom: '8px' } }>
         <Grid container justify="center" alignItems="center" style={ { paddingTop: 24 } } direction="column">
           <Typography variant="h1" style={ { paddingBottom: 16 } }>ZAR Network</Typography>
-          <div style={ { width: '50px', height: '50px', borderRadius: '25px', background: '#dedede', position: 'relative', backgroundImage: 'url("' + user.profilePhoto + '")', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } }>
+          <div style={ { width: '50px', height: '50px', borderRadius: '25px', background: '#ECECEC', position: 'relative', backgroundImage: 'url("' + user.profilePhoto + '")', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } }>
           </div>
           <Typography variant="h1" style={ { paddingTop: 16 } }>{ user.username }</Typography>
         </Grid>
-      </Card>)
-    } else {
-      return (
-        <div style={ { padding: '24px', marginBottom: '8px' } }>
-          <Grid container justify="center" alignItems="center" style={ { paddingTop: 24 } } direction="column">
-            <Typography variant="h1" style={ { paddingBottom: 16 } }>ZAR Network</Typography>
-            <div style={ { width: '50px', height: '50px', borderRadius: '25px', background: '#dedede', position: 'relative', backgroundImage: 'url("' + user.profilePhoto + '")', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } }>
-            </div>
-            <Typography variant="h1" style={ { paddingTop: 16 } }>{ user.username }</Typography>
-          </Grid>
-        </div>
-      )
-    }
+      </div>
+    )
   }
 
   renderBottom() {
-    if (this.props.theme.name === 'dark') {
-      return <Card>{ this.renderList() }</Card>;
-    } else {
-      return this.renderList();
-    }
+    return this.renderList();
   }
 
   renderList() {
@@ -91,6 +76,15 @@ class AppDrawer extends Component {
           <ListItemText primary="Accounts" />
         </ListItem>
         <ListItem
+          selected={ path === 'beneficiaries' }
+          button
+          onClick={ event => {
+            navClicked(event, 'beneficiaries');
+          } }
+        >
+          <ListItemText primary="Beneficiaries" />
+        </ListItem>
+        <ListItem
           selected={ ['tokenSwap'].includes(path) }
           button
           onClick={ event => {
@@ -99,18 +93,18 @@ class AppDrawer extends Component {
         >
           <ListItemText primary="Token Swap" />
         </ListItem>
+        <ListItem
+          selected={ ['assetManagement'].includes(path) }
+          button
+          onClick={ event => {
+            navClicked(event, 'assetManagement');
+          } }
+        >
+          <ListItemText primary="Asset Management" />
+        </ListItem>
 
         <Divider />
         <ListSubheader disableSticky={ true }>PROFILE</ListSubheader>
-        <ListItem
-          selected={ path === 'contacts' }
-          button
-          onClick={ event => {
-            navClicked(event, 'contacts');
-          } }
-        >
-          <ListItemText primary="Contacts" />
-        </ListItem>
         <ListItem
           selected={ path === 'settings' }
           button
