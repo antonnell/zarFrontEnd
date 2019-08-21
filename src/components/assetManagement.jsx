@@ -13,6 +13,8 @@ import PageTitle from "./pageTitle";
 import Asset from '../containers/asset';
 import PageLoader from './pageLoader';
 import IssueModal from './issueAssetModal';
+import MintModal from './mintAssetModal';
+import BurnModal from './burnAssetModal';
 
 import { colors } from '../theme.js'
 
@@ -45,7 +47,9 @@ class AssetManagement extends Component {
       theme,
       loading,
       viewMode,
-      user
+      user,
+      mintAssetClicked,
+      burnAssetClicked
     } = this.props
 
     if(!assets) {
@@ -64,13 +68,27 @@ class AssetManagement extends Component {
       if(viewMode === 'List') {
         return (
           <Grid item xs={12} key={asset.type+'_'+asset.name} style={{ padding: '0px 24px' }}>
-            <Asset user={ user } asset={ asset } theme={ theme } viewMode={ viewMode } />
+            <Asset
+              user={ user }
+              asset={ asset }
+              theme={ theme }
+              viewMode={ viewMode }
+              mintAssetClicked={ mintAssetClicked }
+              burnAssetClicked={ burnAssetClicked }
+            />
           </Grid>
         )
       } else {
         return (
           <Grid item xs={12} sm={6} lg={4} xl={3} key={asset.type+'_'+asset.name} style={{ padding: '24px' }}>
-            <Asset user={ user } asset={ asset } theme={ theme } viewMode={ viewMode } />
+            <Asset
+              user={ user }
+              asset={ asset }
+              theme={ theme }
+              viewMode={ viewMode }
+              mintAssetClicked={ mintAssetClicked }
+              burnAssetClicked={ burnAssetClicked }
+            />
           </Grid>
         )
       }
@@ -84,6 +102,8 @@ class AssetManagement extends Component {
       issueAssetClicked,
       loading,
       issueOpen,
+      mintOpen,
+      burnOpen,
       error,
       toggleViewClicked,
       viewMode,
@@ -180,6 +200,8 @@ class AssetManagement extends Component {
         { loading && this.renderLoader() }
         { error && <Snackbar open={true} type={'Error'} message={error} /> }
         { issueOpen && this.renderIssueModal() }
+        { mintOpen && this.renderMintModal() }
+        { burnOpen && this.renderBurnModal() }
       </Grid>
     );
   }
@@ -234,19 +256,19 @@ class AssetManagement extends Component {
       error,
       loading,
 
-      assetName,
+      assetNameValue,
       assetNameError,
       assetNameErrorMessage,
 
-      symbol,
+      symbolValue,
       symbolError,
       symbolErrorMessage,
 
-      totalSupply,
+      totalSupplyValue,
       totalSupplyError,
       totalSupplyErrorMessage,
 
-      mintable,
+      mintableValue,
       mintableError,
       mintableErrorMessage,
 
@@ -268,19 +290,19 @@ class AssetManagement extends Component {
         error={ error }
         loading={ loading }
 
-        assetName={ assetName }
+        assetNameValue={ assetNameValue }
         assetNameError={ assetNameError }
         assetNameErrorMessage={ assetNameErrorMessage }
 
-        symbol={ symbol }
+        symbolValue={ symbolValue }
         symbolError={ symbolError }
         symbolErrorMessage={ symbolErrorMessage }
 
-        totalSupply={ totalSupply }
+        totalSupplyValue={ totalSupplyValue }
         totalSupplyError={ totalSupplyError }
         totalSupplyErrorMessage={ totalSupplyErrorMessage }
 
-        mintable={ mintable }
+        mintableValue={ mintableValue }
         mintableError={ mintableError }
         mintableErrorMessage={ mintableErrorMessage }
 
@@ -288,6 +310,118 @@ class AssetManagement extends Component {
         mintingAddressOptions={ mintingAddressOptions }
         mintingAddressError={ mintingAddressError }
         mintingAddressErrorMessage={ mintingAddressErrorMessage }
+      />
+    )
+  }
+
+  renderMintModal() {
+
+    const {
+      mintAssetCloseClicked,
+      handleChange,
+      handelMint,
+      handleSelectChange,
+
+      mintOpen,
+      error,
+      loading,
+
+      assetValue,
+      assetOptions,
+      assetError,
+      assetErrorMessage,
+
+      mintAmountValue,
+      mintAmountError,
+      mintAmountErrorMessage,
+
+      mintingAddressValue,
+      mintingAddressOptions,
+      mintingAddressError,
+      mintingAddressErrorMessage,
+    } = this.props
+
+    return (
+      <MintModal
+
+        handleClose={ mintAssetCloseClicked }
+        handleChange={ handleChange }
+        handelMint={ handelMint }
+        handleSelectChange={ handleSelectChange }
+
+        isOpen={ mintOpen }
+        error={ error }
+        loading={ loading }
+
+        assetValue={ assetValue }
+        assetOptions={ assetOptions }
+        assetError={ assetError }
+        assetErrorMessage={ assetErrorMessage }
+
+        mintAmountValue={ mintAmountValue }
+        mintAmountError={ mintAmountError }
+        mintAmountErrorMessage={ mintAmountErrorMessage }
+
+        mintingAddressValue={ mintingAddressValue }
+        mintingAddressOptions={ mintingAddressOptions }
+        mintingAddressError={ mintingAddressError }
+        mintingAddressErrorMessage={ mintingAddressErrorMessage }
+      />
+    )
+  }
+
+  renderBurnModal() {
+
+    const {
+      burnAssetCloseClicked,
+      handleChange,
+      handelBurn,
+      handleSelectChange,
+
+      burnOpen,
+      error,
+      loading,
+
+      assetValue,
+      assetOptions,
+      assetError,
+      assetErrorMessage,
+
+      burnAmountValue,
+      burnAmountError,
+      burnAmountErrorMessage,
+
+      burningAddressValue,
+      burningAddressOptions,
+      burningAddressError,
+      burningAddressErrorMessage,
+    } = this.props
+
+    return (
+      <BurnModal
+
+        handleClose={ burnAssetCloseClicked }
+        handleChange={ handleChange }
+        handelBurn={ handelBurn }
+        handleSelectChange={ handleSelectChange }
+
+        isOpen={ burnOpen }
+        error={ error }
+        loading={ loading }
+
+        assetValue={ assetValue }
+        assetOptions={ assetOptions }
+        assetError={ assetError }
+        assetErrorMessage={ assetErrorMessage }
+
+        burnAmountValue={ burnAmountValue }
+        burnAmountError={ burnAmountError }
+        burnAmountErrorMessage={ burnAmountErrorMessage }
+
+        burningAddressValue={ burningAddressValue }
+        burningAddressOptions={ burningAddressOptions }
+        burningAddressError={ burningAddressError }
+        burningAddressErrorMessage={ burningAddressErrorMessage }
       />
     )
   }

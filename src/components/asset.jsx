@@ -19,7 +19,11 @@ class Asset extends Component {
   }
 
   renderList() {
-    let { asset } = this.props
+    let {
+      asset,
+      mintAssetClicked,
+      burnAssetClicked
+    } = this.props
 
     let logo = 'footer'
 
@@ -70,10 +74,10 @@ class Asset extends Component {
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
                 List
               </Button>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
+              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { burnAssetClicked(asset); } }>
                 Burn
               </Button>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
+              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { mintAssetClicked(asset); } }>
                 Mint
               </Button>
             </Grid>
@@ -84,7 +88,11 @@ class Asset extends Component {
   }
 
   renderGrid() {
-    let { asset } = this.props
+    let {
+      asset,
+      mintAssetClicked,
+      burnAssetClicked
+    } = this.props
 
     let logo = 'footer'
 
@@ -130,12 +138,12 @@ class Asset extends Component {
               </Button>
             </Grid>
             <Grid item xs={4} align='center'>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
+              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { burnAssetClicked(asset); } }>
                 Burn
               </Button>
             </Grid>
             <Grid item xs={4} align='right'>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
+              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { mintAssetClicked(asset); } }>
                 Mint
               </Button>
             </Grid>

@@ -9,11 +9,22 @@ let Asset = createReactClass({
     };
   },
   render() {
+
+    const {
+      theme,
+      asset,
+      viewMode,
+      mintAssetClicked,
+      burnAssetClicked
+    } = this.props
+
     return (
       <AssetComponent
-        theme={ this.props.theme }
-        asset={ this.props.asset }
-        viewMode={ this.props.viewMode }
+        theme={ theme }
+        asset={ asset }
+        viewMode={ viewMode }
+        mintAssetClicked={ mintAssetClicked }
+        burnAssetClicked={ burnAssetClicked }
       />
     );
   }
