@@ -10,8 +10,7 @@ import {
   ListItemText,
   FormHelperText,
   Slide,
-  Input,
-  Checkbox
+  Input
 } from '@material-ui/core';
 import SectionLoader from './sectionLoader';
 

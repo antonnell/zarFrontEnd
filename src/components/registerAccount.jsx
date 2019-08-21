@@ -3,14 +3,15 @@ import Grid from "@material-ui/core/Grid";
 import Typography from "@material-ui/core/Typography";
 import Button from "@material-ui/core/Button";
 import TextField from "@material-ui/core/TextField";
+import MobileNumberInput from '../containers/mobileInput.jsx'
 
 class RegisterAccount extends Component {
 
   render() {
     const {
-      username,
-      usernameError,
-      usernameErrorMessage,
+      mobileNumber,
+      mobileNumberError,
+      mobileNumberErrorMessage,
       handleChange,
       loading,
       onRegisterKeyDown,
@@ -23,7 +24,12 @@ class RegisterAccount extends Component {
       confirmPassword,
       confirmPasswordError,
       confirmPasswordErrorMessage,
-      validateEmail,
+      firstname,
+      firstnameError,
+      firstnameErrorMessage,
+      lastname,
+      lastnameError,
+      lastnameErrorMessage,
       submitRegister,
       theme
     } = this.props;
@@ -49,17 +55,49 @@ class RegisterAccount extends Component {
             autoFocus={true}
             fullWidth={true}
             color="textSecondary"
-            error={usernameError}
+            error={firstnameError}
             disabled={loading}
-            id="username"
-            label="Username"
-            value={username}
+            id="firstname"
+            label="Firstname"
+            value={firstname}
             onChange={event => {
-              handleChange(event, "username");
+              handleChange(event, "firstname");
             }}
             margin="normal"
             onKeyDown={onRegisterKeyDown}
-            helperText={usernameErrorMessage}
+            helperText={firstnameErrorMessage}
+          />
+          <TextField
+            required
+            fullWidth={true}
+            color="textSecondary"
+            error={lastnameError}
+            disabled={loading}
+            id="Lastname"
+            label="lastname"
+            value={lastname}
+            onChange={event => {
+              handleChange(event, "lastname");
+            }}
+            margin="normal"
+            onKeyDown={onRegisterKeyDown}
+            helperText={lastnameErrorMessage}
+          />
+          <TextField
+            required
+            fullWidth={true}
+            color="textSecondary"
+            error={mobileNumberError}
+            disabled={loading}
+            id="mobileNumber"
+            label="Mobile Number"
+            value={mobileNumber}
+            onChange={event => {
+              handleChange(event, "mobileNumber");
+            }}
+            margin="normal"
+            onKeyDown={onRegisterKeyDown}
+            helperText={mobileNumberErrorMessage}
           />
           <TextField
             required
@@ -76,7 +114,6 @@ class RegisterAccount extends Component {
             margin="normal"
             onKeyDown={onRegisterKeyDown}
             helperText={emailAddressErrorMessage}
-            onBlur={validateEmail()}
           />
           <TextField
             required

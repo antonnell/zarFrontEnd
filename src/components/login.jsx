@@ -6,14 +6,12 @@ import TextField from "@material-ui/core/TextField";
 
 class Login extends Component {
   render() {
-
     let {
       submitForgotPasswordNavigate,
-      submitResendConfirmationNavigate,
       loading,
-      username,
-      usernameError,
-      usernameErrorMessage,
+      emailAddress,
+      emailAddressError,
+      emailAddressErrorMessage,
       handleChange,
       onLoginKeyDown,
       password,
@@ -23,10 +21,8 @@ class Login extends Component {
     } = this.props
 
     let forgotPasswordClicked = submitForgotPasswordNavigate;
-    let resendConfirmationEmail = submitResendConfirmationNavigate;
     if (loading) {
       forgotPasswordClicked = null;
-      resendConfirmationEmail = null;
     }
 
     if(!theme) {
@@ -52,17 +48,17 @@ class Login extends Component {
             autoFocus={true}
             fullWidth={true}
             color="textSecondary"
-            error={usernameError}
+            error={emailAddressError}
             disabled={loading}
-            id="username"
-            label="Username / Email"
-            value={username}
+            id="emailAddress"
+            label="Email Address"
+            value={emailAddress}
             onChange={event => {
-              handleChange(event, "username");
+              handleChange(event, "emailAddress");
             }}
             margin="normal"
             onKeyDown={onLoginKeyDown}
-            helperText={usernameErrorMessage}
+            helperText={emailAddressErrorMessage}
           />
           <TextField
             required
@@ -96,13 +92,6 @@ class Login extends Component {
           >
             Login
           </Button>
-          <Typography
-            variant="body1"
-            style={theme.custom.resendConfirmationEmail}
-            onClick={resendConfirmationEmail}
-          >
-            Didn't receive confirmation email?
-          </Typography>
         </Grid>
       </Grid>
     );

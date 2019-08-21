@@ -1,14 +1,15 @@
 import React, { Component } from 'react';
-import Typography from '@material-ui/core/Typography';
-import Drawer from '@material-ui/core/Drawer';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemText from '@material-ui/core/ListItemText';
-import ListSubheader from '@material-ui/core/ListSubheader';
-import Divider from '@material-ui/core/Divider';
-import Card from '@material-ui/core/Card';
-import { Grid } from '@material-ui/core';
-import {version} from "../version";
+import {
+  Typography,
+  Drawer,
+  List,
+  ListItem,
+  ListItemText,
+  ListSubheader,
+  Divider,
+  Grid
+} from '@material-ui/core';
+import { version } from "../version";
 import ScrollArea  from 'react-scrollbar';
 
 class AppDrawer extends Component {

@@ -19,8 +19,7 @@ class RegisterCompleted extends Component {
 
   render() {
     const {
-      theme,
-      email
+      theme
     } = this.props;
     if(!theme) {
       return null
@@ -31,7 +30,7 @@ class RegisterCompleted extends Component {
         container
         justify="space-around"
         direction="row"
-        style={          
+        style={
           {
             marginTop: '50vh',
             transform: 'translate(0%,-50%)'
@@ -45,9 +44,9 @@ class RegisterCompleted extends Component {
             />
           </div>
           <div style={{display: 'inline-block', verticalAlign: 'top'}}>
-            <Typography variant="h5" style={{lineHeight: '64px'}}>Confirmation Email Sent</Typography>
+            <Typography variant="h5" style={{lineHeight: '64px'}}>Registration Successful</Typography>
           </div>
-          <Typography variant="body1" style={ { marginTop: '24px', lineHeight: '35px', fontSize: '15px' } }>We sent a verification email to {email}. Click the link inside to get started! Please note the link will become invalid after 30 minutes.</Typography>
+          <Typography variant="body1" style={ { marginTop: '24px', lineHeight: '35px', fontSize: '15px' } }>Thank you for signing up to ZAR Network. Please login to access your profile.</Typography>
         </Grid>
       </Grid>
     );

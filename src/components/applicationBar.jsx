@@ -1,17 +1,4 @@
 import React, { Component } from 'react';
-import { withStyles } from '@material-ui/core/styles';
-import IconButton from '@material-ui/core/IconButton';
-import SvgIcon from '@material-ui/core/SvgIcon';
-
-const styles = {};
-
-function MenuIcon(props) {
-  return (
-    <SvgIcon {...props}>
-      <path fill='#fff' d="M3,6H21V8H3V6M3,11H21V13H3V11M3,16H21V18H3V16Z" />
-    </SvgIcon>
-  );
-}
 
 class ApplicationBar extends Component {
 
@@ -29,4 +16,4 @@ class ApplicationBar extends Component {
   };
 }
 
-export default withStyles(styles)(ApplicationBar);
+export default ApplicationBar;

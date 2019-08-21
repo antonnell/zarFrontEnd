@@ -1,10 +1,13 @@
 import React from 'react';
 import RegisterAccountComponent from '../components/registerAccount';
+import {
+  REGISTER,
+  REGISTER_RETURNED,
+  ERROR
+} from '../constants'
 
 const createReactClass = require('create-react-class');
-let emitter = require('../store/accountStore.js').default.emitter;
-let dispatcher = require('../store/accountStore.js').default.dispatcher;
-
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 const email = require('email-validator');
 
 let RegisterAccount = createReactClass({
@@ -12,9 +15,9 @@ let RegisterAccount = createReactClass({
     return {
       loading: false,
       error: null,
-      username: '',
-      usernameError: false,
-      usernameErrorMessage: "",
+      mobileNumber: '',
+      mobileNumberError: false,
+      mobileNumberErrorMessage: "",
       emailAddress: '',
       emailAddressError: false,
       emailAddressErrorMessage: "",
@@ -24,16 +27,21 @@ let RegisterAccount = createReactClass({
       confirmPassword: '',
       confirmPasswordError: false,
       confirmPasswordErrorMessage: '',
-      confirmEmail: false
+      firstname: '',
+      firstnameError: false,
+      firstnameErrorMessage: '',
+      lastname: '',
+      lastnameError: false,
+      lastnameErrorMessage: '',
     };
   },
 
   componentWillMount() {
-    emitter.on('register', this.registerReturned);
+    emitter.on(REGISTER_RETURNED, this.registerReturned);
   },
 
   componentWillUnmount() {
-    emitter.removeAllListeners('register');
+    emitter.removeListener(REGISTER_RETURNED, this.registerReturned);
   },
 
   render() {
@@ -41,15 +49,14 @@ let RegisterAccount = createReactClass({
       <RegisterAccountComponent
         handleChange={ this.handleChange }
         submitRegister={ this.submitRegister }
-        validateEmail={ this.validateEmail }
         submitLoginNavigate={ this.submitLoginNavigate }
         onRegisterKeyDown={ this.onRegisterKeyDown }
         emailAddress={ this.state.emailAddress }
         emailAddressError={ this.state.emailAddressError }
         emailAddressErrorMessage={ this.state.emailAddressErrorMessage }
-        username={ this.state.username }
-        usernameError={ this.state.usernameError }
-        usernameErrorMessage={ this.state.usernameErrorMessage }
+        mobileNumber={ this.state.mobileNumber }
+        mobileNumberError={ this.state.mobileNumberError }
+        mobileNumberErrorMessage={ this.state.mobileNumberErrorMessage }
         password={ this.state.password }
         passwordError={ this.state.passwordError }
         passwordErrorMessage={ this.state.passwordErrorMessage }
@@ -59,7 +66,6 @@ let RegisterAccount = createReactClass({
         error={ this.state.error }
         loading={ this.state.loading }
         handleChecked={ this.handleChecked }
-        confirmEmail={ this.state.confirmEmail }
         resendConfirmationEmail={ this.resendConfirmationEmail }
         theme={ this.props.theme }
       />
@@ -84,25 +90,11 @@ let RegisterAccount = createReactClass({
     }
   },
 
-  validateEmail() {
-    /*var that = this
-    setTimeout(function() {
-
-      if(that.state.emailAddress == '') {
-
-      } else if (!email.validate(that.state.emailAddress)) {
-        //that.setState({emailAddressError: true, emailAddressErrorMessage: "Email address provided is not a valid email address"});
-      } else {
-        that.setState({emailAddressError: false, emailAddressErrorMessage: "The email address that is approved for Presale participation"})
-      }
-    }, 100)*/
-  },
-
   submitRegister() {
     var error = false;
     this.setState({
-      usernameError: false,
-      usernameErrorMessage: "",
+      mobileNumberError: false,
+      mobileNumberErrorMessage: "",
       emailAddressError: false,
       emailAddressErrorMessage: "",
       passwordError: false,
@@ -111,10 +103,25 @@ let RegisterAccount = createReactClass({
       confirmPasswordErrorMessage: '',
     });
 
-    if (this.state.username === '') {
+    if (this.state.firstname === '') {
       this.setState({
-        usernameError: true,
-        usernameErrorMessage: 'Username is a required field'
+        firstnameError: true,
+        firstnameErrorMessage: 'Firstname is a required field'
+      });
+      error = true;
+    }
+    if (this.state.lastname === '') {
+      this.setState({
+        lastnameError: true,
+        lastnameErrorMessage: 'Lastname is a required field'
+      });
+      error = true;
+    }
+
+    if (this.state.mobileNumber === '') {
+      this.setState({
+        mobileNumberError: true,
+        mobileNumberErrorMessage: 'Mobile Number is a required field'
       });
       error = true;
     }
@@ -163,15 +170,25 @@ let RegisterAccount = createReactClass({
     if (!error) {
       this.setState({ loading: true });
       this.props.setError(null)
-
       this.props.startLoading()
 
+      const {
+        mobileNumber,
+        emailAddress,
+        password,
+        firstname,
+        lastname
+      } = this.state
+
       var content = {
-        username: this.state.username,
-        emailAddress: this.state.emailAddress,
-        password: this.state.password
+        mobile_number: mobileNumber,
+        email_address: emailAddress,
+        password: password,
+        firstname: firstname,
+        lastname: lastname
       };
-      dispatcher.dispatch({ type: 'register', content });
+
+      dispatcher.dispatch({ type: REGISTER, content });
     }
   },
 
@@ -188,9 +205,9 @@ let RegisterAccount = createReactClass({
     if (data.success) {
       this.props.setEmail(this.state.emailAddress)
       this.props.navigate("registrationSuccessful")
-    } else if (data.errorMsg) {
-      this.setState({ error: data.errorMsg });
-      this.props.setError(data.errorMsg)
+    } else if (data.result) {
+      this.setState({ error: data.result });
+      this.props.setError(data.result)
     } else {
       this.setState({ error: data.statusText });
       this.props.setError(data.statusText)

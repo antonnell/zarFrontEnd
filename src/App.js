@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { CssBaseline, Grid } from "@material-ui/core";
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
 
-import curveTheme from './theme';
+import customTheme from './theme';
 
 import TheAppBar from './containers/applicationBar.jsx';
 import AppDrawer from './containers/drawer.jsx';
@@ -16,28 +16,15 @@ import Transact from './containers/transact';
 import TokenSwap from './containers/tokenSwap.jsx';
 import AssetManagement from './containers/assetManagement.jsx';
 
-let accountEmitter = require("./store/accountStore.js").default.emitter;
-let accountDispatcher = require("./store/accountStore.js").default.dispatcher;
-
-let contactsEmitter = require("./store/contactsStore.js").default.emitter;
-let contactsDispatcher = require("./store/contactsStore.js").default.dispatcher;
-let contactsStore = require("./store/contactsStore.js").default.store;
-
-let ethEmitter = require("./store/ethStore.js").default.emitter;
-let ethDispatcher = require("./store/ethStore.js").default.dispatcher;
-let ethStore = require("./store/ethStore.js").default.store;
-
-let binanceEmitter = require("./store/binanceStore.js").default.emitter;
-let binanceDispatcher = require('./store/binanceStore.js').default.dispatcher;
-let binanceStore = require("./store/binanceStore.js").default.store;
+const { emitter, dispatcher, store } = require("./store/zarStore.js");
 
 const setInitialUser = () => {
-  const userString = sessionStorage.getItem("cc_user");
+  const userString = sessionStorage.getItem("zar_user");
   return userString !== null ? JSON.parse(userString) : null;
 };
 
 const setInitialTheme = () => {
-  let themeString = localStorage.getItem("cc_theme");
+  let themeString = localStorage.getItem("zar_theme");
   return themeString !== null ? themeString : "light";
 };
 
@@ -50,7 +37,7 @@ class App extends Component {
     uriParameters: {},
     verificationSearching: false,
     currentTheme: setInitialTheme(),
-    theme: curveTheme[setInitialTheme()],
+    theme: customTheme[setInitialTheme()],
     transactOpen: false,
     transactCurrency: null,
     transactContact: null,
@@ -75,56 +62,20 @@ class App extends Component {
     this.contactsRefreshed = this.contactsRefreshed.bind(this);
     this.ethAccountsRefreshed = this.ethAccountsRefreshed.bind(this);
 
-    this.verificationResultReturned = this.verificationResultReturned.bind(this);
-
     this.getSupportedERC20TokensReturned = this.getSupportedERC20TokensReturned.bind(this);
   }
 
   contactsRefreshed() {
-    this.setState({ contacts: contactsStore.getStore('contacts') })
+    // this.setState({ contacts: contactsStore.getStore('contacts') })
   }
 
   ethAccountsRefreshed() {
-    this.setState({ ethAddresses: ethStore.getStore('accounts') })
-  }
-
-  verificationResultReturned(error, data) {
-    if (error) {
-      return this.setState({ error: error.toString() });
-    }
-
-    if (data.success) {
-      let user = this.state.user;
-
-      if (
-        user.verificationResult !== data.verificationResult ||
-        user.verificationUrl !== data.verificationUrl
-      ) {
-        user.verificationResult = data.verificationResult;
-        user.verificationUrl = data.verificationUrl;
-
-        this.setUser(user);
-      }
-
-      if (user.verificationResult !== "complete" && user) {
-        setTimeout(() => {
-          accountDispatcher.dispatch({
-            type: "verificationResult",
-            content: { userId: user.id },
-            token: user.token
-          });
-        }, 300000);
-      }
-    } else if (data.errorMsg) {
-      this.setState({ error: data.errorMsg });
-    } else {
-      this.setState({ error: data.statusText });
-    }
+    // this.setState({ ethAddresses: ethStore.getStore('accounts') })
   }
 
   componentWillMount() {
     var user = null;
-    var userString = sessionStorage.getItem("cc_user");
+    var userString = sessionStorage.getItem("zar_user");
     if (userString) {
       user = JSON.parse(userString);
       this.setUser(user);
@@ -147,51 +98,31 @@ class App extends Component {
     }
 
     window.removeEventListener('resize', this.updateWindowDimensions);
-    contactsEmitter.removeAllListeners('Unauthorised');
-    ethEmitter.removeAllListeners('Unauthorised');
-    accountEmitter.removeAllListeners('Unauthorised');
-    accountEmitter.removeAllListeners('verificationResult');
-    binanceEmitter.removeAllListeners('Unauthorised');
-
-    contactsEmitter.on('Unauthorised', this.logUserOut);
-    ethEmitter.on('Unauthorised', this.logUserOut);
-    accountEmitter.on('Unauthorised', this.logUserOut);
-    binanceEmitter.on('Unauthorised', this.logUserOut);
-
-    contactsEmitter.on('contactsUpdated', this.contactsRefreshed);
-    accountEmitter.on('verificationResult', this.verificationResultReturned);
-    ethEmitter.on('appAccountsUpdated', this.ethAccountsRefreshed);
-
-    ethEmitter.on('getSupportedERC20Tokens', this.getSupportedERC20TokensReturned)
+    // contactsEmitter.removeAllListeners('Unauthorised');
+    // ethEmitter.removeAllListeners('Unauthorised');
+    // accountEmitter.removeAllListeners('Unauthorised');
+    // accountEmitter.removeAllListeners('verificationResult');
+    // binanceEmitter.removeAllListeners('Unauthorised');
+    //
+    // contactsEmitter.on('Unauthorised', this.logUserOut);
+    // ethEmitter.on('Unauthorised', this.logUserOut);
+    // accountEmitter.on('Unauthorised', this.logUserOut);
+    // binanceEmitter.on('Unauthorised', this.logUserOut);
+    //
+    // contactsEmitter.on('contactsUpdated', this.contactsRefreshed);
+    // ethEmitter.on('appAccountsUpdated', this.ethAccountsRefreshed);
+    //
+    // ethEmitter.on('getSupportedERC20Tokens', this.getSupportedERC20TokensReturned)
 
     this.updateWindowDimensions();
     window.addEventListener("resize", this.updateWindowDimensions);
 
     window.onhashchange = this.locationHashChanged;
     this.locationHashChanged();
-
-    if (this.state.user) {
-      let content = {};
-      if ( this.state.user.verificationResult !== "complete" && this.state.verificationSearching === false) {
-        this.setState({ verificationSearching: true });
-        accountDispatcher.dispatch({
-          type: "verificationResult",
-          content: { userId: this.state.user.id },
-          token: this.state.user.token
-        });
-      }
-
-      content = { id: user.id };
-      accountDispatcher.dispatch({
-        type: "generate2faKey",
-        content,
-        token: user.token
-      });
-    }
   }
 
   getSupportedERC20TokensReturned() {
-    this.setState({ supportedERC20Tokens: ethStore.getStore('supportedERC20Tokens') })
+    // this.setState({ supportedERC20Tokens: ethStore.getStore('supportedERC20Tokens') })
   }
 
   updateWindowDimensions() {
@@ -228,26 +159,26 @@ class App extends Component {
 
   logUserOut = () => {
     this.resetStores()
-    sessionStorage.removeItem("cc_user");
+    sessionStorage.removeItem("zar_user");
     window.location.hash = "welcome";
   };
 
   resetStores() {
-    binanceStore.setStore({
-      accounts: null,
-      accountsCombined: null
-    })
-    ethStore.setStore({
-      accounts: null,
-      accountsCombined: null,
-      erc20Accounts: null,
-      erc20AccountsCombined: null
-    })
+    // binanceStore.setStore({
+    //   accounts: null,
+    //   accountsCombined: null
+    // })
+    // ethStore.setStore({
+    //   accounts: null,
+    //   accountsCombined: null,
+    //   erc20Accounts: null,
+    //   erc20AccountsCombined: null
+    // })
   }
 
   setUser(user) {
     this.setState({ user });
-    sessionStorage.setItem("cc_user", JSON.stringify(user));
+    sessionStorage.setItem("zar_user", JSON.stringify(user));
   }
 
   locationHashChanged() {
@@ -270,7 +201,7 @@ class App extends Component {
     }
 
     if (["", "welcome", "logOut"].includes(currentScreen)) {
-      sessionStorage.removeItem("cc_user");
+      sessionStorage.removeItem("zar_user");
 
       this.setState({
         drawerOpen: false,
@@ -296,39 +227,39 @@ class App extends Component {
 
       if (['accounts', 'binanceAccounts', 'ethAccounts'].includes(path) ) {
         content = { id: this.state.user.id };
-        contactsDispatcher.dispatch({
-          type: "getContacts",
-          content,
-          token: this.state.user.token
-        });
+        // contactsDispatcher.dispatch({
+        //   type: "getContacts",
+        //   content,
+        //   token: this.state.user.token
+        // });
 
         this.getAllAccounts()
 
         if(['accounts', 'ethAccounts'].includes(path)) {
-          ethDispatcher.dispatch({
-            type: "getSupportedERC20Tokens",
-            content: {},
-            token: this.state.user.token
-          });
+          // ethDispatcher.dispatch({
+          //   type: "getSupportedERC20Tokens",
+          //   content: {},
+          //   token: this.state.user.token
+          // });
         }
       } else if (path === 'beneficiaries') {
         content = { id: this.state.user.id };
-        contactsDispatcher.dispatch({
-          type: "getContacts",
-          content,
-          token: this.state.user.token
-        });
+        // contactsDispatcher.dispatch({
+        //   type: "getContacts",
+        //   content,
+        //   token: this.state.user.token
+        // });
 
         this.getAllAccounts()
       }
 
       if ( this.state.user.verificationResult !== "complete" && this.state.verificationSearching === false ) {
         this.setState({ verificationSearching: true });
-        accountDispatcher.dispatch({
-          type: "verificationResult",
-          content: { userId: this.state.user.id },
-          token: this.state.user.token
-        });
+        // accountDispatcher.dispatch({
+        //   type: "verificationResult",
+        //   content: { userId: this.state.user.id },
+        //   token: this.state.user.token
+        // });
       }
     }
 
@@ -339,16 +270,16 @@ class App extends Component {
     const { user } = this.state;
     const content = { id: user.id };
 
-    binanceDispatcher.dispatch({
-      type: 'getBinanceAddress',
-      content,
-      token: user.token
-    });
-    ethDispatcher.dispatch({
-      type: 'getEthAddress',
-      content,
-      token: user.token
-    });
+    // binanceDispatcher.dispatch({
+    //   type: 'getBinanceAddress',
+    //   content,
+    //   token: user.token
+    // });
+    // ethDispatcher.dispatch({
+    //   type: 'getEthAddress',
+    //   content,
+    //   token: user.token
+    // });
   }
 
   renderAppBar() {
@@ -482,13 +413,32 @@ class App extends Component {
 
     switch (path) {
       case "welcome":
-        return <Welcome setUser={ this.setUser } theme={ this.state.theme } />;
+        return <Welcome
+        setUser={ this.setUser }
+        theme={ this.state.theme }
+        />;
       case "setUsername":
-        return <SetUsername user={ this.state.user } setUser={ this.setUser } />;
+        return <SetUsername
+         user={ this.state.user }
+         setUser={ this.setUser }
+         />;
       case "resetPassword":
-        return <Welcome setUser={ this.setUser } theme={ this.state.theme } initialScreen='resetPassword' uriParameters={ this.state.uriParameters } />;
+        return <Welcome
+        setUser={ this.setUser }
+        theme={ this.state.theme }
+        initialScreen='resetPassword'
+        uriParameters={ this.state.uriParameters }
+        />;
       case "accounts":
-        return ( <Accounts theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } /> )
+        return ( <Accounts
+          theme={ this.state.theme }
+          size={ this.state.size }
+          user={ this.state.user }
+          transactOpen={ this.state.transactOpen }
+          transactClosed={ this.transactClosed }
+          transactClicked={ this.transactClicked }
+          transactCurrency={ this.state.transactCurrency }
+          /> )
       case "ethAccounts":
         return ( <Accounts token="Ethereum" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } /> )
       case 'binanceAccounts':
