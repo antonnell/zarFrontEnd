@@ -18,7 +18,7 @@ let Profile = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on("uploadProfilePhoto", this.uploadProfilePhotoReturned);
     emitter.on("getUserProfile", this.getUserProfileReturned)
   },

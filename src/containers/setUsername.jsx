@@ -18,7 +18,7 @@ let SetUsername = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (this.props.user && this.props.user.username !== this.props.user.email) {
       window.location.hash = "wanAccounts";
     }

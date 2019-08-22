@@ -41,9 +41,12 @@ class Store {
         switch (payload.type) {
           case LOGIN:
           case REGISTER:
-          case GET_ACCOUNTS:
-          case CREATE_ACCOUNT:
             this.callBasic(payload);
+            break;
+          case GET_ACCOUNTS:
+            this.getAccounts(payload);
+          case CREATE_ACCOUNT:
+            this.createAccount(payload);
             break;
           default: {
           }
@@ -67,7 +70,36 @@ class Store {
     });
   };
 
+  getAccounts = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({accounts: data.result})
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  createAccount = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getPayload = {
+          type: GET_ACCOUNTS,
+          content: {}
+        }
+        this.getAccounts(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
   callApi = function (url, method, postData, payload, callback) {
+
+    let user = {}
+    const userString = sessionStorage.getItem('zar_user')
+    if(userString) {
+      user = JSON.parse(userString)
+    }
+
     var call = apiUrl + url;
 
     if (method === 'GET') {
@@ -97,6 +129,8 @@ class Store {
       headers: {
         'Content-Type': 'application/json',
         Authorization: 'Basic ' + config.apiToken,
+        'x-access-token': user.token,
+        'x-key': user.tokenKey
       }
     })
       .then(res => {

@@ -36,7 +36,7 @@ let RegisterAccount = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on(REGISTER_RETURNED, this.registerReturned);
   },
 

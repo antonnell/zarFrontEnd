@@ -18,7 +18,7 @@ let ResetPassword = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     if (
       this.props.uriParameters.token == null ||
       this.props.uriParameters.code == null

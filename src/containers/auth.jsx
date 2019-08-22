@@ -26,7 +26,7 @@ let Auth = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on("loginOTP", this.loginReturned);
   },
 

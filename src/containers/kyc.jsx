@@ -14,7 +14,7 @@ let KYC = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     accountEmitter.on("allocateKycCode", this.allocateKycCodeReturned);
   },
 

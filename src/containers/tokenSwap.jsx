@@ -112,7 +112,7 @@ let TokenSwap = createReactClass({
   },
 
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     ethEmitter.removeAllListeners('accountsUpdated');
     bnbEmitter.removeAllListeners("accountsUpdated");
 

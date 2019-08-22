@@ -12,8 +12,6 @@ import Snackbar from './snackbar';
 import PageTitle from "./pageTitle";
 import Account from '../containers/account';
 import PageLoader from './pageLoader';
-import CreateModal from './createModal';
-import ImportModal from './importModal';
 
 import { colors } from '../theme.js'
 
@@ -38,8 +36,6 @@ function GridIcon(props) {
   );
 }
 
-
-
 class Accounts extends Component {
   renderAccounts() {
     let {
@@ -56,32 +52,26 @@ class Accounts extends Component {
     }
 
     if(accounts && accounts.length === 0 && loading !== true) {
-      //no addresses
       return (<Grid item xs={12} align="center" style={{ minHeight: "190px", paddingTop: "100px" }} >
         <Typography variant="h2">
-          Oh no, we couldn't find any accounts for you. Why don't you
-          create/import one?
+          Oh no, we couldn't find any accounts for you.
         </Typography>
       </Grid>)
     }
 
     return accounts.map((account) => {
-      if(["Aion", "Bitcoin", "Ethereum", "Tezos", "Wanchain", "Binance"].includes(account.name) || account.balance > 0) {
-        if(viewMode === 'List') {
-          return (
-            <Grid item xs={12} key={account.type+'_'+account.name} style={{ padding: '0px 24px' }}>
-              <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } />
-            </Grid>
-          )
-        } else {
-          return (
-            <Grid item xs={12} sm={6} lg={4} xl={3} key={account.type+'_'+account.name} style={{ padding: '24px' }}>
-              <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } />
-            </Grid>
-          )
-        }
+      if(viewMode === 'List') {
+        return (
+          <Grid item xs={12} key={account.type+'_'+account.name} style={{ padding: '0px 24px' }}>
+            <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } />
+          </Grid>
+        )
       } else {
-        return null
+        return (
+          <Grid item xs={12} sm={6} lg={4} xl={3} key={account.type+'_'+account.name} style={{ padding: '24px' }}>
+            <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } />
+          </Grid>
+        )
       }
     })
   }
@@ -90,11 +80,7 @@ class Accounts extends Component {
 
     let {
       theme,
-      handleCreateOpen,
-      handleImportOpen,
       loading,
-      createOpen,
-      importOpen,
       error,
       toggleViewClicked,
       viewMode
@@ -118,7 +104,7 @@ class Accounts extends Component {
             spacing={0}
             style={theme.custom.sectionTitle}
           >
-            <Grid item xs={6} align='left'>
+            <Grid item xs={12} align='left'>
               <div style={theme.custom.inline}>
                 <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Accounts</Typography>
               </div>
@@ -134,25 +120,6 @@ class Accounts extends Component {
                   <ListIcon theme={theme} color={viewMode==='List'?colors.lightBlue:colors.darkGray} />
                 </IconButton>
               </div>
-            </Grid>
-            <Grid item xs={6} align='right'>
-              <Button
-                size="small"
-                variant="contained"
-                color="primary"
-                onClick={handleCreateOpen}
-              >
-                Create
-              </Button>
-              <Button
-                style={{ marginLeft: "12px" }}
-                size="small"
-                variant="contained"
-                color="secondary"
-                onClick={handleImportOpen}
-              >
-                Import
-              </Button>
             </Grid>
           </Grid>
         </Grid>
@@ -170,8 +137,6 @@ class Accounts extends Component {
         </Grid>
         { loading && this.renderLoader() }
         { error && <Snackbar open={true} type={'Error'} message={error} /> }
-        { createOpen && this.renderCreateModal() }
-        { importOpen && this.renderImportModal() }
       </Grid>
     );
   }
@@ -192,7 +157,7 @@ class Accounts extends Component {
         <Grid container>
           <Grid item xs={6} align='left' style={headerStyle}>
             <Typography variant="body1" style={textStyle}>
-              Token
+              Asset
             </Typography>
           </Grid>
           <Grid item xs={2} align='right' style={headerStyle}>
@@ -212,106 +177,6 @@ class Accounts extends Component {
 
   renderLoader() {
     return <PageLoader />
-  }
-
-  renderCreateModal() {
-
-    let {
-      createOpen,
-      handleCreateClose,
-      addressName,
-      addressNameError,
-      addressNameErrorMessage,
-      createLoading,
-      handleChange,
-      handleSelectChange,
-      error,
-      tokens,
-      tokenValue,
-      handleCreate,
-      accountTypeValue,
-      accountTypeError,
-      accountTypeErrorMessage,
-      accountTypes,
-      managerAddressValue,
-      managerAddressError,
-      managerAddressErrorMessage,
-      managerAddressOptions,
-    } = this.props
-
-    return <CreateModal
-      tokenOptions={ tokens }
-      tokenValue={ tokenValue }
-      isOpen={ createOpen }
-      handleClose={ handleCreateClose }
-      addressName={ addressName }
-      addressNameError={ addressNameError }
-      addressNameErrorMessage={ addressNameErrorMessage }
-      createLoading={ createLoading }
-      handleChange={ handleChange }
-      handleSelectChange={ handleSelectChange }
-      error={ error }
-      handleCreate={ handleCreate }
-      accountTypeValue={ accountTypeValue }
-      accountTypeError={ accountTypeError }
-      accountTypeErrorMessage={ accountTypeErrorMessage }
-      accountTypeOptions={ accountTypes }
-      managerAddressValue={ managerAddressValue }
-      managerAddressError={ managerAddressError }
-      managerAddressErrorMessage={ managerAddressErrorMessage }
-      managerAddressOptions={ managerAddressOptions }
-    />
-  }
-
-  renderImportModal() {
-
-    let {
-      importOpen,
-      handleImportClose,
-      addressName,
-      addressNameError,
-      addressNameErrorMessage,
-      privateKey,
-      privateKeyError,
-      privateKeyErrorMessage,
-      mnemonicPhrase,
-      mnemonicPhraseError,
-      mnemonicPhraseErrorMessage,
-      publicAddress,
-      publicAddressError,
-      publicAddressErrorMessage,
-      importLoading,
-      handleChange,
-      handleSelectChange,
-      error,
-      tokens,
-      tokenValue,
-      handleImport,
-    } = this.props
-
-    return <ImportModal
-      tokenOptions={ tokens }
-      tokenValue={ tokenValue }
-      isOpen={ importOpen }
-      handleClose={ handleImportClose }
-      addressName={ addressName }
-      addressNameError={ addressNameError }
-      addressNameErrorMessage={ addressNameErrorMessage }
-      privateKey={ privateKey }
-      privateKeyError={ privateKeyError }
-      privateKeyErrorMessage={ privateKeyErrorMessage }
-      mnemonicPhrase={ mnemonicPhrase }
-      mnemonicPhraseError={ mnemonicPhraseError }
-      mnemonicPhraseErrorMessage={ mnemonicPhraseErrorMessage }
-      publicAddress={ publicAddress }
-      publicAddressError={ publicAddressError }
-      publicAddressErrorMessage={ publicAddressErrorMessage }
-      importLoading={ importLoading }
-      handleChange={ handleChange }
-      handleSelectChange={ handleSelectChange }
-      error={ error }
-      handleImport={ handleImport }
-    />
   }
 }
 

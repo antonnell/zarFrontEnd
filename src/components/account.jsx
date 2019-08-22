@@ -21,7 +21,7 @@ class Account extends Component {
   renderList() {
     let { account, cardClicked, transactClicked } = this.props
 
-    let logo = 'footer'
+    let logo = 'Bitcoin'
     if(["Ethereum", "Binance"].includes(account.type)) {
       logo = account.type
     } else if (account.type === 'ERC20') {
@@ -70,10 +70,10 @@ class Account extends Component {
             </Grid>
             <Grid item xs={2} align='right' style={bodyStyle} onClick={cardClicked}>
               <Typography variant="body1" noWrap style={textStyle}>
-                {account.balance.toFixed(4) + ' ' + account.symbol}
+                {(account.balance ? account.balance.toFixed(4) : '0') + ' ' + account.account_type}
               </Typography>
               <Typography variant="subtitle2" noWrap>
-                {"$" + account.usdBalance.toFixed(2)}
+                {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
               </Typography>
             </Grid>
             <Grid item xs={4} align='right' style={bodyStyle}>
@@ -90,7 +90,7 @@ class Account extends Component {
   renderGrid() {
     let { account, cardClicked, transactClicked } = this.props
 
-    let logo = 'footer'
+    let logo = 'Bitcoin'
     if(["Ethereum", "Binance"].includes(account.type)) {
       logo = account.type
     } else if (account.type === 'ERC20') {
@@ -124,10 +124,10 @@ class Account extends Component {
                 </Grid>
                 <Grid item xs={8} align='right'>
                   <Typography variant="h4" noWrap style={{fontSize: '20px'}}>
-                    {account.balance.toFixed(4) + ' ' + account.symbol}
+                    {(account.balance ? account.balance.toFixed(4) : '0') + ' ' + account.account_type}
                   </Typography>
                   <Typography variant="h4" noWrap style={{color: '#888'}}>
-                    {"$" + account.usdBalance.toFixed(2)}
+                    {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
                   </Typography>
                 </Grid>
               </Grid>

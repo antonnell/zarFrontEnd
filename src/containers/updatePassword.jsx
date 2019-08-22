@@ -21,7 +21,7 @@ let UpdatePassword = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on("updatePassword", this.updatePasswordReturned);
   },
 

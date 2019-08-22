@@ -8,6 +8,8 @@ import {
   UNAUTHORISED,
 } from '../constants'
 
+
+const sha256 = require('sha256');
 const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let Login = createReactClass({
@@ -25,7 +27,7 @@ let Login = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on(LOGIN_RETURNED, this.loginReturned);
   },
 
@@ -121,7 +123,11 @@ let Login = createReactClass({
     }
 
     if (data.success) {
-      setUser(data.result);
+      let user = data.result
+      user.token = data.result.jwt.token;
+      user.tokenKey = sha256(data.result.email_address);
+      setUser(user);
+
       window.location.hash = "accounts";
     } else if (data.result) {
       this.setState({ error: data.result });

@@ -17,7 +17,7 @@ let ResendConfirmationEmail = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on("resendConfirmationEmail", this.resendConfirmationEmailReturned);
   },
 

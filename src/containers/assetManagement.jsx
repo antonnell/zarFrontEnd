@@ -27,7 +27,7 @@ let Contacts = createReactClass({
     }
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     assetEmitter.removeAllListeners('assetsUpdated');
     assetEmitter.removeAllListeners('error');
 

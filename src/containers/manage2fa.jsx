@@ -34,7 +34,7 @@ let Manage2FA = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on("enable2fa", this.enable2faReturned);
     emitter.on("disable2fa", this.disable2faReturned);
     emitter.on("generate2faKey", this.generate2faKeyReturned);

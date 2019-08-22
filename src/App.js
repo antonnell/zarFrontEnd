@@ -58,22 +58,9 @@ class App extends Component {
 
     this.transactClicked = this.transactClicked.bind(this);
     this.transactClosed = this.transactClosed.bind(this);
-
-    this.contactsRefreshed = this.contactsRefreshed.bind(this);
-    this.ethAccountsRefreshed = this.ethAccountsRefreshed.bind(this);
-
-    this.getSupportedERC20TokensReturned = this.getSupportedERC20TokensReturned.bind(this);
   }
 
-  contactsRefreshed() {
-    // this.setState({ contacts: contactsStore.getStore('contacts') })
-  }
-
-  ethAccountsRefreshed() {
-    // this.setState({ ethAddresses: ethStore.getStore('accounts') })
-  }
-
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     var user = null;
     var userString = sessionStorage.getItem("zar_user");
     if (userString) {
@@ -98,31 +85,11 @@ class App extends Component {
     }
 
     window.removeEventListener('resize', this.updateWindowDimensions);
-    // contactsEmitter.removeAllListeners('Unauthorised');
-    // ethEmitter.removeAllListeners('Unauthorised');
-    // accountEmitter.removeAllListeners('Unauthorised');
-    // accountEmitter.removeAllListeners('verificationResult');
-    // binanceEmitter.removeAllListeners('Unauthorised');
-    //
-    // contactsEmitter.on('Unauthorised', this.logUserOut);
-    // ethEmitter.on('Unauthorised', this.logUserOut);
-    // accountEmitter.on('Unauthorised', this.logUserOut);
-    // binanceEmitter.on('Unauthorised', this.logUserOut);
-    //
-    // contactsEmitter.on('contactsUpdated', this.contactsRefreshed);
-    // ethEmitter.on('appAccountsUpdated', this.ethAccountsRefreshed);
-    //
-    // ethEmitter.on('getSupportedERC20Tokens', this.getSupportedERC20TokensReturned)
-
     this.updateWindowDimensions();
     window.addEventListener("resize", this.updateWindowDimensions);
 
     window.onhashchange = this.locationHashChanged;
     this.locationHashChanged();
-  }
-
-  getSupportedERC20TokensReturned() {
-    // this.setState({ supportedERC20Tokens: ethStore.getStore('supportedERC20Tokens') })
   }
 
   updateWindowDimensions() {
@@ -157,28 +124,24 @@ class App extends Component {
     window.location.hash = currentScreen;
   }
 
-  logUserOut = () => {
+  logUserOut() {
     this.resetStores()
     sessionStorage.removeItem("zar_user");
     window.location.hash = "welcome";
   };
 
   resetStores() {
-    // binanceStore.setStore({
-    //   accounts: null,
-    //   accountsCombined: null
-    // })
-    // ethStore.setStore({
-    //   accounts: null,
-    //   accountsCombined: null,
-    //   erc20Accounts: null,
-    //   erc20AccountsCombined: null
-    // })
+
   }
 
   setUser(user) {
     this.setState({ user });
     sessionStorage.setItem("zar_user", JSON.stringify(user));
+
+    if(user) {
+      //get all things.
+      // GET_BANKS, GET_BANK_ACCOUNT_TYPES etc.
+    }
   }
 
   locationHashChanged() {
@@ -210,76 +173,11 @@ class App extends Component {
       });
     }
 
-    if (
-      ![
-        "welcome",
-        "resetPassword",
-      ].includes(currentScreen)
-    ) {
-      if (this.state.user == null) {
-        return (window.location.hash = "welcome");
-      }
-    }
-
-    if (this.state.user) {
-      var content = {};
-      const path = currentScreen.split('/')[0];
-
-      if (['accounts', 'binanceAccounts', 'ethAccounts'].includes(path) ) {
-        content = { id: this.state.user.id };
-        // contactsDispatcher.dispatch({
-        //   type: "getContacts",
-        //   content,
-        //   token: this.state.user.token
-        // });
-
-        this.getAllAccounts()
-
-        if(['accounts', 'ethAccounts'].includes(path)) {
-          // ethDispatcher.dispatch({
-          //   type: "getSupportedERC20Tokens",
-          //   content: {},
-          //   token: this.state.user.token
-          // });
-        }
-      } else if (path === 'beneficiaries') {
-        content = { id: this.state.user.id };
-        // contactsDispatcher.dispatch({
-        //   type: "getContacts",
-        //   content,
-        //   token: this.state.user.token
-        // });
-
-        this.getAllAccounts()
-      }
-
-      if ( this.state.user.verificationResult !== "complete" && this.state.verificationSearching === false ) {
-        this.setState({ verificationSearching: true });
-        // accountDispatcher.dispatch({
-        //   type: "verificationResult",
-        //   content: { userId: this.state.user.id },
-        //   token: this.state.user.token
-        // });
-      }
+    if ( ![ "welcome", "resetPassword", ].includes(currentScreen) && this.state.user === null ) {
+      return (window.location.hash = "welcome");
     }
 
     this.setState({ currentScreen, uriParameters });
-  }
-
-  getAllAccounts() {
-    const { user } = this.state;
-    const content = { id: user.id };
-
-    // binanceDispatcher.dispatch({
-    //   type: 'getBinanceAddress',
-    //   content,
-    //   token: user.token
-    // });
-    // ethDispatcher.dispatch({
-    //   type: 'getEthAddress',
-    //   content,
-    //   token: user.token
-    // });
   }
 
   renderAppBar() {
@@ -360,7 +258,6 @@ class App extends Component {
       )
     }
 
-
     return (
       <MuiThemeProvider theme={ createMuiTheme(this.state.theme.mui) }>
         <CssBaseline />
@@ -439,10 +336,6 @@ class App extends Component {
           transactClicked={ this.transactClicked }
           transactCurrency={ this.state.transactCurrency }
           /> )
-      case "ethAccounts":
-        return ( <Accounts token="Ethereum" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } /> )
-      case 'binanceAccounts':
-        return ( <Accounts token="Binance" theme={ this.state.theme } size={ this.state.size } user={ this.state.user } transactOpen={ this.state.transactOpen } transactClosed={ this.transactClosed } transactClicked={ this.transactClicked } transactCurrency={ this.state.transactCurrency } /> )
       case 'beneficiaries':
         return (
           <Contacts

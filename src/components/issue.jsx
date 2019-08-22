@@ -88,7 +88,7 @@ class Issue extends Component {
     erc20Info: null
   };
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on('token_issued', this.tokenIssued);
     emitter.on('token_finalized', this.tokenFinalized);
     emitter.on('erc20_info_updated', this.erc20InfoUpdated);

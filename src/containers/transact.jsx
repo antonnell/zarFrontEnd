@@ -129,7 +129,7 @@ let Transact = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     binanceEmitter.removeAllListeners('sendReturned')
     ethEmitter.removeAllListeners('sendReturned')
 

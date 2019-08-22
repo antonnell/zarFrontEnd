@@ -27,7 +27,7 @@ let Contacts = createReactClass({
     }
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     contactsEmitter.removeAllListeners('addContactReturned');
     contactsEmitter.removeAllListeners('error');
 

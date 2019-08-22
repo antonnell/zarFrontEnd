@@ -18,7 +18,7 @@ let ForgotPassword = createReactClass({
     };
   },
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     emitter.on("sendResetPasswordEmail", this.sendResetPasswordEmailReturned);
   },
 
