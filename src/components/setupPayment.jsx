@@ -21,20 +21,20 @@ class SetupPayment extends Component {
       accountError,
       accountErrorMessage,
 
-      tokenValue,
-      tokenOptions,
-      tokenError,
-      tokenErrorMessage,
+      assetValue,
+      assetOptions,
+      assetError,
+      assetErrorMessage,
 
       typeValue,
       typeOptions,
       typeError,
       typeErrorMessage,
 
-      contactValue,
-      contactOptions,
-      contactError,
-      contactErrorMessage,
+      beneficiaryValue,
+      beneficiaryOptions,
+      beneficiaryError,
+      beneficiaryErrorMessage,
 
       ownValue,
       ownOptions,
@@ -49,41 +49,38 @@ class SetupPayment extends Component {
       amountError,
       amountErrorMessage,
 
-      gasValue,
-      gasError,
-      gasErrorMessage,
+      referenceValue,
+      referenceError,
+      referenceErrorMessage,
 
       onSelectChange,
       onChange,
 
       disabled,
-      symbol,
-      gasSymbol,
     } = this.props
 
     return (
       <Grid container justify="space-around" alignItems="center" direction="row" style={{ width: '100%' }} >
         <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }}>
-          { this.renderSelect("Select Your Token", tokenValue, tokenOptions, tokenError, tokenErrorMessage, onSelectChange, disabled, 'token') }
+          { this.renderSelect("Select Your Asset", assetValue, assetOptions, assetError, assetErrorMessage, onSelectChange, disabled, 'asset') }
         </Grid>
         <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }}>
           { this.renderSelect("Select Your Account", accountValue, accountOptions, accountError, accountErrorMessage, onSelectChange, disabled, 'account') }
         </Grid>
 
         <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }} >
-          { this.renderSelect("Address Type", typeValue, typeOptions, typeError, typeErrorMessage, onSelectChange, disabled, 'type') }
+          { this.renderSelect("Recipient Type", typeValue, typeOptions, typeError, typeErrorMessage, onSelectChange, disabled, 'type') }
         </Grid>
         <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }} >
-          { typeValue === 'contact' && this.renderSelect("Select Contact", contactValue, contactOptions, contactError, contactErrorMessage, onSelectChange, disabled, 'contact') }
+          { typeValue === 'beneficiary' && this.renderSelect("Select Beneficiary", beneficiaryValue, beneficiaryOptions, beneficiaryError, beneficiaryErrorMessage, onSelectChange, disabled, 'beneficiary') }
           { typeValue === 'own' && this.renderSelect("Select Your Account", ownValue, ownOptions, ownError, ownErrorMessage, onSelectChange, disabled, 'own', accountValue) }
-          { typeValue === 'public' && this.renderInput("Enter Address", publicValue, publicError, publicErrorMessage, onChange, disabled, 'public') }
+          { typeValue === 'public' && this.renderInput("Enter Address", publicValue, publicError, publicErrorMessage, onChange, disabled, 'publicValue') }
         </Grid>
-
         <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }} >
-          { this.renderInput("Payment Amount", amountValue, amountError, amountErrorMessage, onChange, disabled, 'amount', symbol) }
+          { this.renderInput("Payment Amount", amountValue, amountError, amountErrorMessage, onChange, disabled, 'amountValue') }
         </Grid>
-        <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }}>
-          { this.renderInput("Gas Limit", gasValue, gasError, gasErrorMessage, onChange, disabled, 'gas', gasSymbol) }
+        <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }} >
+          { this.renderInput("Reference", referenceValue, referenceError, referenceErrorMessage, onChange, disabled, 'referenceValue') }
         </Grid>
       </Grid>
     );

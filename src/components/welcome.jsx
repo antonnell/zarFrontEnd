@@ -44,7 +44,7 @@ class Welcome extends Component {
       case 'otp' :
         return (<Auth theme={ theme } navigate={ navigate } setUser={ setUser } startLoading={ startLoading } stopLoading={ stopLoading } credentials={ credentials } setError={ setError } />)
       case 'register' :
-        return (<Register theme={ theme } navigate={ navigate } setEmail={ setEmail } startLoading={ startLoading } stopLoading={ stopLoading } setError={ setError } />)
+        return (<Register theme={ theme } navigate={ navigate } setUser={ setUser } setEmail={ setEmail } startLoading={ startLoading } stopLoading={ stopLoading } setError={ setError } />)
       case 'registrationSuccessful' :
         return (<RegisterCompleted theme={ theme } email={ email } />)
       case 'resendConfirmationEmail' :

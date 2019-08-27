@@ -8,17 +8,17 @@ class ConfirmPayment extends Component {
 
   renderBeneficiary() {
     let {
-      contactOptions,
-      contactValue
+      beneficiaryOptions,
+      beneficiaryValue
     } = this.props
 
-    return (<Grid item xs={10} align='left' style={{ marginTop: '60px' }}>
+    return (<Grid item xs={10} align='left' style={{ marginTop: '40px' }}>
       <Typography variant='body1' style={{ fontSize: '11px' }}>
         To
       </Typography>
       <Typography variant="h5" noWrap style={{ fontSize:  '20px', marginTop: '4px' }}>
-        { contactOptions.filter((option) => {
-          return contactValue === option.value
+        { beneficiaryOptions.filter((option) => {
+          return beneficiaryValue === option.value
         })[0].description }
       </Typography>
     </Grid>)
@@ -28,7 +28,7 @@ class ConfirmPayment extends Component {
     let {
       publicValue
     } = this.props
-    return (<Grid item xs={10} align='left' style={{ marginTop: '60px' }}>
+    return (<Grid item xs={10} align='left' style={{ marginTop: '40px' }}>
       <Typography variant='body1' style={{ fontSize: '11px' }}>
         To
       </Typography>
@@ -43,7 +43,7 @@ class ConfirmPayment extends Component {
       ownOptions,
       ownValue
     } = this.props
-    return (<Grid item xs={10} align='left' style={{ marginTop: '60px' }}>
+    return (<Grid item xs={10} align='left' style={{ marginTop: '40px' }}>
       <Typography variant='body1' style={{ fontSize: '11px' }}>
         To
       </Typography>
@@ -62,7 +62,8 @@ class ConfirmPayment extends Component {
       accountOptions,
       accountValue,
       typeValue,
-      tokenValue
+      assetValue,
+      referenceValue
     } = this.props
 
     return (
@@ -72,10 +73,10 @@ class ConfirmPayment extends Component {
               You're sending
             </Typography>
             <Typography variant="h5" noWrap style={{ fontSize:  '20px', marginTop: '4px' }}>
-              { amountValue + " " + tokenValue }
+              { amountValue + " " + assetValue }
             </Typography>
           </Grid>
-          <Grid item xs={10} align='left' style={{ marginTop: '60px' }}>
+          <Grid item xs={10} align='left' style={{ marginTop: '40px' }}>
             <Typography variant='body1' style={{ fontSize: '11px' }}>
               From
             </Typography>
@@ -85,9 +86,17 @@ class ConfirmPayment extends Component {
               })[0].description }
             </Typography>
           </Grid>
-          { typeValue==='contact' && this.renderBeneficiary() }
+          { typeValue==='beneficiary' && this.renderBeneficiary() }
           { typeValue==='own' && this.renderOwnAccount() }
           { typeValue==='public' && this.renderPublic() }
+          <Grid item xs={10} align='left' style={{ marginTop: '40px' }}>
+            <Typography variant='body1' style={{ fontSize: '11px' }}>
+              Reference
+            </Typography>
+            <Typography variant="h5" noWrap style={{ fontSize:  '20px', marginTop: '4px' }}>
+              { referenceValue }
+            </Typography>
+          </Grid>
         </Grid>
     );
   };

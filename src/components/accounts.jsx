@@ -12,6 +12,7 @@ import Snackbar from './snackbar';
 import PageTitle from "./pageTitle";
 import Account from '../containers/account';
 import PageLoader from './pageLoader';
+import Transactions from "../containers/transactions";
 
 import { colors } from '../theme.js'
 
@@ -80,10 +81,13 @@ class Accounts extends Component {
 
     let {
       theme,
+      size,
       loading,
       error,
       toggleViewClicked,
-      viewMode
+      viewMode,
+      accounts, 
+      transactions
     } = this.props
 
     return (
@@ -108,7 +112,7 @@ class Accounts extends Component {
               <div style={theme.custom.inline}>
                 <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Accounts</Typography>
               </div>
-              <div style={{ marginLeft: '-15px' }}>
+              <div style={{ marginLeft: '15px', display: 'inline-block'  }}>
                 <IconButton
                   color="primary"
                   aria-label="Switch View"
@@ -134,6 +138,13 @@ class Accounts extends Component {
             { viewMode === 'List' && this.renderHeader()}
             {this.renderAccounts()}
           </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Transactions
+            theme={ theme }
+            transactions={ transactions }
+            size={ size }
+          />
         </Grid>
         { loading && this.renderLoader() }
         { error && <Snackbar open={true} type={'Error'} message={error} /> }

@@ -68,6 +68,7 @@ let Accounts = createReactClass({
     let {
       error,
       accounts,
+      transactions,
       loading,
       viewMode
     } = this.state
@@ -78,6 +79,7 @@ let Accounts = createReactClass({
         user={ user }
         theme={ theme }
         accounts={ accounts }
+        transactions={ transactions }
         loading={ loading }
         transactClicked= { transactClicked }
         transactOpen={ transactOpen }

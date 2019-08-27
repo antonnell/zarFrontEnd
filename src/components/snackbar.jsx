@@ -133,7 +133,7 @@ class MySnackbar extends Component {
           <div style={{ padding: '12px 24px', borderLeft: '5px solid '+color, borderRadius: '4px'}}>
             {icon}
             <div style={{ display: 'inline-block', verticalAlign: 'middle', maxWidth: '400px' }}>
-              <Typography variant='body1' style={{ fontFamily: 'Montserrat-SemiBold', fontSize: '12px' }}>{type}</Typography>
+              <Typography variant='body1' style={{ fontFamily: 'Montserrat-SemiBold', fontSize: '12px', color: color }}>{type}</Typography>
               <Typography variant='body1' style={{ fontFamily: 'Montserrat-Medium', fontSize: '10px', color: colors.darkGray }} noWrap>{message}</Typography>
             </div>
           </div>

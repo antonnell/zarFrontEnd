@@ -40,6 +40,7 @@ let customTheme =  {
           fontSize: '18px',
           WebkitFontSmoothing: "antialiased",
           MozOsxFontSmoothing: "grayscale",
+          color: colors.lightBlack
         },
         h3: {
           letterSpacing: '0.5px',
@@ -327,14 +328,17 @@ let customTheme =  {
             fontWeight: '600',
             letterSpacing: '0.5px',
             '&:hover': {
-              color: colors.white
-            },
-            '&:focus': {
-              color: colors.white
+              color: colors.white+"!important"
             }
           },
           active: {
-            color: colors.white
+            color: colors.white+"!important"
+          },
+          icon: {
+            color: colors.white+"!important"
+          },
+          hover: {
+            color: colors.white+"!important"
           }
         },
         MuiTableRow: {

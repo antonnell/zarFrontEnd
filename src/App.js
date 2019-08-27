@@ -9,7 +9,7 @@ import AppDrawer from './containers/drawer.jsx';
 
 import Welcome from './containers/welcome.jsx';
 import Accounts from './containers/accounts.jsx';
-import Contacts from './containers/contacts.jsx';
+import Beneficiaries from './containers/beneficiaries.jsx';
 import SetUsername from './containers/setUsername.jsx';
 import Settings from './containers/settings.jsx';
 import Transact from './containers/transact';
@@ -32,15 +32,13 @@ class App extends Component {
   state = {
     drawerOpen: false,
     user: setInitialUser(),
-    addresses: null,
-    contacts: null,
     uriParameters: {},
     verificationSearching: false,
     currentTheme: setInitialTheme(),
     theme: customTheme[setInitialTheme()],
     transactOpen: false,
     transactCurrency: null,
-    transactContact: null,
+    transactBeneficiary: null,
     transactAccount: null,
   };
 
@@ -168,8 +166,7 @@ class App extends Component {
 
       this.setState({
         drawerOpen: false,
-        user: null,
-        contacts: null,
+        user: null
       });
     }
 
@@ -217,7 +214,7 @@ class App extends Component {
   }
 
   renderTransact() {
-    const { transactOpen, transactCurrency, transactContact, transactAccount, theme, user, supportedERC20Tokens } = this.state
+    const { transactOpen, transactCurrency, transactBeneficiary, transactAccount, theme, user, supportedERC20Tokens } = this.state
 
     return <Transact
       user={ user }
@@ -225,14 +222,14 @@ class App extends Component {
       isOpen={ transactOpen }
       transactClosed= { this.transactClosed }
       transactCurrency={ transactCurrency }
-      transactContact={ transactContact }
+      transactBeneficiary={ transactBeneficiary }
       transactAccount={ transactAccount }
       supportedERC20Tokens={ supportedERC20Tokens }
     />
   }
 
-  transactClicked(token, contact, account) {
-    this.setState({ transactOpen: true, transactCurrency: token, transactContact: contact, transactAccount: (account ? account.address: null) })
+  transactClicked(token, beneficiary, account) {
+    this.setState({ transactOpen: true, transactCurrency: token, transactBeneficiary: beneficiary, transactAccount: (account ? account.address: null) })
   }
 
   transactClosed() {
@@ -338,10 +335,9 @@ class App extends Component {
           /> )
       case 'beneficiaries':
         return (
-          <Contacts
+          <Beneficiaries
             theme={ this.state.theme }
             user={ this.state.user }
-            contacts={ this.state.contacts }
             transactClicked={ this.transactClicked }
             size={ this.state.size }
           />

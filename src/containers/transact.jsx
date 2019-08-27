@@ -16,20 +16,20 @@ import {
   Button
 } from "@material-ui/core";
 import SectionLoader from '../components/sectionLoader';
+import {
+  PAY,
+  PAY_RETURNED,
+  GET_ACCOUNTS,
+  GET_ACCOUNTS_RETURNED,
+  GET_BENEFICIARIES,
+  GET_BENEFICIARIES_RETURNED,
+  ERROR,
+} from '../constants'
 
 const createReactClass = require("create-react-class");
-var QRCode = require("qrcode");
+const QRCode = require("qrcode");
 
-let ethEmitter = require("../store/ethStore.js").default.emitter;
-let ethDispatcher = require("../store/ethStore.js").default.dispatcher;
-let ethStore = require("../store/ethStore.js").default.store;
-
-let binanceEmitter = require('../store/binanceStore.js').default.emitter;
-let binanceDispatcher = require('../store/binanceStore.js').default.dispatcher;
-let binanceStore = require('../store/binanceStore.js').default.store;
-
-let contactsStore = require("../store/contactsStore.js").default.store;
-
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -38,60 +38,26 @@ function Transition(props) {
 let Transact = createReactClass({
   getInitialState() {
 
-    let ethAccounts = ethStore.getStore('accounts')
-    let binanceAccounts = binanceStore.getStore('accounts')
-
-    let erc20AccountsCombined = ethStore.getStore('erc20AccountsCombined')
-    let bep2AccountsCombined = binanceStore.getStore('bep2AccountsCombined')
-
+    const accounts = store.getStore('accounts')
     let accountValue = this.props.transactAccount ? this.props.transactAccount : null
 
-    if(this.props.transactCurrency && !this.props.transactAccount) {
-      switch(this.props.transactCurrency.type) {
-        case "BEP2" :
-        case "Binance" :
-          accountValue = binanceAccounts && binanceAccounts.length ? binanceAccounts.filter((account) => {
-            return account.isPrimary === true
-          })[0].address : ""
-        break;
-        case "ERC20" :
-        case "Ethereum" :
-          accountValue = ethAccounts && ethAccounts.length ? ethAccounts.filter((account) => {
-            return account.isPrimary === true
-          })[0].address : ""
-        break;
-        default:
-          break;
-      }
+    if(!this.props.transactAccount) {
+      accountValue = accounts.length > 0 ? accounts[0].uuid : null
     }
 
-    let erc20 = erc20AccountsCombined ? erc20AccountsCombined.map((account) => {
-      return {
-        value: account.name,
-        description: account.name,
-        symbol: account.symbol,
-        gasSymbol: 'WEI'
-      }
-    }) : []
 
-    let bep2 = bep2AccountsCombined ? bep2AccountsCombined.map((account) => {
-      return {
-        value: account.name,
-        description: account.name,
-        symbol: account.symbol,
-        gasSymbol: 'BNB'
-      }
-    }) : []
+    const beneficiaries = store.getStore('beneficiaries')
+    let selectedBeneficiary = null
+
+    if(this.props.transactBeneficiary && beneficiaries) {
+      selectedBeneficiary = beneficiaries.filter((bene) => {
+        return bene.uuid === this.props.transactBeneficiary
+      })
+    }
 
     return {
-      ethAccounts: ethAccounts,
-      binanceAccounts: binanceAccounts,
-      erc20AccountsCombined: erc20AccountsCombined,
-      bep2AccountsCombined: bep2AccountsCombined,
-      contacts: contactsStore.getStore('contacts'),
-      ethLoading: false,
-      binanceLoading: false,
-      contactsLoading: true,
+      accounts: accounts,
+      beneficiaries: beneficiaries,
 
       loading: false,
       error: null,
@@ -107,56 +73,76 @@ let Transact = createReactClass({
       completed: {},
 
       accountValue: accountValue,
-      tokens: [
-        { value: 'Binance', description: 'Binance', symbol: 'BNB', gasSymbol: 'BNB' },
-        { value: 'Ethereum', description: 'Ethereum', symbol: 'ETH', gasSymbol: 'WEI' },
-        ...erc20,
-        ...bep2
+      assets: [
+        { value: 'ZAR', description: 'ZAR', symbol: 'ZAR' }
+        //GET THIS FROM DB SOMEWHERE
       ],
-      tokenValue: this.props.transactCurrency ? this.props.transactCurrency.name : null,
+      assetValue: this.props.transactAsset ? this.props.transactAsset.value : 'ZAR',
       typeOptions: [
-        {  value: 'contact', description: 'Contact' },
+        {  value: 'beneficiary', description: 'Beneficiary' },
         {  value: 'public', description: 'Public Address' },
         {  value: 'own', description: 'Own Account' },
       ],
-      typeValue: 'contact',
-      contactValue: this.props.transactContact ? this.props.transactContact : null,
+      typeValue: 'beneficiary',
+      beneficiaryValue: this.props.transactBeneficiary ? this.props.transactBeneficiary : null,
+      referenceValue: selectedBeneficiary && selectedBeneficiary.length > 0 ? selectedBeneficiary[0].reference : null,
       ownValue: null,
       publicValue: '',
       amountValue: '',
-      gasValue: '20',
-      chain: null
     };
   },
 
   UNSAFE_componentWillMount() {
-    binanceEmitter.removeAllListeners('sendReturned')
-    ethEmitter.removeAllListeners('sendReturned')
 
-    binanceEmitter.on('sendReturned', this.sendReturned)
-    ethEmitter.on('sendReturned', this.sendReturned)
+    const accounts = store.getStore('accounts')
+    if(!accounts || accounts.length === 0) {
+      emitter.removeListener(GET_ACCOUNTS_RETURNED, this.getAccountsReturned)
+      emitter.on(GET_ACCOUNTS_RETURNED, this.getAccountsReturned)
+      dispatcher.dispatch({ type: GET_ACCOUNTS, content: {} })
+    }
+
+    const beneficiaries = store.getStore('beneficiaries')
+    if(!beneficiaries || beneficiaries.length === 0) {
+      emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.getBeneficiariesReturned)
+      emitter.on(GET_BENEFICIARIES_RETURNED, this.getBeneficiariesReturned)
+      dispatcher.dispatch({ type: GET_BENEFICIARIES, content: {} })
+    }
+
+    emitter.removeListener(PAY_RETURNED, this.payReturned)
+    emitter.on(PAY_RETURNED, this.payReturned)
+  },
+
+  getBeneficiariesReturned(error, data) {
+    this.setState({
+      beneficiaries: store.getStore('beneficiaries'),
+    })
+  },
+
+  getAccountsReturned(error, data) {
+    this.setState({
+      accounts: store.getStore('accounts'),
+    })
   },
 
   renderScreen() {
     let { theme } = this.props
     let {
       loading,
-      ethAccounts,
-      binanceAccounts,
-      ethLoading,
-      binanceLoading,
-      tokenValue,
-      tokenError,
-      tokenErrorMessage,
+      accounts,
+      assets,
+      assetValue,
+      assetError,
+      assetErrorMessage,
       accountValue,
       accountError,
       accountErrorMessage,
+      typeOptions,
       typeValue,
       typeError,
       typeErrorMessage,
-      contactValue,
-      contactError,
-      contactErrorMessage,
+      beneficiaryValue,
+      beneficiaryError,
+      beneficiaryErrorMessage,
       ownValue,
       ownError,
       ownErrorMessage,
@@ -166,92 +152,25 @@ let Transact = createReactClass({
       amountValue,
       amountError,
       amountErrorMessage,
-      gasValue,
-      gasError,
-      gasErrorMessage,
-      tokens,
-      typeOptions,
-      symbol,
-      gasSymbol,
-      erc20AccountsCombined,
-      bep2AccountsCombined,
+      referenceValue,
+      referenceError,
+      referenceErrorMessage,
+      beneficiaries
     } = this.state
 
-    let accountOptions = []
-
-    let aValue = tokenValue
-    if(!['Binance',  'Ethereum'].includes(tokenValue)) {
-      let erc = erc20AccountsCombined ? erc20AccountsCombined.filter((account) => {
-        return account.name === tokenValue
-      }) : null
-      if(erc.length > 0) {
-        aValue='ERC20'
-      }
-
-      let bep = bep2AccountsCombined ? bep2AccountsCombined.filter((account) => {
-        return account.name === tokenValue
-      }) : null
-      if(bep.length > 0) {
-        aValue = 'BEP2'
-      }
-    }
-
-    switch (aValue) {
-      case 'Binance':
-        accountOptions = binanceAccounts ? binanceAccounts.map((account) => {
-          return {
-            description: account.name,
-            value: account.address,
-            balance: account.balance,
-            symbol: 'BNB'
-          }
-        }) : []
-        break;
-      case 'BEP2':
-        accountOptions = binanceAccounts ? binanceAccounts.map((account) => {
-          let token = account.balances.filter((tokenAccount) => {
-            return tokenAccount.symbol === tokenValue
-          })[0]
-
-          return {
-            description: account.name,
-            value: account.address,
-            balance: token?parseFloat(token.free):null,
-            symbol: token?token.symbol:null
-          }
-        }) : []
-        break;
-      case 'Ethereum':
-        accountOptions = ethAccounts ? ethAccounts.map((account) => {
-          return {
-            description: account.name,
-            value: account.address,
-            balance: account.balance,
-            symbol: 'Eth'
-          }
-        }) : []
-        break;
-      case 'ERC20':
-        accountOptions = ethAccounts ? ethAccounts.map((account) => {
-          let token = account.tokens.filter((tokenAccount) => {
-            return tokenAccount.name === tokenValue
-          })[0]
-
-          return {
-            description: account.name,
-            value: account.address,
-            balance: token.balance,
-            symbol: token.symbol
-          }
-        }) : []
-        break;
-      default:
-    }
-
-    let contactOptions = this.state.contacts ? this.state.contacts.map((contact) => {
+    let accountOptions = accounts ? accounts.map((account) => {
       return {
-        description: contact.displayName,
-        value: contact.userName
+        description: account.name,
+        value: account.uuid,
+        balance: account.balance,
+        symbol: 'ZAR'
+      }
+    }) : []
+
+    let beneficiaryOptions = beneficiaries ? beneficiaries.map((beneficiary) => {
+      return {
+        description: beneficiary.name,
+        value: beneficiary.uuid
       }
     }) : []
 
@@ -260,10 +179,10 @@ let Transact = createReactClass({
         return (
           <ReceivePayment
             theme={ theme }
-            loading={ ethLoading || binanceLoading }
+            loading={ loading }
 
-            tokenOptions={ tokens }
-            tokenValue={ tokenValue }
+            assetOptions={ assets }
+            assetValue={ assetValue }
 
             accountOptions={ accountOptions }
             accountValue={ accountValue }
@@ -271,19 +190,18 @@ let Transact = createReactClass({
             publicKey={ accountValue }
 
             onSelectChange={ this.onSelectChange }
-
           />
         )
       case "setup":
         return (
           <SetupPayment
             theme={ theme }
-            loading={ ethLoading || binanceLoading }
+            loading={ loading }
 
-            tokenOptions={ tokens }
-            tokenValue={ tokenValue }
-            tokenError={ tokenError }
-            tokenErrorMessage={ tokenErrorMessage }
+            assetOptions={ assets }
+            assetValue={ assetValue }
+            assetError={ assetError }
+            assetErrorMessage={ assetErrorMessage }
             accountOptions={ accountOptions }
             accountValue={ accountValue }
             accountError={ accountError }
@@ -292,10 +210,10 @@ let Transact = createReactClass({
             typeValue={ typeValue }
             typeError={ typeError }
             typeErrorMessage={ typeErrorMessage }
-            contactOptions={ contactOptions }
-            contactValue={ contactValue }
-            contactError={ contactError }
-            contactErrorMessage={ contactErrorMessage }
+            beneficiaryOptions={ beneficiaryOptions }
+            beneficiaryValue={ beneficiaryValue }
+            beneficiaryError={ beneficiaryError }
+            beneficiaryErrorMessage={ beneficiaryErrorMessage }
             ownOptions={ accountOptions }
             ownValue={ ownValue }
             ownError={ ownError }
@@ -306,12 +224,9 @@ let Transact = createReactClass({
             amountValue={ amountValue }
             amountError={ amountError }
             amountErrorMessage={ amountErrorMessage }
-            gasValue={ gasValue }
-            gasError={ gasError }
-            gasErrorMessage={ gasErrorMessage }
-
-            symbol={ symbol }
-            gasSymbol={ gasSymbol }
+            referenceValue={ referenceValue }
+            referenceError={ referenceError }
+            referenceErrorMessage={ referenceErrorMessage }
 
             onSelectChange={ this.onSelectChange }
             onChange={ this.onChange }
@@ -321,16 +236,17 @@ let Transact = createReactClass({
         return (
           <ConfirmPayment
             loading={ loading }
-            tokenValue={ tokenValue }
+            assetValue={ assetValue }
             amountValue={ amountValue }
             accountOptions={ accountOptions }
             accountValue={ accountValue }
             typeValue={ typeValue }
-            contactOptions={ contactOptions }
-            contactValue={ contactValue }
+            beneficiaryOptions={ beneficiaryOptions }
+            beneficiaryValue={ beneficiaryValue }
             ownOptions={ accountOptions }
             ownValue={ ownValue }
             publicValue={ publicValue }
+            referenceValue={ referenceValue }
           />
         );
       case "results":
@@ -346,12 +262,12 @@ let Transact = createReactClass({
         return (
           <SetupPayment
             theme={ theme }
-            loading={ ethLoading || binanceLoading }
+            loading={ loading }
 
-            tokenOptions={ tokens }
-            tokenValue={ tokenValue }
-            tokenError={ tokenError }
-            tokenErrorMessage={ tokenErrorMessage }
+            assetOptions={ assets }
+            assetValue={ assetValue }
+            assetError={ assetError }
+            assetErrorMessage={ assetErrorMessage }
             accountOptions={ accountOptions }
             accountValue={ accountValue }
             accountError={ accountError }
@@ -360,10 +276,10 @@ let Transact = createReactClass({
             typeValue={ typeValue }
             typeError={ typeError }
             typeErrorMessage={ typeErrorMessage }
-            contactOptions={ contactOptions }
-            contactValue={ contactValue }
-            contactError={ contactError }
-            contactErrorMessage={ contactErrorMessage }
+            beneficiaryOptions={ beneficiaryOptions }
+            beneficiaryValue={ beneficiaryValue }
+            beneficiaryError={ beneficiaryError }
+            beneficiaryErrorMessage={ beneficiaryErrorMessage }
             ownOptions={ accountOptions }
             ownValue={ ownValue }
             ownError={ ownError }
@@ -374,9 +290,9 @@ let Transact = createReactClass({
             amountValue={ amountValue }
             amountError={ amountError }
             amountErrorMessage={ amountErrorMessage }
-            gasValue={ gasValue }
-            gasError={ gasError }
-            gasErrorMessage={ gasErrorMessage }
+            referenceValue={ referenceValue }
+            referenceError={ referenceError }
+            referenceErrorMessage={ referenceErrorMessage }
 
             onSelectChange={ this.onSelectChange }
             onChange={ this.onChange }
@@ -547,8 +463,8 @@ let Transact = createReactClass({
 
   onSelectChange(event, value) {
     switch (event.target.name) {
-      case 'token':
-        this.setState({ tokenValue: event.target.value, accountValue: null })
+      case 'asset':
+        this.setState({ assetValue: event.target.value, accountValue: null })
 
         window.setTimeout(() => {
           const canvas = document.getElementById("canvas");
@@ -558,14 +474,6 @@ let Transact = createReactClass({
           }
         })
 
-        let theToken = this.state.tokens.filter((token) => {
-          return token.value === event.target.value
-        })
-
-        if(theToken && theToken.length > 0) {
-          this.setState({ symbol: theToken[0].symbol, gasSymbol: theToken[0].gasSymbol })
-        }
-
         break;
       case 'account':
         this.setState({ accountValue: event.target.value })
@@ -574,7 +482,7 @@ let Transact = createReactClass({
         window.setTimeout(() => {
           const canvas = document.getElementById("canvas");
           let val = that.state.accountValue
-          
+
           QRCode.toCanvas(canvas, val, { width: 200 }, function(error) {
             if (error) console.error(error);
           });
@@ -582,10 +490,20 @@ let Transact = createReactClass({
 
         break;
       case 'type':
-        this.setState({ typeValue: event.target.value, contactValue: null, ownValue: null, publicValue: '' })
+        this.setState({ typeValue: event.target.value, beneficiaryValue: null, ownValue: null, publicValue: '' })
         break;
-      case 'contact':
-        this.setState({ contactValue: event.target.value })
+      case 'beneficiary':
+
+        const selectedBeneficiary = this.state.beneficiaries.filter((bene) => {
+          return bene.uuid === event.target.value
+        })
+
+        let ref = this.state.referenceValue
+        if(selectedBeneficiary.length > 0) {
+          ref = selectedBeneficiary[0].reference
+        }
+
+        this.setState({ beneficiaryValue: event.target.value, referenceValue: ref })
         break;
       case 'own':
         this.setState({ ownValue: event.target.value })
@@ -596,18 +514,10 @@ let Transact = createReactClass({
   },
 
   onChange(event) {
-    switch (event.target.name) {
-      case 'public':
-        this.setState({ publicValue: event.target.value })
-        break;
-      case 'amount':
-        this.setState({ amountValue: event.target.value })
-        break;
-      case 'gas':
-        this.setState({ gasValue: event.target.value })
-        break;
-      default:
-        break
+    if(event != null && event.target != null) {
+      this.setState({
+        [event.target.name]: event.target.value
+      });
     }
   },
 
@@ -619,7 +529,7 @@ let Transact = createReactClass({
     } else if (this.state.currentScreen === 'confirm') {
       this.callSend()
     } else if (this.state.currentScreen === 'results') {
-      this.setState({ currentScreen: 'setup', activeStep: 0, accountValue: null, gasValue: '', ownValue: null, typeValue: 'contact', tokenValue: null, amountValue: '', publicValue: '', contactValue: null })
+      this.setState({ currentScreen: 'setup', activeStep: 0, accountValue: null, ownValue: null, typeValue: 'beneficiary', assetValue: null, amountValue: '', publicValue: '', beneficiaryValue: null })
     }
   },
 
@@ -628,125 +538,44 @@ let Transact = createReactClass({
   },
 
   callSend() {
-    let { user, supportedERC20Tokens } = this.props
+    let { user } = this.props
 
     let {
-      binanceAccounts,
-      ethAccounts,
-      tokenValue,
+      accounts,
+      assetValue,
       typeValue,
       accountValue,
       amountValue,
-      gasValue,
-      contactValue,
+      beneficiaryValue,
       publicValue,
       ownValue,
+      referenceValue
     } = this.state
 
     let content = {
-      fromAddress: accountValue,
+      account_uuid: accountValue,
       amount: amountValue,
-      gwei: gasValue,
+      reference: referenceValue
     }
 
-    if(typeValue === 'contact') {
-      content.contactUserName = contactValue
+    if(typeValue === 'beneficiary') {
+      content.beneficiary_uuid = beneficiaryValue
     }
 
     if(typeValue === 'own') {
-      content.toAddress = ownValue
-      content.recipientWalletId = ownValue
+      content.to_address = ownValue
     }
 
     if(typeValue === 'public') {
-      content.toAddress = publicValue
-      content.recipientAddress = publicValue
+      content.to_address = publicValue
     }
 
     this.setState({ loading: true });
 
-    switch(tokenValue) {
-      case 'Binance':
-        content.currency = 'BNB'
-        binanceDispatcher.dispatch({
-          type: 'sendBinance',
-          content,
-          token: user.token
-        });
-        this.setState({chain: 'Binance'})
-        break
-      case 'BEP2':
-        binanceDispatcher.dispatch({
-          type: 'sendBinance',
-          content,
-          token: user.token
-        });
-        this.setState({chain: 'Binance'})
-        break
-      case 'Ethereum':
-        ethDispatcher.dispatch({
-          type: 'sendEther',
-          content,
-          token: user.token
-        });
-        this.setState({chain: 'Ethereum'})
-        break
-      case 'ERC20':
-        ethDispatcher.dispatch({
-          type: 'sendERC20',
-          content,
-          token: user.token
-        });
-        this.setState({chain: 'Ethereum'})
-        break
-      default:
-
-        let acc = ethAccounts.filter((account) => {
-          return account.address === accountValue
-        })
-
-        if(acc.length > 0) {
-
-          let arr = supportedERC20Tokens.filter((token) => {
-            return token.name === tokenValue
-          })
-          if(arr.length > 0) {
-            content.tokenAddress = arr[0].contractAddress
-          }
-
-          this.setState({ chain: 'Ethereum'})
-
-          ethDispatcher.dispatch({
-            type: 'sendERC20',
-            content,
-            token: user.token
-          });
-          return
-        }
-
-        let bep = binanceAccounts.filter((account) => {
-          return account.address === accountValue
-        })
-
-        if(bep.length > 0) {
-
-          content.currency = tokenValue
-
-          this.setState({ chain: 'Binance'})
-
-          binanceDispatcher.dispatch({
-            type: 'sendBinance',
-            content,
-            token: user.token
-          });
-          return
-        }
-
-        break;
-    }
+    dispatcher.dispatch({ type: PAY, content });
   },
 
-  sendReturned(error, data) {
+  payReturned(error, data) {
     if (data.success) {
       this.setState({
         loading: false,
@@ -760,7 +589,7 @@ let Transact = createReactClass({
         loading: false,
         currentScreen: "results",
         activeStep: 2,
-        error: data.errorMsg,
+        error: data.result,
         transactionID: null
       });
     }
@@ -769,40 +598,37 @@ let Transact = createReactClass({
   validateSetup() {
 
     this.setState({
-      tokenError: null,
-      tokenErrorMessage: '',
+      assetError: null,
+      assetErrorMessage: '',
       accountError: null,
       accountErrorMessage: '',
       typeError: null,
       typeErrorMessage: '',
-      contactError: null,
-      contactErrorMessage: '',
+      beneficiaryError: null,
+      beneficiaryErrorMessage: '',
       ownError: null,
       ownErrorMessage: '',
       publicError: null,
       publicErrorMessage: '',
       amountError: null,
       amountErrorMessage: '',
-      gasError: null,
-      gasErrorMessage: '',
     })
 
     let {
-      tokenValue,
+      assetValue,
       accountValue,
       typeValue,
-      contactValue,
+      beneficiaryValue,
       ownValue,
       amountValue,
-      gasValue,
       ethAccounts,
       binanceAccounts,
     } = this.state
 
     let error = false
 
-    if(!tokenValue) {
-      this.setState({ tokenError: true, tokenErrorMessage: 'Token is a required field' })
+    if(!assetValue) {
+      this.setState({ assetError: true, assetErrorMessage: 'Asset is a required field' })
       error = true
     }
 
@@ -815,8 +641,8 @@ let Transact = createReactClass({
       this.setState({ typeError: true, typeErrorMessage: 'Type is a required field' })
       error = true
     } else {
-      if(typeValue === 'contact' && !contactValue) {
-        this.setState({ contactError: true, contactErrorMessage: 'Contact is a required field' })
+      if(typeValue === 'beneficiary' && !beneficiaryValue) {
+        this.setState({ beneficiaryError: true, beneficiaryErrorMessage: 'Beneficiary is a required field' })
         error = true
       }
 
@@ -837,68 +663,6 @@ let Transact = createReactClass({
     } else {
       if(!this.isNumeric(amountValue)) {
         this.setState({ amountError: true, amountErrorMessage: 'Amount needs to be numeric' })
-        error = true
-      }
-    }
-
-
-    if(!gasValue || gasValue === "" || gasValue <= 0) {
-      this.setState({ gasError: true, gasErrorMessage: 'Gas is a required field' })
-      error = true
-    } else {
-      if(!this.isNumeric(gasValue)) {
-        this.setState({ gasError: true, gasErrorMessage: 'Gas needs to be numeric' })
-        error = true
-      }
-    }
-
-    if(tokenValue && accountValue) {
-      let accountBalance = 0
-      switch(tokenValue) {
-        case "Binance":
-          accountBalance = binanceAccounts.filter((account) => {
-            return account.address === accountValue
-          })[0].balance
-          break;
-        case "Ethereum":
-          accountBalance = ethAccounts.filter((account) => {
-            return account.address === accountValue
-          })[0].balance
-          break;
-        default:
-          let acc = ethAccounts.filter((account) => {
-            return account.address === accountValue
-          })
-
-          if(acc.length > 0) {
-            let tok = acc[0].tokens.filter((token) => {
-              return token.name === tokenValue
-            })
-            accountBalance = tok[0].balance
-          } else {
-            if(acc.length === 0) {
-              acc = binanceAccounts.filter((account) => {
-                return account.address === accountValue
-              })
-            }
-
-            if(acc.length > 0) {
-
-              let tok = acc[0].balances.filter((token) => {
-                return token.symbol === tokenValue
-              })
-
-              accountBalance = parseFloat(tok[0].free)
-
-              console.log(accountBalance)
-            }
-          }
-
-          break;
-      }
-
-      if(amountValue > accountBalance) {
-        this.setState({ amountError: true, amountErrorMessage: 'Amount is greater than Current Balance' })
         error = true
       }
     }

@@ -7,6 +7,11 @@ import {
   REGISTER,
   GET_ACCOUNTS,
   CREATE_ACCOUNT,
+  GET_BENEFICIARIES,
+  CREATE_BENEFICIARY,
+  GET_TRANSACTIONS,
+  PAY,
+  PAY_RETURNED,
   ERROR,
   UNAUTHORISED,
   _RETURNED,
@@ -45,8 +50,21 @@ class Store {
             break;
           case GET_ACCOUNTS:
             this.getAccounts(payload);
+            break;
           case CREATE_ACCOUNT:
             this.createAccount(payload);
+            break;
+          case GET_BENEFICIARIES:
+            this.getBeneficiaries(payload);
+            break;
+          case CREATE_BENEFICIARY:
+            this.createBeneficiary(payload);
+            break;
+          case GET_TRANSACTIONS:
+            this.getTransactions(payload);
+            break;
+          case PAY:
+            this.pay(payload)
             break;
           default: {
           }
@@ -65,6 +83,7 @@ class Store {
   };
 
   callBasic = (payload) => {
+    console.log(payload)
     this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
       emitter.emit(payload.type+_RETURNED, err, data);
     });
@@ -87,6 +106,56 @@ class Store {
           content: {}
         }
         this.getAccounts(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  getBeneficiaries = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({beneficiaries: data.result})
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  createBeneficiary = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err && data.success) {
+        const getPayload = {
+          type: GET_BENEFICIARIES,
+          content: {}
+        }
+        this.getBeneficiaries(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  getTransactions = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({transactions: data.result})
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  pay = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err && data.success) {
+        const getAccountsPayload = {
+          type: GET_ACCOUNTS,
+          content: {}
+        }
+        this.getAccounts(getAccountsPayload)
+
+        const getTransactionsPayload = {
+          type: GET_TRANSACTIONS,
+          content: {}
+        }
+        this.callBasic(getTransactionsPayload)
       }
       emitter.emit(payload.type+_RETURNED, err, data);
     });
@@ -141,7 +210,7 @@ class Store {
           return emitter.emit(UNAUTHORISED, null, null);
         }
 
-        if (res.ok) {
+        if (res.ok || res.status === 400) {
           return res;
         } else {
           throw Error(res.statusText);
@@ -152,7 +221,7 @@ class Store {
         callback(null, res)
         // emitter.emit(payload.type, null, res);
       })
-      .catch(error => {
+      .catch((error, a, b) => {
         callback(error, null)
         // emitter.emit(payload.type, error, null);
       });

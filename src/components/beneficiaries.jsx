@@ -7,14 +7,14 @@ import {
   Card,
   CardContent
 } from "@material-ui/core";
-import AddModal from "./createContactModal";
+import CreateModal from "./createBeneficiaryModal";
 import PageTItle from "./pageTitle";
 import PageLoader from "./pageLoader";
 import Snackbar from './snackbar';
 
-class Contacts extends Component {
-  renderContacts() {
-    if (this.props.contacts == null) {
+class Beneficiaries extends Component {
+  renderBeneficiaries() {
+    if (this.props.beneficiaries == null) {
       return (
         <Grid
           item
@@ -28,7 +28,7 @@ class Contacts extends Component {
       );
     }
 
-    if (this.props.contacts.length === 0) {
+    if (this.props.beneficiaries.length === 0) {
       return (
         <Grid
           item
@@ -38,16 +38,16 @@ class Contacts extends Component {
           style={{ minHeight: "190px", paddingTop: "100px" }}
         >
           <Typography variant="h2">
-            Oh no, we couldn't find any beneficiaries for you. Why don't you add one?
+            Oh no, we couldn't find any beneficiaries for you. Why don't you create one?
           </Typography>
         </Grid>
       );
     }
 
-    return this.props.contacts.map(contact => {
+    return this.props.beneficiaries.map(beneficiary => {
 
       return (
-        <Grid item xs={12} lg={6} xl={4} key={contact.userName} style={{ padding: '24px' }}>
+        <Grid item xs={12} lg={6} xl={4} key={beneficiary.uuid} style={{ padding: '24px' }}>
           <Card>
             <CardContent>
               <Grid
@@ -57,13 +57,13 @@ class Contacts extends Component {
                 direction="row"
               >
                 <Grid item xs={6} align="left">
-                  <Tooltip placement="top-start" title={contact.userName}>
+                  <Tooltip placement="top-start" title={beneficiary.email_address}>
                     <Typography
                       noWrap
                       variant="h3"
                       style={{ lineHeight: '33px' }}
                     >
-                      {contact.displayName}
+                      {beneficiary.name}
                     </Typography>
                   </Tooltip>
                 </Grid>
@@ -73,17 +73,17 @@ class Contacts extends Component {
                     variant="contained"
                     color="primary"
                     onClick={e => {
-                      this.props.transactClicked(null, contact.userName);
+                      this.props.transactClicked(null, beneficiary.uuid);
                     }}
                   >
-                    Transact
+                    Pay
                   </Button>
                 </Grid>
                 <Grid item xs={12} align="left">
                   <Typography
                   variant="subtitle1"
                   color="textSecondary">
-                    {contact.notes}
+                    {beneficiary.reference}
                   </Typography>
                 </Grid>
               </Grid>
@@ -95,7 +95,34 @@ class Contacts extends Component {
   }
 
   render() {
-    let { error, theme } = this.props
+    let {
+      error,
+      theme,
+      loading,
+      name,
+      nameError,
+      nameErrorMessage,
+      emailAddress,
+      emailAddressError,
+      emailAddressErrorMessage,
+      mobileNumber,
+      mobileNumberError,
+      mobileNumberErrorMessage,
+      reference,
+      referenceError,
+      referenceErrorMessage,
+      walletAddress,
+      walletAddressError,
+      walletAddressErrorMessage,
+      createClicked,
+      handleCreateClose,
+      createOpen,
+      handleChange,
+      validateField,
+      handleCreateOpen,
+      onCreateKeyDown
+    } = this.props
+
     return (
       <Grid
         container
@@ -110,7 +137,7 @@ class Contacts extends Component {
           xs={12}
           align="left"
         >
-          <PageTItle theme={this.props.theme} root={null} screen={{display: 'Beneficiaries', location: 'beneficiaries'}} />
+          <PageTItle theme={theme} root={null} screen={{display: 'Beneficiaries', location: 'beneficiaries'}} />
         </Grid>
         <Grid item xs={12} align="center">
           <Grid
@@ -129,9 +156,9 @@ class Contacts extends Component {
                 size="small"
                 variant="contained"
                 color="secondary"
-                onClick={this.props.handleAddOpen}
+                onClick={handleCreateOpen}
               >
-                Add
+                Create
               </Button>
             </Grid>
           </Grid>
@@ -144,31 +171,39 @@ class Contacts extends Component {
             direction="row"
             style={ theme.custom.accountsContainer }
           >
-            {this.renderContacts()}
+            {this.renderBeneficiaries()}
           </Grid>
         </Grid>
-        { error && <Snackbar open={true} type={'Error'} message={error} /> }
-        <AddModal
-          isOpen={this.props.addOpen}
-          handleClose={this.props.handleAddClose}
-          addClicked={this.props.addClicked}
-          addLoading={this.props.addLoading}
-          username={this.props.username}
-          usernameError={this.props.usernameError}
-          usernameErrorMessage={this.props.usernameErrorMessage}
-          displayName={this.props.displayName}
-          displayNameError={this.props.displayNameError}
-          displayNameErrorMessage={this.props.displayNameErrorMessage}
-          notes={this.props.notes}
-          notesError={this.props.notesError}
-          notesErrorMessage={this.props.notesErrorMessage}
-          handleChange={this.props.handleChange}
-          validateField={this.props.validateField}
-          error={this.props.error}
+        { error && <Snackbar open={ true } type={ 'Error' } message={ error } /> }
+        <CreateModal
+          isOpen={createOpen}
+          handleClose={handleCreateClose}
+          createClicked={createClicked}
+          onCreateKeyDown={onCreateKeyDown}
+          loading={loading}
+
+          name={name}
+          nameError={nameError}
+          nameErrorMessage={nameErrorMessage}
+          emailAddress={emailAddress}
+          emailAddressError={emailAddressError}
+          emailAddressErrorMessage={emailAddressErrorMessage}
+          mobileNumber={mobileNumber}
+          mobileNumberError={mobileNumberError}
+          mobileNumberErrorMessage={mobileNumberErrorMessage}
+          reference={reference}
+          referenceError={referenceError}
+          referenceErrorMessage={referenceErrorMessage}
+          walletAddress={walletAddress}
+          walletAddressError={walletAddressError}
+          walletAddressErrorMessage={walletAddressErrorMessage}
+
+          handleChange={handleChange}
+          validateField={validateField}
         />
       </Grid>
     );
   }
 }
 
-export default Contacts;
+export default Beneficiaries;

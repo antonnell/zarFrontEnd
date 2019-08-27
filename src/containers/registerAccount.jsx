@@ -3,12 +3,15 @@ import RegisterAccountComponent from '../components/registerAccount';
 import {
   REGISTER,
   REGISTER_RETURNED,
-  ERROR
+  ERROR,
+  CREATE_ACCOUNT,
+  CREATE_ACCOUNT_RETURNED,
 } from '../constants'
 
 const createReactClass = require('create-react-class');
 const { emitter, dispatcher, store } = require("../store/zarStore.js");
 const email = require('email-validator');
+const sha256 = require('sha256');
 
 let RegisterAccount = createReactClass({
   getInitialState() {
@@ -38,10 +41,12 @@ let RegisterAccount = createReactClass({
 
   UNSAFE_componentWillMount() {
     emitter.on(REGISTER_RETURNED, this.registerReturned);
+    emitter.on(CREATE_ACCOUNT_RETURNED, this.createAccountReturned);
   },
 
   componentWillUnmount() {
     emitter.removeListener(REGISTER_RETURNED, this.registerReturned);
+    emitter.removeListener(CREATE_ACCOUNT_RETURNED, this.createAccountReturned);
   },
 
   render() {
@@ -193,7 +198,6 @@ let RegisterAccount = createReactClass({
   },
 
   registerReturned(error, data) {
-
     this.setState({ loading: false });
     this.props.stopLoading()
 
@@ -204,6 +208,36 @@ let RegisterAccount = createReactClass({
 
     if (data.success) {
       this.props.setEmail(this.state.emailAddress)
+
+      let user = data.result
+      user.token = data.result.jwt.token;
+      user.tokenKey = sha256(data.result.email_address);
+      this.props.setUser(user);
+
+      var content = {
+        account_type: 'ZAR',
+        name: 'My ZAR Account'
+      };
+
+      dispatcher.dispatch({ type: CREATE_ACCOUNT, content });
+    } else if (data.result) {
+      this.setState({ error: data.result });
+      this.props.setError(data.result)
+    } else {
+      this.setState({ error: data.statusText });
+      this.props.setError(data.statusText)
+    }
+  },
+
+  createAccountReturned(error, data) {
+    //I think we can basically ignore this.
+    //Once the store is updated from the GET_ACCOUNTS, the UI will populate.
+    if (error) {
+      this.props.setError(error.toString())
+      return this.setState({ error: error.toString() });
+    }
+
+    if (data.success) {
       this.props.navigate("registrationSuccessful")
     } else if (data.result) {
       this.setState({ error: data.result });

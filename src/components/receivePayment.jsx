@@ -19,10 +19,10 @@ class ReceivePayment extends Component {
       accountError,
       accountErrorMessage,
 
-      tokenValue,
-      tokenOptions,
-      tokenError,
-      tokenErrorMessage,
+      assetValue,
+      assetOptions,
+      assetError,
+      assetErrorMessage,
 
       publicKey,
 
@@ -30,18 +30,10 @@ class ReceivePayment extends Component {
       disabled
     } = this.props
 
-    if(tokenValue === "Bitcoin" && accountValue) {
-      publicKey = accountOptions.filter((account) => {
-        return account.value === accountValue
-      }).map((account) => {
-        return account.address
-      })[0]
-    }
-
     return (
       <Grid container justify="space-around" alignItems="flex-start" direction="row" style={{ marginTop: '48px', minHeight: '400px' }} >
         <Grid item xs={11} md={5} align="left" >
-          { this.renderSelect("Select Your Token", tokenValue, tokenOptions, tokenError, tokenErrorMessage, onSelectChange, disabled, 'token') }
+          { this.renderSelect("Select Your Asset", assetValue, assetOptions, assetError, assetErrorMessage, onSelectChange, disabled, 'asset') }
         </Grid>
         <Grid item xs={11} md={5} align="left">
           { this.renderSelect("Select Your Account", accountValue, accountOptions, accountError, accountErrorMessage, onSelectChange, disabled, 'account') }
@@ -50,7 +42,7 @@ class ReceivePayment extends Component {
         {publicKey &&
           <Grid item xs={11} align="left" style={{ marginTop: '48px', marginBottom: '48px' }}>
             <Typography variant="body1">
-              Public Key
+              Wallet Address
             </Typography>
             <Typography variant="body1">
               {publicKey}
@@ -68,7 +60,7 @@ class ReceivePayment extends Component {
         {publicKey &&
           <Grid item xs={11} md={5} align="left">
             <Typography variant="h4" style={ { minHeight: '15px' } }>
-              Only send {tokenValue} to this Address. All other tokens will be lost forever.
+              Only send {assetValue} to this Address. All other assets will be lost forever.
             </Typography>
           </Grid>
         }
@@ -77,6 +69,9 @@ class ReceivePayment extends Component {
   }
 
   renderSelect(label, value, options, error, errorMessage, onChange, disabled, name) {
+
+    console.log(label, value, options, error, errorMessage, disabled, name)
+
     return (<FormControl error={error} fullWidth={true} >
       <Typography variant="body1" style={{
           fontSize: '12px',
