@@ -42,7 +42,7 @@ function GridIcon(props) {
 
 
 class AssetManagement extends Component {
-  renderAssets(assets) {
+  renderAssets(assets, owner) {
     let {
       theme,
       loading,
@@ -59,7 +59,7 @@ class AssetManagement extends Component {
     if(assets && assets.length === 0 && loading !== true) {
       return (<Grid item xs={12} align="center" style={{ minHeight: "190px", paddingTop: "100px" }} >
         <Typography variant="h2">
-          Oh no, we couldn't find any assets, you can issue a new asset my clicking on the Issue button
+          We couldn't find any assets. You can create an asset by clicking on the Issue button
         </Typography>
       </Grid>)
     }
@@ -75,6 +75,7 @@ class AssetManagement extends Component {
               viewMode={ viewMode }
               mintAssetClicked={ mintAssetClicked }
               burnAssetClicked={ burnAssetClicked }
+              owner={ owner }
             />
           </Grid>
         )
@@ -88,6 +89,7 @@ class AssetManagement extends Component {
               viewMode={ viewMode }
               mintAssetClicked={ mintAssetClicked }
               burnAssetClicked={ burnAssetClicked }
+              owner={ owner }
             />
           </Grid>
         )
@@ -167,7 +169,7 @@ class AssetManagement extends Component {
             style={theme.custom.accountsContainer}
           >
             { viewMode === 'List' && this.renderHeader()}
-            {this.renderAssets(myAssets)}
+            {this.renderAssets(myAssets, true)}
           </Grid>
         </Grid>
 
@@ -194,7 +196,7 @@ class AssetManagement extends Component {
             style={theme.custom.accountsContainer}
           >
             { viewMode === 'List' && this.renderHeader()}
-            {this.renderAssets(allAssets)}
+            {this.renderAssets(allAssets, false)}
           </Grid>
         </Grid>
         { loading && this.renderLoader() }
@@ -251,6 +253,7 @@ class AssetManagement extends Component {
       handleChange,
       handelIssue,
       handleSelectChange,
+      handleCheckboxChange,
 
       issueOpen,
       error,
@@ -285,6 +288,7 @@ class AssetManagement extends Component {
         handleChange={ handleChange }
         handelIssue={ handelIssue }
         handleSelectChange={ handleSelectChange }
+        handleCheckboxChange={ handleCheckboxChange }
 
         isOpen={ issueOpen }
         error={ error }

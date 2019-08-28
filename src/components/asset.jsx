@@ -22,7 +22,9 @@ class Asset extends Component {
     let {
       asset,
       mintAssetClicked,
-      burnAssetClicked
+      burnAssetClicked,
+      user,
+      owner
     } = this.props
 
     let logo = 'footer'
@@ -70,7 +72,7 @@ class Asset extends Component {
                 {asset.total_supply + ' ' + asset.symbol}
               </Typography>
             </Grid>
-            <Grid item xs={6} align='right' style={bodyStyle}>
+            { owner === true && user && asset.user_uuid === user.uuid && <Grid item xs={6} align='right' style={bodyStyle}>
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
                 List
               </Button>
@@ -80,7 +82,8 @@ class Asset extends Component {
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { mintAssetClicked(asset); } }>
                 Mint
               </Button>
-            </Grid>
+            </Grid>}
+            { asset.user_uuid !== user.uuid && <Grid item xs={6} align='right' style={bodyStyle}></Grid> }
           </Grid>
         </Card>
       </Grid>
@@ -91,7 +94,9 @@ class Asset extends Component {
     let {
       asset,
       mintAssetClicked,
-      burnAssetClicked
+      burnAssetClicked,
+      user,
+      owner
     } = this.props
 
     let logo = 'footer'
@@ -130,7 +135,7 @@ class Asset extends Component {
             </Grid>
           </div>
         </CardContent>
-        <CardContent style={{ position: "relative" }}>
+        { owner === true && user && asset.user_uuid === user.uuid && <CardContent style={{ position: "relative" }}>
           <Grid container style={{marginTop: '12px'}}>
             <Grid item xs={4} align='left'>
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
@@ -148,7 +153,7 @@ class Asset extends Component {
               </Button>
             </Grid>
           </Grid>
-        </CardContent>
+        </CardContent>}
       </Card>
     );
   }

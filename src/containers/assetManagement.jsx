@@ -1,11 +1,21 @@
 import React from 'react'
 import AssetManagementComponent from '../components/assetManagement'
+import {
+  GET_ASSETS,
+  GET_ASSETS_RETURNED,
+  ISSUE_ASSET,
+  ISSUE_ASSET_RETURNED,
+  BURN_ASSET,
+  BURN_ASSET_RETURNED,
+  MINT_ASSET,
+  MINT_ASSET_RETURNED,
+  GET_ACCOUNTS,
+  GET_ACCOUNTS_RETURNED,
+  ERROR,
+} from '../constants'
 const createReactClass = require('create-react-class')
 
-
-let assetEmitter = require("../store/assetStore.js").default.emitter;
-let assetDispatcher = require("../store/assetStore.js").default.dispatcher;
-let assetStore = require("../store/assetStore.js").default.store;
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let Contacts = createReactClass({
   getInitialState() {
@@ -15,6 +25,7 @@ let Contacts = createReactClass({
       allAssets: null,
       myAssets: null,
       assetOptions: [],
+      accountOptions: [],
       viewMode: 'Grid',
       issueOpen: false,
       mintOpen: false,
@@ -23,27 +34,88 @@ let Contacts = createReactClass({
       assetError: false,
       assetErrorMessage: '',
 
-
     }
   },
 
   UNSAFE_componentWillMount() {
-    assetEmitter.removeAllListeners('assetsUpdated');
-    assetEmitter.removeAllListeners('error');
+    emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated);
+    emitter.removeListener(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
+    emitter.removeListener(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
+    emitter.removeListener(MINT_ASSET_RETURNED, this.mintAssetReturned);
+    emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
+    emitter.removeListener(ERROR, this.showError);
 
-    assetEmitter.on('assetsUpdated', this.assetsUpdated);
-    assetEmitter.on("error", this.showError);
+    emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated);
+    emitter.on(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
+    emitter.on(ERROR, this.showError);
 
-    //TODO: replace this with actually calling for the data.
-    this.assetsUpdated();
+    const content = {};
+    dispatcher.dispatch({ type: GET_ASSETS, content })
+    dispatcher.dispatch({ type: GET_ACCOUNTS, content });
   },
 
   assetsUpdated() {
     this.setState({
-      allAssets: assetStore.getStore('allAssets'),
-      myAssets: assetStore.getStore('myAssets'),
-      assetOptions: assetStore.getStore('myAssets').map((asset) => { return { value: asset.uuid, description: asset.name }; })
+      allAssets: store.getStore('allAssets'),
+      myAssets: store.getStore('myAssets'),
+      assetOptions: store.getStore('myAssets').map((asset) => { return { value: asset.uuid, description: asset.name }; })
     })
+  },
+
+  accountsUpdated() {
+    this.setState({
+      accounts: store.getStore('accounts'),
+      mintingAddressOptions: store.getStore('accounts').map((asset) => { return { value: asset.uuid, description: asset.name }; }),
+      burningAddressOptions: store.getStore('accounts').map((asset) => { return { value: asset.uuid, description: asset.name }; })
+    })
+  },
+
+  issueAssetReturned(error, data) {
+    if(!data && error) {
+      this.setState({ loading: false })
+      this.showError(error)
+      return
+    }
+
+    if(!data.success) {
+      this.setState({ loading: false })
+      this.showError(data.result)
+      return
+    }
+
+    this.setState({ issueOpen: false })
+  },
+
+  mintAssetReturned(error, data) {
+    if(!data && error) {
+      this.setState({ loading: false })
+      this.showError(error)
+      return
+    }
+
+    if(!data.success) {
+      this.setState({ loading: false })
+      this.showError(data.result)
+      return
+    }
+
+    this.setState({ mintOpen: false })
+  },
+
+  burnAssetReturned(error, data) {
+    if(!data && error) {
+      this.setState({ loading: false })
+      this.showError(error)
+      return
+    }
+
+    if(!data.success) {
+      this.setState({ loading: false })
+      this.showError(data.result)
+      return
+    }
+
+    this.setState({ burnOpen: false })
   },
 
   showError(error) {
@@ -51,13 +123,15 @@ let Contacts = createReactClass({
   },
 
   handleChange(event) {
-    switch (event.target.name) {
-      default:
-        let st = {}
-        st[event.target.name+'Value'] = event.target.value
-        this.setState(st)
-        break;
-    }
+    let st = {}
+    st[event.target.name+'Value'] = event.target.value
+    this.setState(st)
+  },
+
+  handleCheckboxChange(event, checked) {
+    let st = {}
+    st[event.target.name+'Value'] = checked
+    this.setState(st)
   },
 
   toggleViewClicked() {
@@ -74,10 +148,96 @@ let Contacts = createReactClass({
 
   handelIssue() {
     console.log(this.state)
+
+    //add validation
+    if(this.validateIssueAsset()) {
+      const {
+        symbolValue,
+        assetNameValue,
+        totalSupplyValue,
+        mintingAddressValue,
+        mintableValue,
+        ownerBurnableValue,
+        holderBurnableValue,
+        fromBurnableValue,
+        freezableValue
+      } = this.state
+
+      const content = {
+        symbol: symbolValue,
+        name: assetNameValue,
+        total_supply:  totalSupplyValue,
+        minting_address: mintingAddressValue,
+        mintable: mintableValue,
+        owner_burnable: ownerBurnableValue,
+        holder_burnable: holderBurnableValue,
+        from_burnable: fromBurnableValue,
+        freezable: freezableValue
+      }
+
+      console.log(content)
+      dispatcher.dispatch({ type: ISSUE_ASSET, content })
+    }
+  },
+
+  validateIssueAsset() {
+
+    this.setState({
+      symbolError: false,
+      symbolErrorMessage: '',
+      assetNameError: false,
+      assetNameErrorMessage: '',
+      totalSupplyError: false,
+      totalSupplyErrorMessage: '',
+      mintingAddressError: false,
+      mintingAddressErrorMessage: '',
+    })
+
+    const {
+      symbolValue,
+      assetNameValue,
+      totalSupplyValue,
+      mintingAddressValue
+    } = this.state
+
+    let error = false
+
+    if(!symbolValue) {
+      error = true
+      this.setState({
+        symbolError: false,
+        symbolErrorMessage: 'Symbol is required',
+      })
+    }
+
+    if(!assetNameValue) {
+      error = true
+      this.setState({
+        assetNameError: false,
+        assetNameErrorMessage: 'Name is required',
+      })
+    }
+
+    if(!totalSupplyValue) {
+      error = true
+      this.setState({
+        totalSupplyError: false,
+        totalSupplyErrorMessage: 'Total Supply is required'
+      })
+    }
+
+    if(!mintingAddressValue) {
+      error = true
+      this.setState({
+        mintingAddressError: false,
+        mintingAddressErrorMessage: 'Minting Address is required'
+      })
+    }
+
+    return !error
   },
 
   mintAssetClicked(asset) {
-    console.log(asset.uuid)
     this.setState({ mintOpen: true, assetValue: asset.uuid })
   },
 
@@ -87,6 +247,21 @@ let Contacts = createReactClass({
 
   handleMint() {
     console.log(this.state)
+
+    //add validation
+    const {
+      assetUuid,
+      recipientUuid,
+      amount,
+    } = this.state
+
+    const content = {
+      asset_uuid: assetUuid,
+      recipient_uuid: recipientUuid,
+      amount: amount
+    }
+
+    dispatcher.dispatch({ type: MINT_ASSET, content })
   },
 
   burnAssetClicked(asset) {
@@ -99,31 +274,27 @@ let Contacts = createReactClass({
 
   handleBurn() {
     console.log(this.state)
+
+    //add validation
+
+    const content = {
+
+    }
+
+    dispatcher.dispatch({ type: BURN_ASSET, content })
   },
 
   handleSelectChange(event, value) {
-
-    console.log(event.target)
-
-    switch (event.target.name) {
-      case 'asset':
-        this.setState({ assetValue: event.target.value })
-        break;
-      case 'mintingAddress':
-        this.setState({ mintingAddressValue: event.target.value })
-        break;
-      case 'burningAddress':
-        this.setState({ burningAddressValue: event.target.value })
-        break;
-      default:
-        break;
-    }
+    let st = {}
+    st[event.target.name+'Value'] = event.target.value
+    this.setState(st)
   },
 
   render() {
 
     const {
-      theme
+      theme,
+      user
     } = this.props
 
     const {
@@ -161,9 +332,12 @@ let Contacts = createReactClass({
       mintingAddressOptions,
       mintingAddressError,
       mintingAddressErrorMessage,
-    } = this.state
 
-    console.log(assetValue)
+      burningAddressValue,
+      burningAddressOptions,
+      burningAddressError,
+      burningAddressErrorMessage,
+    } = this.state
 
     return (
       <AssetManagementComponent
@@ -177,11 +351,13 @@ let Contacts = createReactClass({
 
         handleChange={ this.handleChange }
         handleSelectChange={ this.handleSelectChange }
+        handleCheckboxChange={ this.handleCheckboxChange }
 
         handelIssue={ this.handelIssue }
         handleMint={ this.handleMint }
         handleBurn={ this.handleBurn }
 
+        user={ user }
         theme={ theme }
         allAssets={ allAssets }
         myAssets={ myAssets }
@@ -218,6 +394,11 @@ let Contacts = createReactClass({
         mintingAddressOptions={ mintingAddressOptions }
         mintingAddressError={ mintingAddressError }
         mintingAddressErrorMessage={ mintingAddressErrorMessage }
+
+        burningAddressValue={ burningAddressValue }
+        burningAddressOptions={ burningAddressOptions }
+        burningAddressError={ burningAddressError }
+        burningAddressErrorMessage={ burningAddressErrorMessage }
       />
     )
   },

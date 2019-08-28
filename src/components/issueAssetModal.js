@@ -28,24 +28,25 @@ class IssueModal extends Component {
       handleChange,
       handelIssue,
       handleSelectChange,
+      handleCheckboxChange,
 
       isOpen,
       error,
       loading,
 
-      assetName,
+      assetNameValue,
       assetNameError,
       assetNameErrorMessage,
 
-      symbol,
+      symbolValue,
       symbolError,
       symbolErrorMessage,
 
-      totalSupply,
+      totalSupplyValue,
       totalSupplyError,
       totalSupplyErrorMessage,
 
-      mintable,
+      mintableValue,
       mintableError,
       mintableErrorMessage,
 
@@ -54,19 +55,19 @@ class IssueModal extends Component {
       mintingAddressError,
       mintingAddressErrorMessage,
 
-      ownerBurnable,
+      ownerBurnableValue,
       ownerBurnableError,
       ownerBurnableErrorMessage,
 
-      holderBurnable,
+      holderBurnableValue,
       holderBurnableError,
       holderBurnableErrorMessage,
 
-      fromBurnable,
+      fromBurnableValue,
       fromBurnableError,
       fromBurnableErrorMessage,
 
-      freezable,
+      freezableValue,
       freezableError,
       freezableErrorMessage,
 
@@ -94,13 +95,13 @@ class IssueModal extends Component {
                 </Typography>
               </Grid>
               <Grid item xs={11}>
-                { this.renderImput("Asset Name", assetName, assetNameError, assetNameErrorMessage, handleChange, loading, 'assetName') }
+                { this.renderImput("Asset Name", assetNameValue, assetNameError, assetNameErrorMessage, handleChange, loading, 'assetName') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderImput("Symbol", symbol, symbolError, symbolErrorMessage, handleChange, loading, 'symbol') }
+                { this.renderImput("Symbol", symbolValue, symbolError, symbolErrorMessage, handleChange, loading, 'symbol') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderImput("Total Supply", totalSupply, totalSupplyError, totalSupplyErrorMessage, handleChange, loading, 'totalSupply') }
+                { this.renderImput("Total Supply", totalSupplyValue, totalSupplyError, totalSupplyErrorMessage, handleChange, loading, 'totalSupply') }
               </Grid>
               <Grid item xs={11}>
                 { this.renderSelect("Minting Address", mintingAddressValue, mintingAddressOptions, mintingAddressError, mintingAddressErrorMessage, handleSelectChange, loading, 'mintingAddress') }
@@ -114,19 +115,19 @@ class IssueModal extends Component {
                 </Typography>
               </Grid>
               <Grid item xs={11}>
-                { this.renderCheckbox("Mintable", mintable, mintableError, mintableErrorMessage, handleChange, loading, 'mintable') }
+                { this.renderCheckbox("Mintable", mintableValue, mintableError, mintableErrorMessage, handleCheckboxChange, loading, 'mintable') }
               </Grid>
               <Grid item xs={3}>
-                { this.renderCheckbox("Owner Burnable", ownerBurnable, ownerBurnableError, ownerBurnableErrorMessage, handleChange, loading, 'ownerBurnable') }
+                { this.renderCheckbox("Owner Burnable", ownerBurnableValue, ownerBurnableError, ownerBurnableErrorMessage, handleCheckboxChange, loading, 'ownerBurnable') }
               </Grid>
               <Grid item xs={3}>
-                { this.renderCheckbox("Holder Burnable", holderBurnable, holderBurnableError, holderBurnableErrorMessage, handleChange, loading, 'holderBurnable') }
+                { this.renderCheckbox("Holder Burnable", holderBurnableValue, holderBurnableError, holderBurnableErrorMessage, handleCheckboxChange, loading, 'holderBurnable') }
               </Grid>
               <Grid item xs={5}>
-                { this.renderCheckbox("From Burnable", fromBurnable, fromBurnableError, fromBurnableErrorMessage, handleChange, loading, 'fromBurnable') }
+                { this.renderCheckbox("From Burnable", fromBurnableValue, fromBurnableError, fromBurnableErrorMessage, handleCheckboxChange, loading, 'fromBurnable') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderCheckbox("Freezable", freezable, freezableError, freezableErrorMessage, handleChange, loading, 'freezable') }
+                { this.renderCheckbox("Freezable", freezableValue, freezableError, freezableErrorMessage, handleCheckboxChange, loading, 'freezable') }
               </Grid>
               <Grid item xs={11}>
                 <Typography style={{color: '#f44336'}} >
@@ -212,6 +213,7 @@ class IssueModal extends Component {
         </Typography>
         <Checkbox
           style={{ justifyContent: 'flex-start' }}
+          name={ name }
           id={ name }
           checked={ value }
           onChange={ onChange }

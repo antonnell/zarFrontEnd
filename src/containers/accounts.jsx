@@ -9,7 +9,6 @@ import {
   CREATE_ACCOUNT,
   CREATE_ACCOUNT_RETURNED,
   ERROR,
-  UNAUTHORISED,
 } from '../constants'
 
 const { emitter, dispatcher, store } = require("../store/zarStore.js");

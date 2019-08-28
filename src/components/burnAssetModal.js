@@ -88,7 +88,7 @@ class BurnModal extends Component {
               </Grid>
               <Grid item xs={11} align='right'>
                 <Button disabled={loading} variant='contained' size='small' onClick={ handleBurn } color="primary" autoFocus>
-                  Issue Asset
+                  Burn Asset
                 </Button>
               </Grid>
             </Grid>

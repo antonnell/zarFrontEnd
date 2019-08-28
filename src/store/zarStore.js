@@ -11,7 +11,10 @@ import {
   CREATE_BENEFICIARY,
   GET_TRANSACTIONS,
   PAY,
-  PAY_RETURNED,
+  GET_ASSETS,
+  ISSUE_ASSET,
+  MINT_ASSET,
+  BURN_ASSET,
   ERROR,
   UNAUTHORISED,
   _RETURNED,
@@ -38,7 +41,8 @@ class Store {
       bank_accounts: [],
       bank_account_types: [],
       transactions: [],
-      assets: []
+      allAssets: [],
+      myAssets: []
     }
 
     dispatcher.register(
@@ -65,6 +69,18 @@ class Store {
             break;
           case PAY:
             this.pay(payload)
+            break;
+          case GET_ASSETS:
+            this.getAssets(payload)
+            break;
+          case ISSUE_ASSET:
+            this.issueAsset(payload)
+            break;
+          case MINT_ASSET:
+            this.mintAsset(payload)
+            break;
+          case BURN_ASSET:
+            this.burnAsset(payload)
             break;
           default: {
           }
@@ -161,13 +177,63 @@ class Store {
     });
   };
 
+  getAssets = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ allAssets: data.result })
+
+        const userString = sessionStorage.getItem("zar_user");
+        const user = userString !== null ? JSON.parse(userString) : {}; //shouldn't be null
+
+        this.setStore({ myAssets: data.result.filter((ass) => { return ass.user_uuid === user.uuid }) })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  issueAsset = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getPayload = {
+          type: GET_ASSETS,
+          content: {}
+        }
+        this.getBeneficiaries(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  mintAsset = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getPayload = {
+          type: GET_ASSETS,
+          content: {}
+        }
+        this.getBeneficiaries(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  burnAsset = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getPayload = {
+          type: GET_ASSETS,
+          content: {}
+        }
+        this.getBeneficiaries(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
   callApi = function (url, method, postData, payload, callback) {
 
-    let user = {}
     const userString = sessionStorage.getItem('zar_user')
-    if(userString) {
-      user = JSON.parse(userString)
-    }
+    const user = userString !== null ? JSON.parse(userString) : {};
 
     var call = apiUrl + url;
 

@@ -12,19 +12,23 @@ let Asset = createReactClass({
 
     const {
       theme,
+      user,
       asset,
       viewMode,
       mintAssetClicked,
-      burnAssetClicked
+      burnAssetClicked,
+      owner
     } = this.props
 
     return (
       <AssetComponent
         theme={ theme }
+        user={ user }
         asset={ asset }
         viewMode={ viewMode }
         mintAssetClicked={ mintAssetClicked }
         burnAssetClicked={ burnAssetClicked }
+        owner={ owner }
       />
     );
   }

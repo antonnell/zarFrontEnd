@@ -257,7 +257,7 @@ class EnhancedTable extends React.Component {
                             {n.type}
                           </Typography>
                           <Typography variant="subtitle2">
-                            {moment(n.timestamp).format("YYYY/MM/DD hh:mm")}
+                            {moment(n.created).format("YYYY/MM/DD hh:mm")}
                           </Typography>
                         </div>
                       </TableCell>

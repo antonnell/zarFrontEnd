@@ -67,14 +67,17 @@ export const SET_PIN_RETURNED = 'SET_PIN_RETURNED'
 export const UPDATE_NAME = 'UPDATE_NAME'
 export const UPDATE_NAME_RETURNED = 'UPDATE_NAME_RETURNED'
 
-export const ISSUE_ASSET = 'ISSUE_ASSET'
-export const ISSUE_ASSET_RETURNED = 'ISSUE_ASSET_RETURNED'
+export const GET_ASSETS = '/api/v1/getAssets'
+export const GET_ASSETS_RETURNED = '/api/v1/getAssets_RETURNED'
 
-export const MINT_ASSET = 'MINT_ASSET'
-export const MINT_ASSET_RETURNED = 'MINT_ASSET_RETURNED'
+export const ISSUE_ASSET = '/api/v1/issueAsset'
+export const ISSUE_ASSET_RETURNED = '/api/v1/issueAsset_RETURNED'
 
-export const BURN_ASSET = 'BURN_ASSET'
-export const BURN_ASSET_RETURNED = 'BURN_ASSET_RETURNED'
+export const MINT_ASSET = '/api/v1/mintAsset'
+export const MINT_ASSET_RETURNED = '/api/v1/mintAsset_RETURNED'
+
+export const BURN_ASSET = '/api/v1/burnAsset'
+export const BURN_ASSET_RETURNED = '/api/v1/burnAsset_RETURNED'
 
 export const SWAP = 'SWAP'
 export const SWAP_RETURNED = 'SWAP_RETURNED'

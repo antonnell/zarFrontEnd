@@ -1,6 +1,9 @@
 import React, { Component } from 'react';
 import { CssBaseline, Grid } from "@material-ui/core";
 import { createMuiTheme, MuiThemeProvider } from '@material-ui/core/styles';
+import {
+  UNAUTHORISED,
+} from './constants'
 
 import customTheme from './theme';
 
@@ -88,6 +91,9 @@ class App extends Component {
 
     window.onhashchange = this.locationHashChanged;
     this.locationHashChanged();
+
+    emitter.removeListener(UNAUTHORISED, this.logUserOut)
+    emitter.on(UNAUTHORISED, this.logUserOut)
   }
 
   updateWindowDimensions() {
@@ -123,8 +129,6 @@ class App extends Component {
   }
 
   logUserOut() {
-    this.resetStores()
-    sessionStorage.removeItem("zar_user");
     window.location.hash = "welcome";
   };
 
@@ -163,7 +167,7 @@ class App extends Component {
 
     if (["", "welcome", "logOut"].includes(currentScreen)) {
       sessionStorage.removeItem("zar_user");
-
+      this.resetStores()
       this.setState({
         drawerOpen: false,
         user: null
