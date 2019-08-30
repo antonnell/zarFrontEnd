@@ -6,8 +6,8 @@ import {
   GET_ACCOUNTS_RETURNED,
   GET_TRANSACTIONS,
   GET_TRANSACTIONS_RETURNED,
-  CREATE_ACCOUNT,
-  CREATE_ACCOUNT_RETURNED,
+  GET_ASSETS,
+  GET_ASSETS_RETURNED,
   ERROR,
 } from '../constants'
 
@@ -48,6 +48,8 @@ let Accounts = createReactClass({
       accountTypeValue: null,
       accountTypeError: false,
       accountTypeErrorMessage: '',
+
+      viewAssetsOpen: false
     };
   },
 
@@ -69,8 +71,13 @@ let Accounts = createReactClass({
       accounts,
       transactions,
       loading,
-      viewMode
+      viewMode,
+      viewAssetsOpen,
+      balances,
+      assets
     } = this.state
+
+    console.log(assets)
 
     return (
       <AccountsComponent
@@ -86,7 +93,12 @@ let Accounts = createReactClass({
         handleChange={ this.handleChange }
         handleSelectChange={ this.handleSelectChange }
         toggleViewClicked={ this.toggleViewClicked }
+        cardClicked={ this.cardClicked }
+        handleViewAssetsClose={ this.handleViewAssetsClose }
         viewMode={ viewMode }
+        viewAssetsOpen={ viewAssetsOpen }
+        balances={ balances }
+        assets={ assets }
       />
     );
   },
@@ -99,11 +111,33 @@ let Accounts = createReactClass({
     emitter.removeListener(GET_TRANSACTIONS_RETURNED, this.transactionsUpdated)
     emitter.on(GET_TRANSACTIONS_RETURNED, this.transactionsUpdated)
 
+    emitter.removeListener(ERROR, this.showError);
     emitter.on(ERROR, this.showError);
 
     var content = {};
     dispatcher.dispatch({ type: GET_ACCOUNTS, content });
     dispatcher.dispatch({ type: GET_TRANSACTIONS, content });
+
+    const allAssets = store.getStore('allAssets')
+    console.log(store.getStore('allAssets'))
+    if(!allAssets || allAssets.length === 0) {
+      emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated)
+      emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated)
+      dispatcher.dispatch({ type: GET_ASSETS, content });
+    } else {
+      this.setState({
+        assets: allAssets
+      })
+    }
+  },
+
+  cardClicked(account) {
+    console.log(store.getStore('allAssets'))
+    this.setState({ viewAssetsOpen: true, balances: account.balances, account: account })
+  },
+
+  handleViewAssetsClose() {
+    this.setState({ viewAssetsOpen: false, balances: [], account: {} })
   },
 
   accountsUpdated() {
@@ -116,6 +150,15 @@ let Accounts = createReactClass({
   transactionsUpdated() {
     this.setState({
       transactions: store.getStore('transactions')
+    })
+  },
+
+  assetsUpdated() {
+    console.log('ALL ASSETS IS UPDATED')
+    console.log(store.getStore('allAssets'))
+    console.log('ALL ASSETS IS UPDATED')
+    this.setState({
+      assets: store.getStore('allAssets')
     })
   },
 

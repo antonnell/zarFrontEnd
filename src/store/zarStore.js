@@ -94,6 +94,7 @@ class Store {
   };
 
   setStore(obj) {
+    // console.log(obj)
     this.store = {...this.store, ...obj}
     return emitter.emit(STORE_UPDATED);
   };
@@ -187,6 +188,7 @@ class Store {
 
         this.setStore({ myAssets: data.result.filter((ass) => { return ass.user_uuid === user.uuid }) })
       }
+      console.log( this.store.allAssets )
       emitter.emit(payload.type+_RETURNED, err, data);
     });
   };
@@ -198,7 +200,7 @@ class Store {
           type: GET_ASSETS,
           content: {}
         }
-        this.getBeneficiaries(getPayload)
+        this.getAssets(getPayload)
       }
       emitter.emit(payload.type+_RETURNED, err, data);
     });
@@ -211,7 +213,7 @@ class Store {
           type: GET_ASSETS,
           content: {}
         }
-        this.getBeneficiaries(getPayload)
+        this.getAssets(getPayload)
       }
       emitter.emit(payload.type+_RETURNED, err, data);
     });
@@ -224,7 +226,7 @@ class Store {
           type: GET_ASSETS,
           content: {}
         }
-        this.getBeneficiaries(getPayload)
+        this.getAssets(getPayload)
       }
       emitter.emit(payload.type+_RETURNED, err, data);
     });
@@ -276,7 +278,7 @@ class Store {
           return emitter.emit(UNAUTHORISED, null, null);
         }
 
-        if (res.ok || res.status === 400) {
+        if (res.ok || res.status === 400 || res.status === 500) {
           return res;
         } else {
           throw Error(res.statusText);
@@ -287,7 +289,7 @@ class Store {
         callback(null, res)
         // emitter.emit(payload.type, null, res);
       })
-      .catch((error, a, b) => {
+      .catch((error) => {
         callback(error, null)
         // emitter.emit(payload.type, error, null);
       });

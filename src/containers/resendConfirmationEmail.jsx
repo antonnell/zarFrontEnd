@@ -1,8 +1,8 @@
 import React from "react";
 import ResendConfirmationEmailComponent from "../components/resendConfirmationEmail";
 const createReactClass = require("create-react-class");
-let emitter = require("../store/accountStore.js").default.emitter;
-let dispatcher = require("../store/accountStore.js").default.dispatcher;
+
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let ResendConfirmationEmail = createReactClass({
   getInitialState() {

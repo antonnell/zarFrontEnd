@@ -1,26 +1,37 @@
 import React, { Component } from "react";
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
-import Dialog from '@material-ui/core/Dialog';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
-import Grid from '@material-ui/core/Grid';
-import Card from '@material-ui/core/Card'
-import Slide from '@material-ui/core/Slide';
+import {
+  DialogActions,
+  DialogContent,
+  Dialog,
+  Button,
+  Typography,
+  Grid,
+  Card,
+  Slide
+} from '@material-ui/core';
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
 }
 
 
-class ViewTokensModal extends Component {
+class ViewAssetsModal extends Component {
 
-  renderTokens() {
-    let { tokens } = this.props
+  renderAssets() {
+    let { balances, assets } = this.props
 
-    if(tokens && tokens.length > 0 ) {
-      return tokens.map((token) => {
-        return this.renderToken(token)
+    if(balances && balances.length > 0 ) {
+      return balances.map((balance) => {
+
+        const asset = assets ? assets.filter((asset) => {
+          return asset.issue_id === balance.denom
+        }) : []
+        if(asset.length > 0) {
+          balance.name = asset[0].name
+          balance.symbol = asset[0].symbol
+        }
+
+        return this.renderAsset(balance)
       })
     } else {
       //something went wrong
@@ -41,19 +52,19 @@ class ViewTokensModal extends Component {
     return (<Grid item xs={12} align='left'>
       <Card style={{borderRadius: '3px'}}>
         <Grid container>
-          <Grid item xs={6} align='left' style={headerStyle}>
+          <Grid item xs={5} align='left' style={headerStyle}>
             <Typography variant="body1" style={textStyle}>
-              Token
+              Asset
             </Typography>
           </Grid>
-          <Grid item xs={3} align='left' style={headerStyle}>
+          <Grid item xs={4} align='left' style={headerStyle}>
             <Typography variant="body1" style={textStyle}>
               Balance
             </Typography>
           </Grid>
-          <Grid item xs={3} align='left' style={headerStyle}>
+          <Grid item xs={3} align='right' style={headerStyle}>
             <Typography variant="body1" style={textStyle}>
-              Send
+              Actions
             </Typography>
           </Grid>
         </Grid>
@@ -61,7 +72,7 @@ class ViewTokensModal extends Component {
     </Grid>)
   }
 
-  renderToken(token) {
+  renderAsset(asset) {
 
     let bodyStyle = {
       padding: '16px',
@@ -81,32 +92,28 @@ class ViewTokensModal extends Component {
       <Grid item xs={12} align='left'>
         <Card style={{marginTop:'16px', borderRadius: '3px'}}>
           <Grid container justify="center" alignItems="center" direction="row">
-            <Grid item xs={6} align='left' style={bodyStyle}>
+            <Grid item xs={5} align='left' style={bodyStyle}>
               <div style={divStyle}>
                 <Typography variant="body1" style={textStyle}>
                   {
-                    token.name != null ? token.name : token.symbol
+                    asset.name
                   }
                 </Typography>
               </div>
             </Grid>
-            <Grid item xs={3} align='left' style={bodyStyle}>
+            <Grid item xs={4} align='left' style={bodyStyle}>
               <Typography variant="body1" style={textStyle}>
-                { parseFloat( token.balance != null ? token.balance : token.free ).toFixed(4) + ' ' + token.symbol }
+                { parseFloat( asset.amount != null ? parseInt(asset.amount) : 0 ).toFixed(4) + ' ' + asset.symbol }
               </Typography>
             </Grid>
-            <Grid item xs={3} align='left' style={bodyStyle}>
+            <Grid item xs={3} align='right' style={bodyStyle}>
               <Button
-                size="medium"
-                variant="contained"
+                size="small"
+                variant="text"
                 color="primary"
-                onClick={() => { this.props.transactClicked({
-                  name: token.name,
-                  symbol: token.symbol,
-                  type: this.props.tokenType
-                }, null, { address: this.props.account }) }}
+                onClick={() => { this.props.transactClicked(asset, null, this.props.account) }}
               >
-                Send
+                Pay
               </Button>
             </Grid>
           </Grid>
@@ -121,7 +128,7 @@ class ViewTokensModal extends Component {
         <DialogContent>
           <Grid container justify="flex-start" alignItems="flex-start" direction="row" spacing={0} style={{padding: '24px'}}>
             {this.renderHeader()}
-            {this.renderTokens()}
+            {this.renderAssets()}
           </Grid>
         </DialogContent>
         <DialogActions>
@@ -134,4 +141,4 @@ class ViewTokensModal extends Component {
   };
 }
 
-export default (ViewTokensModal);
+export default (ViewAssetsModal);

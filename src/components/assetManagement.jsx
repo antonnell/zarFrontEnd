@@ -49,7 +49,8 @@ class AssetManagement extends Component {
       viewMode,
       user,
       mintAssetClicked,
-      burnAssetClicked
+      burnAssetClicked,
+      freezeAssetClicked
     } = this.props
 
     if(!assets) {
@@ -67,7 +68,7 @@ class AssetManagement extends Component {
     return assets.map((asset) => {
       if(viewMode === 'List') {
         return (
-          <Grid item xs={12} key={asset.type+'_'+asset.name} style={{ padding: '0px 24px' }}>
+          <Grid item xs={12} key={asset.issue_id} style={{ padding: '0px 24px' }}>
             <Asset
               user={ user }
               asset={ asset }
@@ -75,13 +76,14 @@ class AssetManagement extends Component {
               viewMode={ viewMode }
               mintAssetClicked={ mintAssetClicked }
               burnAssetClicked={ burnAssetClicked }
+              freezeAssetClicked={ freezeAssetClicked }
               owner={ owner }
             />
           </Grid>
         )
       } else {
         return (
-          <Grid item xs={12} sm={6} lg={4} xl={3} key={asset.type+'_'+asset.name} style={{ padding: '24px' }}>
+          <Grid item xs={12} sm={6} lg={4} xl={3} key={asset.issue_id+'_'+asset.name} style={{ padding: '24px' }}>
             <Asset
               user={ user }
               asset={ asset }
@@ -89,6 +91,7 @@ class AssetManagement extends Component {
               viewMode={ viewMode }
               mintAssetClicked={ mintAssetClicked }
               burnAssetClicked={ burnAssetClicked }
+              freezeAssetClicked={ freezeAssetClicked }
               owner={ owner }
             />
           </Grid>
@@ -251,7 +254,7 @@ class AssetManagement extends Component {
     const {
       issueAssetCloseClicked,
       handleChange,
-      handelIssue,
+      handleIssue,
       handleSelectChange,
       handleCheckboxChange,
 
@@ -286,7 +289,7 @@ class AssetManagement extends Component {
 
         handleClose={ issueAssetCloseClicked }
         handleChange={ handleChange }
-        handelIssue={ handelIssue }
+        handleIssue={ handleIssue }
         handleSelectChange={ handleSelectChange }
         handleCheckboxChange={ handleCheckboxChange }
 
@@ -323,7 +326,7 @@ class AssetManagement extends Component {
     const {
       mintAssetCloseClicked,
       handleChange,
-      handelMint,
+      handleMint,
       handleSelectChange,
 
       mintOpen,
@@ -343,6 +346,11 @@ class AssetManagement extends Component {
       mintingAddressOptions,
       mintingAddressError,
       mintingAddressErrorMessage,
+
+      recipientAddressValue,
+      recipientAddressOptions,
+      recipientAddressError,
+      recipientAddressErrorMessage,
     } = this.props
 
     return (
@@ -350,7 +358,7 @@ class AssetManagement extends Component {
 
         handleClose={ mintAssetCloseClicked }
         handleChange={ handleChange }
-        handelMint={ handelMint }
+        handleMint={ handleMint }
         handleSelectChange={ handleSelectChange }
 
         isOpen={ mintOpen }
@@ -370,6 +378,11 @@ class AssetManagement extends Component {
         mintingAddressOptions={ mintingAddressOptions }
         mintingAddressError={ mintingAddressError }
         mintingAddressErrorMessage={ mintingAddressErrorMessage }
+
+        recipientAddressValue={ recipientAddressValue }
+        recipientAddressOptions={ recipientAddressOptions }
+        recipientAddressError={ recipientAddressError }
+        recipientAddressErrorMessage={ recipientAddressErrorMessage }
       />
     )
   }
@@ -379,7 +392,7 @@ class AssetManagement extends Component {
     const {
       burnAssetCloseClicked,
       handleChange,
-      handelBurn,
+      handleBurn,
       handleSelectChange,
 
       burnOpen,
@@ -399,6 +412,11 @@ class AssetManagement extends Component {
       burningAddressOptions,
       burningAddressError,
       burningAddressErrorMessage,
+
+      recipientAddressValue,
+      recipientAddressOptions,
+      recipientAddressError,
+      recipientAddressErrorMessage,
     } = this.props
 
     return (
@@ -406,7 +424,7 @@ class AssetManagement extends Component {
 
         handleClose={ burnAssetCloseClicked }
         handleChange={ handleChange }
-        handelBurn={ handelBurn }
+        handleBurn={ handleBurn }
         handleSelectChange={ handleSelectChange }
 
         isOpen={ burnOpen }
@@ -426,6 +444,11 @@ class AssetManagement extends Component {
         burningAddressOptions={ burningAddressOptions }
         burningAddressError={ burningAddressError }
         burningAddressErrorMessage={ burningAddressErrorMessage }
+
+        recipientAddressValue={ recipientAddressValue }
+        recipientAddressOptions={ recipientAddressOptions }
+        recipientAddressError={ recipientAddressError }
+        recipientAddressErrorMessage={ recipientAddressErrorMessage }
       />
     )
   }

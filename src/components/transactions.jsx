@@ -267,7 +267,7 @@ class EnhancedTable extends React.Component {
                         </Typography>
                       </TableCell>
                       <TableCell>
-                        <Typography variant="body1">{n.amount + " ZAR"}</Typography>
+                        <Typography variant="body1">{n.amount + ' ' + n.symbol}</Typography>
                       </TableCell>
                     </TableRow>
                   );

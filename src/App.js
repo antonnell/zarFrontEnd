@@ -19,7 +19,7 @@ import Transact from './containers/transact';
 import TokenSwap from './containers/tokenSwap.jsx';
 import AssetManagement from './containers/assetManagement.jsx';
 
-const { emitter, dispatcher, store } = require("./store/zarStore.js");
+const { emitter, store } = require("./store/zarStore.js");
 
 const setInitialUser = () => {
   const userString = sessionStorage.getItem("zar_user");
@@ -40,7 +40,7 @@ class App extends Component {
     currentTheme: setInitialTheme(),
     theme: customTheme[setInitialTheme()],
     transactOpen: false,
-    transactCurrency: null,
+    transactAsset: null,
     transactBeneficiary: null,
     transactAccount: null,
   };
@@ -130,10 +130,20 @@ class App extends Component {
 
   logUserOut() {
     window.location.hash = "welcome";
+    this.resetStores()
   };
 
   resetStores() {
-
+    store.setStore({
+      user: {},
+      accounts: [],
+      beneficiaries: [],
+      bank_accounts: [],
+      bank_account_types: [],
+      transactions: [],
+      allAssets: [],
+      myAssets: []
+    })
   }
 
   setUser(user) {
@@ -218,14 +228,14 @@ class App extends Component {
   }
 
   renderTransact() {
-    const { transactOpen, transactCurrency, transactBeneficiary, transactAccount, theme, user, supportedERC20Tokens } = this.state
+    const { transactOpen, transactAsset, transactBeneficiary, transactAccount, theme, user, supportedERC20Tokens } = this.state
 
     return <Transact
       user={ user }
       theme={ theme }
       isOpen={ transactOpen }
       transactClosed= { this.transactClosed }
-      transactCurrency={ transactCurrency }
+      transactAsset={ transactAsset }
       transactBeneficiary={ transactBeneficiary }
       transactAccount={ transactAccount }
       supportedERC20Tokens={ supportedERC20Tokens }
@@ -233,7 +243,8 @@ class App extends Component {
   }
 
   transactClicked(token, beneficiary, account) {
-    this.setState({ transactOpen: true, transactCurrency: token, transactBeneficiary: beneficiary, transactAccount: (account ? account.address: null) })
+    console.log(store.getStore('allAssets'))
+    this.setState({ transactOpen: true, transactAsset: token, transactBeneficiary: beneficiary, transactAccount: (account ? account.uuid: null) })
   }
 
   transactClosed() {
@@ -335,7 +346,7 @@ class App extends Component {
           transactOpen={ this.state.transactOpen }
           transactClosed={ this.transactClosed }
           transactClicked={ this.transactClicked }
-          transactCurrency={ this.state.transactCurrency }
+          transactAsset={ this.state.transactAsset }
           /> )
       case 'beneficiaries':
         return (

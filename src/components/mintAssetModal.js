@@ -46,6 +46,11 @@ class MintModal extends Component {
       mintingAddressError,
       mintingAddressErrorMessage,
 
+      recipientAddressValue,
+      recipientAddressOptions,
+      recipientAddressError,
+      recipientAddressErrorMessage,
+
     } = this.props
 
     console.log(assetOptions)
@@ -75,10 +80,13 @@ class MintModal extends Component {
                 { this.renderSelect("Asset", assetValue, assetOptions, assetError, assetErrorMessage, handleSelectChange, loading, 'asset') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderImput("Mint amount", mintAmountValue, mintAmountError, mintAmountErrorMessage, handleChange, loading, 'mintAmount') }
+                { this.renderSelect("Minting Address", mintingAddressValue, mintingAddressOptions, mintingAddressError, mintingAddressErrorMessage, handleSelectChange, loading, 'mintingAddress') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderSelect("Minting Address", mintingAddressValue, mintingAddressOptions, mintingAddressError, mintingAddressErrorMessage, handleSelectChange, loading, 'mintingAddress') }
+                { this.renderImput("Recipient Address", recipientAddressValue, recipientAddressError, recipientAddressErrorMessage, handleChange, loading, 'recipientAddress') }
+              </Grid>
+              <Grid item xs={11}>
+                { this.renderImput("Mint amount", mintAmountValue, mintAmountError, mintAmountErrorMessage, handleChange, loading, 'mintAmount') }
               </Grid>
               <Grid item xs={11}>
                 <Typography style={{color: '#f44336'}} >

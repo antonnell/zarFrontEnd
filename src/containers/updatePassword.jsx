@@ -1,8 +1,8 @@
 import React from "react";
 import UpdatePasswordComponent from "../components/updatePassword";
 const createReactClass = require("create-react-class");
-let emitter = require("../store/accountStore.js").default.emitter;
-let dispatcher = require("../store/accountStore.js").default.dispatcher;
+
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let UpdatePassword = createReactClass({
   getInitialState() {

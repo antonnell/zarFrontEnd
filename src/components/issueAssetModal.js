@@ -26,7 +26,7 @@ class IssueModal extends Component {
     let {
       handleClose,
       handleChange,
-      handelIssue,
+      handleIssue,
       handleSelectChange,
       handleCheckboxChange,
 
@@ -135,7 +135,7 @@ class IssueModal extends Component {
                 </Typography>
               </Grid>
               <Grid item xs={11} align='right'>
-                <Button disabled={loading} variant='contained' size='small' onClick={ handelIssue } color="primary" autoFocus>
+                <Button disabled={loading} variant='contained' size='small' onClick={ handleIssue } color="primary" autoFocus>
                   Issue Asset
                 </Button>
               </Grid>

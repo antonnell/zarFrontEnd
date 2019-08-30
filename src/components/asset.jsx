@@ -23,6 +23,7 @@ class Asset extends Component {
       asset,
       mintAssetClicked,
       burnAssetClicked,
+      freezeAssetClicked,
       user,
       owner
     } = this.props
@@ -73,9 +74,6 @@ class Asset extends Component {
               </Typography>
             </Grid>
             { owner === true && user && asset.user_uuid === user.uuid && <Grid item xs={6} align='right' style={bodyStyle}>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
-                List
-              </Button>
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { burnAssetClicked(asset); } }>
                 Burn
               </Button>
@@ -83,7 +81,7 @@ class Asset extends Component {
                 Mint
               </Button>
             </Grid>}
-            { asset.user_uuid !== user.uuid && <Grid item xs={6} align='right' style={bodyStyle}></Grid> }
+            { (owner !== true || asset.user_uuid !== user.uuid) && <Grid item xs={6} align='right' style={bodyStyle}></Grid> }
           </Grid>
         </Card>
       </Grid>
@@ -95,6 +93,7 @@ class Asset extends Component {
       asset,
       mintAssetClicked,
       burnAssetClicked,
+      freezeAssetClicked,
       user,
       owner
     } = this.props
@@ -138,14 +137,11 @@ class Asset extends Component {
         { owner === true && user && asset.user_uuid === user.uuid && <CardContent style={{ position: "relative" }}>
           <Grid container style={{marginTop: '12px'}}>
             <Grid item xs={4} align='left'>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={() => {  }}>
-                List
-              </Button>
-            </Grid>
-            <Grid item xs={4} align='center'>
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { burnAssetClicked(asset); } }>
                 Burn
               </Button>
+            </Grid>
+            <Grid item xs={4} align='center'>
             </Grid>
             <Grid item xs={4} align='right'>
               <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { mintAssetClicked(asset); } }>

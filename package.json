@@ -5,7 +5,6 @@
   "dependencies": {
     "@material-ui/core": "^4.3.3",
     "@material-ui/icons": "^4.2.1",
-    "@zar-network/javascript-sdk": "^2.14.8",
     "async": "^3.1.0",
     "bip39": "^3.0.2",
     "create-react-class": "^15.6.3",

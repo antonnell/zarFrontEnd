@@ -1,8 +1,8 @@
 import React from "react";
 import ResetPasswordComponent from "../components/resetPassword";
 const createReactClass = require("create-react-class");
-let emitter = require("../store/accountStore.js").default.emitter;
-let dispatcher = require("../store/accountStore.js").default.dispatcher;
+
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let ResetPassword = createReactClass({
   getInitialState() {
@@ -116,7 +116,7 @@ let ResetPassword = createReactClass({
     this.props.stopLoading();
     if (error) {
       this.props.setError(error.toString())
-      return this.setState({ error: error.toString() });      
+      return this.setState({ error: error.toString() });
     }
 
     if (data.success) {

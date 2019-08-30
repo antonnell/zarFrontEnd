@@ -22,13 +22,6 @@ class Account extends Component {
     let { account, cardClicked, transactClicked } = this.props
 
     let logo = 'Bitcoin'
-    if(["Ethereum", "Binance"].includes(account.type)) {
-      logo = account.type
-    } else if (account.type === 'ERC20') {
-      logo = 'Ethereum'
-    } else if (account.type === 'BEP2') {
-      logo = 'Binance'
-    }
 
     let bodyStyle = {
       padding: '12px 12px 12px 24px',
@@ -49,11 +42,23 @@ class Account extends Component {
       width: 'calc( 100% - 42px)'
     }
 
+    let ftmBalance = 0
+
+    if(account.balances && account.balances.length > 0) {
+      const balance = account.balances.filter((bal) => {
+        return bal.denom === 'ftm'
+      })
+
+      ftmBalance = balance.length > 0 ? parseInt(balance[0].amount) : 0
+    }
+
     return(
       <Grid item xs={12} align='left'>
         <Card style={{marginTop:'16px', borderRadius: '3px', cursor: 'pointer'}}>
           <Grid container justify="center" alignItems="center" direction="row">
-            <Grid item xs={6} align='left' style={bodyStyle} onClick={cardClicked}>
+            <Grid item xs={6} align='left' style={bodyStyle} onClick={() => {
+              cardClicked(account) }
+            }>
               <div style={iconStyle}>
                 <img
                   alt=""
@@ -70,14 +75,14 @@ class Account extends Component {
             </Grid>
             <Grid item xs={2} align='right' style={bodyStyle} onClick={cardClicked}>
               <Typography variant="body1" noWrap style={textStyle}>
-                {(account.balance ? account.balance.toFixed(4) : '0') + ' ' + account.account_type}
+                {(ftmBalance ? ftmBalance.toFixed(4) : '0') + ' FTM'}
               </Typography>
               <Typography variant="subtitle2" noWrap>
                 {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
               </Typography>
             </Grid>
             <Grid item xs={4} align='right' style={bodyStyle}>
-              <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(account) }}>
+              <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(null, null, account) }}>
                 Transact
               </Button>
             </Grid>
@@ -91,18 +96,24 @@ class Account extends Component {
     let { account, cardClicked, transactClicked } = this.props
 
     let logo = 'Bitcoin'
-    if(["Ethereum", "Binance"].includes(account.type)) {
-      logo = account.type
-    } else if (account.type === 'ERC20') {
-      logo = 'Ethereum'
-    } else if (account.type === 'BEP2') {
-      logo = 'Binance'
+
+    let ftmBalance = 0
+
+    if(account.balances && account.balances.length > 0) {
+      const balance = account.balances.filter((bal) => {
+        return bal.denom === 'ftm'
+      })
+
+      ftmBalance = balance.length > 0 ? parseInt(balance[0].amount) : 0
     }
+
 
     return (
 
       <Card>
-        <CardActionArea onClick={cardClicked}>
+        <CardActionArea onClick={() => {
+          cardClicked(account)
+        }}>
           <CardContent style={{ position: "relative" }}>
             <div style={ {
               width: '150px',
@@ -124,7 +135,7 @@ class Account extends Component {
                 </Grid>
                 <Grid item xs={8} align='right'>
                   <Typography variant="h4" noWrap style={{fontSize: '20px'}}>
-                    {(account.balance ? account.balance.toFixed(4) : '0') + ' ' + account.account_type}
+                    {(ftmBalance ? ftmBalance.toFixed(4) : '0') + ' FTM'}
                   </Typography>
                   <Typography variant="h4" noWrap style={{color: '#888'}}>
                     {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
@@ -137,7 +148,7 @@ class Account extends Component {
         <CardContent style={{ position: "relative" }}>
           <Grid container style={{marginTop: '12px'}}>
             <Grid item xs={12} align='right'>
-              <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(account) }}>
+              <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(null, null, account) }}>
                 Transact
               </Button>
             </Grid>

@@ -2,8 +2,7 @@ import React from "react";
 import KYCComponent from "../components/kyc";
 import KYCStatusComponent from "../components/kycStatus";
 
-let accountEmitter = require("../store/accountStore.js").default.emitter;
-let accountDispatcher = require("../store/accountStore.js").default.dispatcher;
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 const createReactClass = require("create-react-class");
 
 let KYC = createReactClass({
@@ -15,11 +14,11 @@ let KYC = createReactClass({
   },
 
   UNSAFE_componentWillMount() {
-    accountEmitter.on("allocateKycCode", this.allocateKycCodeReturned);
+    emitter.on("allocateKycCode", this.allocateKycCodeReturned);
   },
 
   componentWillUnmount() {
-    accountEmitter.removeAllListeners("allocateKycCode");
+    emitter.removeAllListeners("allocateKycCode");
   },
 
   render() {
@@ -56,7 +55,7 @@ let KYC = createReactClass({
       this.openKYC(this.props.user.verificationUrl)
     } else {
       this.setState({ loading: true });
-      accountDispatcher.dispatch({
+      dispatcher.dispatch({
         type: "allocateKycCode",
         content: { username: this.props.user.username },
         token: this.props.user.token

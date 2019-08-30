@@ -13,6 +13,7 @@ import PageTitle from "./pageTitle";
 import Account from '../containers/account';
 import PageLoader from './pageLoader';
 import Transactions from "../containers/transactions";
+import ViewAssetModal from './viewAssetsModal';
 
 import { colors } from '../theme.js'
 
@@ -46,6 +47,7 @@ class Accounts extends Component {
       transactClicked,
       user,
       viewMode,
+      cardClicked
     } = this.props
 
     if(!accounts) {
@@ -64,13 +66,13 @@ class Accounts extends Component {
       if(viewMode === 'List') {
         return (
           <Grid item xs={12} key={account.type+'_'+account.name} style={{ padding: '0px 24px' }}>
-            <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } />
+            <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } cardClicked={ cardClicked } />
           </Grid>
         )
       } else {
         return (
           <Grid item xs={12} sm={6} lg={4} xl={3} key={account.type+'_'+account.name} style={{ padding: '24px' }}>
-            <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } />
+            <Account user={ user } account={ account } theme={ theme } transactClicked={ transactClicked } viewMode={ viewMode } cardClicked={ cardClicked } />
           </Grid>
         )
       }
@@ -86,8 +88,13 @@ class Accounts extends Component {
       error,
       toggleViewClicked,
       viewMode,
-      accounts, 
-      transactions
+      accounts,
+      transactions,
+      balances,
+      viewAssetsOpen,
+      handleViewAssetsClose,
+      assets,
+      transactClicked,
     } = this.props
 
     return (
@@ -148,6 +155,7 @@ class Accounts extends Component {
         </Grid>
         { loading && this.renderLoader() }
         { error && <Snackbar open={true} type={'Error'} message={error} /> }
+        { viewAssetsOpen && <ViewAssetModal balances={ balances } isOpen={ viewAssetsOpen } handleClose={ handleViewAssetsClose } assets={ assets } transactClicked={ transactClicked } /> }
       </Grid>
     );
   }

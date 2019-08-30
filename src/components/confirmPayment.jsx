@@ -63,8 +63,14 @@ class ConfirmPayment extends Component {
       accountValue,
       typeValue,
       assetValue,
+      assets,
       referenceValue
     } = this.props
+
+    const asset = assets.filter((ass) => {
+      console.log(ass)
+      return ass.value == assetValue
+    })[0].description
 
     return (
         <Grid container justify="center" alignItems="flex-start" direction="row">
@@ -73,7 +79,7 @@ class ConfirmPayment extends Component {
               You're sending
             </Typography>
             <Typography variant="h5" noWrap style={{ fontSize:  '20px', marginTop: '4px' }}>
-              { amountValue + " " + assetValue }
+              { amountValue + " " + asset }
             </Typography>
           </Grid>
           <Grid item xs={10} align='left' style={{ marginTop: '40px' }}>

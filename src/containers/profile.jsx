@@ -4,8 +4,7 @@ const createReactClass = require("create-react-class");
 
 const email = require("email-validator");
 
-let emitter = require("../store/accountStore.js").default.emitter;
-let dispatcher = require("../store/accountStore.js").default.dispatcher;
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let Profile = createReactClass({
   getInitialState() {

@@ -2,18 +2,12 @@ import React from 'react'
 import TokenSwapComponent from '../components/tokenSwap'
 const createReactClass = require('create-react-class')
 
-let ethEmitter = require("../store/ethStore.js").default.emitter;
-let ethDispatcher = require("../store/ethStore.js").default.dispatcher;
-let ethStore = require("../store/ethStore.js").default.store;
-
-let bnbEmitter = require("../store/binanceStore.js").default.emitter;
-let bnbDispatcher = require("../store/binanceStore.js").default.dispatcher;
-let bnbStore = require("../store/binanceStore.js").default.store;
+const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
 let TokenSwap = createReactClass({
   getInitialState() {
-    const ethAccounts = ethStore.getStore('accounts')
-    const bnbAccounts = bnbStore.getStore('accounts')
+    const ethAccounts = store.getStore('accounts')
+    const bnbAccounts = store.getStore('accounts')
 
     return {
       ethLoading: true,
@@ -113,16 +107,8 @@ let TokenSwap = createReactClass({
 
 
   UNSAFE_componentWillMount() {
-    ethEmitter.removeAllListeners('accountsUpdated');
-    bnbEmitter.removeAllListeners("accountsUpdated");
-
-    ethEmitter.on('accountsUpdated', this.ethAccountsRefreshed);
-    bnbEmitter.on('accountsUpdated', this.bnbAccountsRefreshed);
-
-    ethEmitter.removeAllListeners("convertCurve");
-    bnbEmitter.removeAllListeners("convertCurve")
-    ethEmitter.on('convertCurve', this.convertCurveReturned)
-    bnbEmitter.on('convertCurve', this.convertCurveReturned)
+    emitter.removeListener('accountsUpdated', this.ethAccountsRefreshed);
+    emitter.on('accountsUpdated', this.ethAccountsRefreshed);
 
     this.getAllAccounts()
   },
@@ -136,7 +122,7 @@ let TokenSwap = createReactClass({
   },
 
   bnbAccountsRefreshed() {
-    const accounts = bnbStore.getStore('accounts')
+    const accounts = store.getStore('accounts')
     let val = null;
     if(accounts) {
       val = accounts.map((acc) => {
@@ -166,7 +152,7 @@ let TokenSwap = createReactClass({
   },
 
   ethAccountsRefreshed() {
-    const accounts = ethStore.getStore('accounts')
+    const accounts = store.getStore('accounts')
     let val = null;
     if(accounts) {
       val = accounts.map((acc) => {
@@ -199,12 +185,12 @@ let TokenSwap = createReactClass({
     const { user } = this.props;
     const content = { id: user.id };
 
-    ethDispatcher.dispatch({
+    dispatcher.dispatch({
       type: 'getEthAddress',
       content,
       token: user.token
     });
-    bnbDispatcher.dispatch({
+    dispatcher.dispatch({
       type: 'getBinanceAddress',
       content,
       token: user.token
@@ -328,7 +314,7 @@ let TokenSwap = createReactClass({
 
           this.setState({ ethLoading: true, error: null })
 
-          ethDispatcher.dispatch({
+          dispatcher.dispatch({
             type: "convertCurve",
             content,
             token: user.token
@@ -345,7 +331,7 @@ let TokenSwap = createReactClass({
 
           this.setState({ bnbLoading: true, error: null })
 
-          bnbDispatcher.dispatch({
+          dispatcher.dispatch({
             type: "convertCurve",
             content,
             token: user.token

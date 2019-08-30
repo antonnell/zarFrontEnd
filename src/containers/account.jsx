@@ -13,31 +13,12 @@ let Account = createReactClass({
       <AccountComponent
         theme={ this.props.theme }
         account={ this.props.account }
-        cardClicked={ this.cardClicked }
+        cardClicked={ this.props.cardClicked }
         transactClicked={ this.props.transactClicked }
         viewMode={ this.props.viewMode }
       />
     );
   },
-
-  cardClicked() {
-    let screen = ''
-
-    switch(this.props.account.type) {
-      case 'Binance':
-      case 'BEP2':
-        screen = 'binanceAccounts'
-        break
-      case 'Ethereum':
-      case 'ERC20':
-        screen = 'ethAccounts'
-        break
-      default:
-        break
-    }
-
-    window.location.hash=screen
-  }
 });
 
 export default Account;

@@ -23,6 +23,8 @@ import {
   GET_ACCOUNTS_RETURNED,
   GET_BENEFICIARIES,
   GET_BENEFICIARIES_RETURNED,
+  GET_ASSETS,
+  GET_ASSETS_RETURNED,
   ERROR,
 } from '../constants'
 
@@ -45,7 +47,6 @@ let Transact = createReactClass({
       accountValue = accounts.length > 0 ? accounts[0].uuid : null
     }
 
-
     const beneficiaries = store.getStore('beneficiaries')
     let selectedBeneficiary = null
 
@@ -55,8 +56,23 @@ let Transact = createReactClass({
       })
     }
 
+    let assetValue = 'coin174876e800'
+    if(this.props.transactAsset) {
+      assetValue = this.props.transactAsset.denom
+    }
+
+    console.log(assetValue)
+    console.log(store.getStore('allAssets'))
+
     return {
       accounts: accounts,
+      allAssets: store.getStore('allAssets'),
+      assets: store.getStore('allAssets').map((asset) => {
+        return {
+          description: asset.name,
+          value: asset.issue_id
+        }
+      }),
       beneficiaries: beneficiaries,
 
       loading: false,
@@ -73,11 +89,7 @@ let Transact = createReactClass({
       completed: {},
 
       accountValue: accountValue,
-      assets: [
-        { value: 'ZAR', description: 'ZAR', symbol: 'ZAR' }
-        //GET THIS FROM DB SOMEWHERE
-      ],
-      assetValue: this.props.transactAsset ? this.props.transactAsset.value : 'ZAR',
+      assetValue: assetValue,
       typeOptions: [
         {  value: 'beneficiary', description: 'Beneficiary' },
         {  value: 'public', description: 'Public Address' },
@@ -108,6 +120,13 @@ let Transact = createReactClass({
       dispatcher.dispatch({ type: GET_BENEFICIARIES, content: {} })
     }
 
+    const allAssets = store.getStore('allAssets')
+    if(!allAssets || allAssets.length === 0) {
+      emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated)
+      emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated)
+      dispatcher.dispatch({ type: GET_ASSETS, content: {} });
+    }
+
     emitter.removeListener(PAY_RETURNED, this.payReturned)
     emitter.on(PAY_RETURNED, this.payReturned)
   },
@@ -118,9 +137,21 @@ let Transact = createReactClass({
     })
   },
 
+  assetsUpdated(error, data) {
+    this.setState({
+      allAssets: store.getStore('allAssets'),
+      assets: store.getStore('allAssets').map((asset) => {
+        return {
+          description: asset.name,
+          value: asset.issue_id
+        }
+      })
+    })
+  },
+
   getAccountsReturned(error, data) {
     this.setState({
-      accounts: store.getStore('accounts'),
+      accounts: store.getStore('accounts')
     })
   },
 
@@ -236,6 +267,7 @@ let Transact = createReactClass({
         return (
           <ConfirmPayment
             loading={ loading }
+            assets={ assets }
             assetValue={ assetValue }
             amountValue={ amountValue }
             accountOptions={ accountOptions }
@@ -464,7 +496,7 @@ let Transact = createReactClass({
   onSelectChange(event, value) {
     switch (event.target.name) {
       case 'asset':
-        this.setState({ assetValue: event.target.value, accountValue: null })
+        this.setState({ assetValue: event.target.value })
 
         window.setTimeout(() => {
           const canvas = document.getElementById("canvas");
@@ -555,7 +587,8 @@ let Transact = createReactClass({
     let content = {
       account_uuid: accountValue,
       amount: amountValue,
-      reference: referenceValue
+      reference: referenceValue,
+      asset_id: assetValue
     }
 
     if(typeValue === 'beneficiary') {
@@ -576,6 +609,17 @@ let Transact = createReactClass({
   },
 
   payReturned(error, data) {
+    if(error) {
+      this.setState({
+        loading: false,
+        currentScreen: "results",
+        activeStep: 2,
+        error: error.toString()
+      });
+
+      return
+    }
+
     if (data.success) {
       this.setState({
         loading: false,

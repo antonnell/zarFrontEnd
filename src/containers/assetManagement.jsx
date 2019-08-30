@@ -17,10 +17,10 @@ const createReactClass = require('create-react-class')
 
 const { emitter, dispatcher, store } = require("../store/zarStore.js");
 
-let Contacts = createReactClass({
+let AssetManagement = createReactClass({
   getInitialState() {
     return {
-      loading: false,
+      loading: true,
       error: false,
       allAssets: null,
       myAssets: null,
@@ -47,6 +47,9 @@ let Contacts = createReactClass({
 
     emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated);
     emitter.on(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
+    emitter.on(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
+    emitter.on(MINT_ASSET_RETURNED, this.mintAssetReturned);
+    emitter.on(BURN_ASSET_RETURNED, this.burnAssetReturned);
     emitter.on(ERROR, this.showError);
 
     const content = {};
@@ -58,7 +61,8 @@ let Contacts = createReactClass({
     this.setState({
       allAssets: store.getStore('allAssets'),
       myAssets: store.getStore('myAssets'),
-      assetOptions: store.getStore('myAssets').map((asset) => { return { value: asset.uuid, description: asset.name }; })
+      assetOptions: store.getStore('myAssets').map((asset) => { return { value: asset.uuid, description: asset.name }; }),
+      loading: false
     })
   },
 
@@ -71,6 +75,8 @@ let Contacts = createReactClass({
   },
 
   issueAssetReturned(error, data) {
+    console.log(error)
+    console.log(data)
     if(!data && error) {
       this.setState({ loading: false })
       this.showError(error)
@@ -146,10 +152,7 @@ let Contacts = createReactClass({
     this.setState({ issueOpen: false })
   },
 
-  handelIssue() {
-    console.log(this.state)
-
-    //add validation
+  handleIssue() {
     if(this.validateIssueAsset()) {
       const {
         symbolValue,
@@ -175,7 +178,7 @@ let Contacts = createReactClass({
         freezable: freezableValue
       }
 
-      console.log(content)
+      this.setState({ loading: true })
       dispatcher.dispatch({ type: ISSUE_ASSET, content })
     }
   },
@@ -250,17 +253,18 @@ let Contacts = createReactClass({
 
     //add validation
     const {
-      assetUuid,
-      recipientUuid,
-      amount,
+      assetValue,
+      recipientAddressValue,
+      mintAmountValue,
     } = this.state
 
     const content = {
-      asset_uuid: assetUuid,
-      recipient_uuid: recipientUuid,
-      amount: amount
+      asset_uuid: assetValue,
+      address: recipientAddressValue,
+      amount: mintAmountValue
     }
 
+    this.setState({ loading: true })
     dispatcher.dispatch({ type: MINT_ASSET, content })
   },
 
@@ -276,11 +280,19 @@ let Contacts = createReactClass({
     console.log(this.state)
 
     //add validation
+    const {
+      assetValue,
+      recipientAddressValue,
+      burnAmountValue,
+    } = this.state
 
     const content = {
-
+      asset_uuid: assetValue,
+      address: recipientAddressValue,
+      amount: burnAmountValue
     }
 
+    this.setState({ loading: true })
     dispatcher.dispatch({ type: BURN_ASSET, content })
   },
 
@@ -337,6 +349,11 @@ let Contacts = createReactClass({
       burningAddressOptions,
       burningAddressError,
       burningAddressErrorMessage,
+
+      recipientAddressValue,
+      recipientAddressOptions,
+      recipientAddressError,
+      recipientAddressErrorMessage,
     } = this.state
 
     return (
@@ -348,12 +365,14 @@ let Contacts = createReactClass({
         mintAssetCloseClicked={ this.mintAssetCloseClicked }
         burnAssetClicked={ this.burnAssetClicked }
         burnAssetCloseClicked={ this.burnAssetCloseClicked }
+        freezeAssetClicked={ this.freezeAssetClicked }
+        freezeAssetCloseClicked={ this.freezeAssetCloseClicked }
 
         handleChange={ this.handleChange }
         handleSelectChange={ this.handleSelectChange }
         handleCheckboxChange={ this.handleCheckboxChange }
 
-        handelIssue={ this.handelIssue }
+        handleIssue={ this.handleIssue }
         handleMint={ this.handleMint }
         handleBurn={ this.handleBurn }
 
@@ -399,10 +418,15 @@ let Contacts = createReactClass({
         burningAddressOptions={ burningAddressOptions }
         burningAddressError={ burningAddressError }
         burningAddressErrorMessage={ burningAddressErrorMessage }
+
+        recipientAddressValue={ recipientAddressValue }
+        recipientAddressOptions={ recipientAddressOptions }
+        recipientAddressError={ recipientAddressError }
+        recipientAddressErrorMessage={ recipientAddressErrorMessage }
       />
     )
   },
 
 })
 
-export default (Contacts);
+export default (AssetManagement);

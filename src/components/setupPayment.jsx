@@ -59,6 +59,9 @@ class SetupPayment extends Component {
       disabled,
     } = this.props
 
+    console.log(assetOptions)
+    console.log(assetValue)
+
     return (
       <Grid container justify="space-around" alignItems="center" direction="row" style={{ width: '100%' }} >
         <Grid item xs={10} md={5} align="left" style={{ marginTop: '60px' }}>

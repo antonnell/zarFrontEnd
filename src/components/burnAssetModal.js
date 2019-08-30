@@ -47,6 +47,11 @@ class BurnModal extends Component {
       burningAddressError,
       burningAddressErrorMessage,
 
+      recipientAddressValue,
+      recipientAddressOptions,
+      recipientAddressError,
+      recipientAddressErrorMessage,
+
     } = this.props
 
     console.log(assetValue)
@@ -76,10 +81,13 @@ class BurnModal extends Component {
                 { this.renderSelect("Asset", assetValue, assetOptions, assetError, assetErrorMessage, handleSelectChange, loading, 'asset') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderImput("Burn amount", burnAmountValue, burnAmountError, burnAmountErrorMessage, handleChange, loading, 'burnAmount') }
+                { this.renderSelect("Burning Address", burningAddressValue, burningAddressOptions, burningAddressError, burningAddressErrorMessage, handleSelectChange, loading, 'burningAddress') }
               </Grid>
               <Grid item xs={11}>
-                { this.renderSelect("Burn Address", burningAddressValue, burningAddressOptions, burningAddressError, burningAddressErrorMessage, handleSelectChange, loading, 'burningAddress') }
+                { this.renderImput("Burn From Address", recipientAddressValue, recipientAddressError, recipientAddressErrorMessage, handleChange, loading, 'recipientAddress') }
+              </Grid>
+              <Grid item xs={11}>
+                { this.renderImput("Burn amount", burnAmountValue, burnAmountError, burnAmountErrorMessage, handleChange, loading, 'burnAmount') }
               </Grid>
               <Grid item xs={11}>
                 <Typography style={{color: '#f44336'}} >

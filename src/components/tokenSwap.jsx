@@ -24,6 +24,7 @@ class TokenSwap extends Component {
       loading,
       theme
     } = this.props
+
     return (
       <Grid container justify="flex-start" alignItems="flex-start" direction="row">
         <Grid
@@ -34,14 +35,34 @@ class TokenSwap extends Component {
           <PageTitle theme={theme} root={null} screen={{display: 'Token Swap', location: 'tokenSwap'}} />
         </Grid>
         <Grid item xs={12} align='left'>
-          <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>CURV Token Swap</Typography>
+          <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Token Swap</Typography>
         </Grid>
-        { this.renderSwap() }
-        { message && this.renderSnackBar('Information', message) }
-        { loading && this.renderLoader() }
-        { error && this.renderSnackBar('Error', error) }
+        <Grid item xs={12} align="center" style={{ minHeight: "190px", paddingTop: "100px" }} >
+          <Typography variant="h2">
+            This is where the token swap would be, if we had any!
+          </Typography>
+        </Grid>
       </Grid>
     );
+
+    // return (
+    //   <Grid container justify="flex-start" alignItems="flex-start" direction="row">
+    //     <Grid
+    //       item
+    //       xs={12}
+    //       align="left"
+    //     >
+    //       <PageTitle theme={theme} root={null} screen={{display: 'Token Swap', location: 'tokenSwap'}} />
+    //     </Grid>
+    //     <Grid item xs={12} align='left'>
+    //       <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Token Swap</Typography>
+    //     </Grid>
+    //     { this.renderSwap() }
+    //     { message && this.renderSnackBar('Information', message) }
+    //     { loading && this.renderLoader() }
+    //     { error && this.renderSnackBar('Error', error) }
+    //   </Grid>
+    // );
   }
 
   renderSwap() {
