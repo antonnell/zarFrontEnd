@@ -1,12 +1,8 @@
 const config = {
-  apiUrl: "http://api.testnet.cryptocurve.network/",
-  assetApiUrl: "http://localhost:8000/",
-  etherscanUrl: "https://ropsten.etherscan.io/tx/",
-  wanscanURL: "https://explorer.cryptocurve.xyz/tx/",
-  aionscanURL: "https://mastery.aion.network/#/transaction/",
-  bitcoinscanURL: "https://live.blockcypher.com/btc-testnet/tx/",
-  tezosscanURL: "https://alphanet.tzscan.io/",
-  binancescanURL: "https://testnet-explorer.binance.org/tx/",
+  apiUrl: "http://localhost:8000",
+  apiToken: "RTgwRjM3RjUyQkM0QzY0RUJCRkU0QURCQkNDNzU2RDUyRDI3MDQ0NUJCQTRCMjhEODkwRTg1MjQzNjlFNEJFMjo1Njg0NjJDNEI4MDhGQkRDRTZFRTE3MjhBQTNEN0M2RTgwMjQxMzMyMzk3NUQzRUI4MTM3MkFBNTEwRDUwQ0U3",
+  assetApiUrl: "",
+  explorerURL : ""
 };
 
 export default config;
