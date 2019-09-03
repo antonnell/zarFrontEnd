@@ -85,7 +85,7 @@ class AppDrawer extends Component {
         >
           <ListItemText primary="Beneficiaries" />
         </ListItem>
-        <ListItem
+        {/*<ListItem
           selected={ ['tokenSwap'].includes(path) }
           button
           onClick={ event => {
@@ -93,7 +93,7 @@ class AppDrawer extends Component {
           } }
         >
           <ListItemText primary="Token Swap" />
-        </ListItem>
+        </ListItem>*/}
         <ListItem
           selected={ ['assetManagement'].includes(path) }
           button

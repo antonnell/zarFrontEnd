@@ -71,6 +71,9 @@ class Account extends Component {
                 <Typography variant="h3" noWrap style={{ width: '100%' }}>
                   {account.name}
                 </Typography>
+                <Typography variant="subtitle2" noWrap>
+                  {account.address}
+                </Typography>
               </div>
             </Grid>
             <Grid item xs={2} align='right' style={bodyStyle} onClick={cardClicked}>
@@ -127,7 +130,15 @@ class Account extends Component {
              } }>
             </div>
             <div style={{ margin: '0 auto'}}>
-              <Grid container >
+              <Grid container>
+                <Grid item xs={12} align='left'  style={{ marginBottom: '12px' }}>
+                  <Typography variant="h3" noWrap style={{ width: '100%' }}>
+                    {account.name}
+                  </Typography>
+                  <Typography variant="subtitle2" noWrap>
+                    {account.address}
+                  </Typography>
+                </Grid>
                 <Grid item xs={4} align='left'>
                   <Typography variant="h4" noWrap style={{ lineHeight: '39px' }}>
                     Balance

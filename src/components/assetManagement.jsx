@@ -155,7 +155,7 @@ class AssetManagement extends Component {
               <Button
                 size="small"
                 variant="contained"
-                color="primary"
+                color="secondary"
                 onClick={ issueAssetClicked }
               >
                 Issue
@@ -347,10 +347,24 @@ class AssetManagement extends Component {
       mintingAddressError,
       mintingAddressErrorMessage,
 
-      recipientAddressValue,
-      recipientAddressOptions,
-      recipientAddressError,
-      recipientAddressErrorMessage,
+      typeValue,
+      typeOptions,
+      typeError,
+      typeErrorMessage,
+
+      beneficiaryValue,
+      beneficiaryOptions,
+      beneficiaryError,
+      beneficiaryErrorMessage,
+
+      ownValue,
+      ownOptions,
+      ownError,
+      ownErrorMessage,
+
+      publicValue,
+      publicError,
+      publicErrorMessage,
     } = this.props
 
     return (
@@ -379,10 +393,24 @@ class AssetManagement extends Component {
         mintingAddressError={ mintingAddressError }
         mintingAddressErrorMessage={ mintingAddressErrorMessage }
 
-        recipientAddressValue={ recipientAddressValue }
-        recipientAddressOptions={ recipientAddressOptions }
-        recipientAddressError={ recipientAddressError }
-        recipientAddressErrorMessage={ recipientAddressErrorMessage }
+        typeValue={ typeValue }
+        typeOptions={ typeOptions }
+        typeError={ typeError }
+        typeErrorMessage={ typeErrorMessage }
+
+        beneficiaryValue={ beneficiaryValue }
+        beneficiaryOptions={ beneficiaryOptions }
+        beneficiaryError={ beneficiaryError }
+        beneficiaryErrorMessage={ beneficiaryErrorMessage }
+
+        ownValue={ ownValue }
+        ownOptions={ ownOptions }
+        ownError={ ownError }
+        ownErrorMessage={ ownErrorMessage }
+
+        publicValue={ publicValue }
+        publicError={ publicError }
+        publicErrorMessage={ publicErrorMessage }
       />
     )
   }

@@ -130,8 +130,8 @@ let Login = createReactClass({
 
       window.location.hash = "accounts";
     } else if (data.result) {
-      this.setState({ error: data.result });
-      setError(data.result)
+      this.setState({ error: data.result.toString() });
+      setError(data.result.toString())
     } else {
       this.setState({ error: data.statusText });
       setError(data.statusText)

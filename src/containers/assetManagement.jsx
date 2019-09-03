@@ -11,6 +11,8 @@ import {
   MINT_ASSET_RETURNED,
   GET_ACCOUNTS,
   GET_ACCOUNTS_RETURNED,
+  GET_BENEFICIARIES,
+  GET_BENEFICIARIES_RETURNED,
   ERROR,
 } from '../constants'
 const createReactClass = require('create-react-class')
@@ -33,6 +35,12 @@ let AssetManagement = createReactClass({
       assetValue: '',
       assetError: false,
       assetErrorMessage: '',
+      typeOptions: [
+        {  value: 'beneficiary', description: 'Beneficiary' },
+        {  value: 'public', description: 'Public Address' },
+        {  value: 'own', description: 'Own Account' },
+      ],
+      typeValue: 'beneficiary',
 
     }
   },
@@ -40,6 +48,7 @@ let AssetManagement = createReactClass({
   UNSAFE_componentWillMount() {
     emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated);
     emitter.removeListener(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
+    emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.beneficiariesUpdated);
     emitter.removeListener(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
     emitter.removeListener(MINT_ASSET_RETURNED, this.mintAssetReturned);
     emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
@@ -47,6 +56,7 @@ let AssetManagement = createReactClass({
 
     emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated);
     emitter.on(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
+    emitter.on(GET_BENEFICIARIES_RETURNED, this.beneficiariesUpdated);
     emitter.on(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
     emitter.on(MINT_ASSET_RETURNED, this.mintAssetReturned);
     emitter.on(BURN_ASSET_RETURNED, this.burnAssetReturned);
@@ -55,6 +65,7 @@ let AssetManagement = createReactClass({
     const content = {};
     dispatcher.dispatch({ type: GET_ASSETS, content })
     dispatcher.dispatch({ type: GET_ACCOUNTS, content });
+    dispatcher.dispatch({ type: GET_BENEFICIARIES, content });
   },
 
   assetsUpdated() {
@@ -74,7 +85,24 @@ let AssetManagement = createReactClass({
     })
   },
 
+  beneficiariesUpdated() {
+    const beneficiaries = store.getStore('beneficiaries')
+
+    const beneficiaryOptions = beneficiaries ? beneficiaries.map((beneficiary) => {
+      return {
+        description: beneficiary.name,
+        value: beneficiary.uuid
+      }
+    }) : []
+
+    this.setState({
+      beneficiaries: beneficiaries,
+      beneficiaryOptions: beneficiaryOptions
+    })
+  },
+
   issueAssetReturned(error, data) {
+    console.log('Issue asset returned')
     console.log(error)
     console.log(data)
     if(!data && error) {
@@ -84,12 +112,25 @@ let AssetManagement = createReactClass({
     }
 
     if(!data.success) {
-      this.setState({ loading: false })
+      this.setState({
+        loading: false
+      })
       this.showError(data.result)
       return
     }
 
-    this.setState({ issueOpen: false })
+    this.setState({
+      issueOpen: false,
+      symbol: '',
+      name: '',
+      total_supply: '',
+      minting_address: '',
+      mintable: false,
+      owner_burnable: false,
+      holder_burnable: false,
+      from_burnable: false,
+      freezable: false
+    })
   },
 
   mintAssetReturned(error, data) {
@@ -256,14 +297,31 @@ let AssetManagement = createReactClass({
       assetValue,
       recipientAddressValue,
       mintAmountValue,
+      typeValue,
+      beneficiaryValue,
+      ownValue,
+      publicValue
     } = this.state
 
     const content = {
       asset_uuid: assetValue,
-      address: recipientAddressValue,
-      amount: mintAmountValue
+      amount: mintAmountValue,
+      recipient_type: typeValue
     }
 
+    if(typeValue === 'beneficiary') {
+      content.beneficiary_uuid = beneficiaryValue
+    }
+
+    if(typeValue === 'own') {
+      content.own_account_uuid = ownValue
+    }
+
+    if(typeValue === 'public') {
+      content.address = publicValue
+    }
+
+    console.log(content)
     this.setState({ loading: true })
     dispatcher.dispatch({ type: MINT_ASSET, content })
   },
@@ -350,10 +408,24 @@ let AssetManagement = createReactClass({
       burningAddressError,
       burningAddressErrorMessage,
 
-      recipientAddressValue,
-      recipientAddressOptions,
-      recipientAddressError,
-      recipientAddressErrorMessage,
+      typeValue,
+      typeOptions,
+      typeError,
+      typeErrorMessage,
+
+      beneficiaryValue,
+      beneficiaryOptions,
+      beneficiaryError,
+      beneficiaryErrorMessage,
+
+      ownValue,
+      ownOptions,
+      ownError,
+      ownErrorMessage,
+
+      publicValue,
+      publicError,
+      publicErrorMessage,
     } = this.state
 
     return (
@@ -419,10 +491,24 @@ let AssetManagement = createReactClass({
         burningAddressError={ burningAddressError }
         burningAddressErrorMessage={ burningAddressErrorMessage }
 
-        recipientAddressValue={ recipientAddressValue }
-        recipientAddressOptions={ recipientAddressOptions }
-        recipientAddressError={ recipientAddressError }
-        recipientAddressErrorMessage={ recipientAddressErrorMessage }
+        typeValue={ typeValue }
+        typeOptions={ typeOptions }
+        typeError={ typeError }
+        typeErrorMessage={ typeErrorMessage }
+
+        beneficiaryValue={ beneficiaryValue }
+        beneficiaryOptions={ beneficiaryOptions }
+        beneficiaryError={ beneficiaryError }
+        beneficiaryErrorMessage={ beneficiaryErrorMessage }
+
+        ownValue={ ownValue }
+        ownOptions={ mintingAddressOptions }
+        ownError={ ownError }
+        ownErrorMessage={ ownErrorMessage }
+
+        publicValue={ publicValue }
+        publicError={ publicError }
+        publicErrorMessage={ publicErrorMessage }
       />
     )
   },

@@ -278,7 +278,7 @@ class Store {
           return emitter.emit(UNAUTHORISED, null, null);
         }
 
-        if (res.ok || res.status === 400 || res.status === 500) {
+        if (res.ok || res.status === 400 /*|| res.status === 500*/) {
           return res;
         } else {
           throw Error(res.statusText);
