@@ -4,13 +4,11 @@ import LoginComponent from "../components/login";
 import {
   LOGIN,
   LOGIN_RETURNED,
-  ERROR,
-  UNAUTHORISED,
 } from '../constants'
 
 
 const sha256 = require('sha256');
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/zarStore.js");
 
 let Login = createReactClass({
   getInitialState() {

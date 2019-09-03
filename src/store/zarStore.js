@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import config from "../config";
-import async from "async";
+// import async from "async";
 import {
   POST,
   LOGIN,
@@ -15,7 +15,6 @@ import {
   ISSUE_ASSET,
   MINT_ASSET,
   BURN_ASSET,
-  ERROR,
   UNAUTHORISED,
   _RETURNED,
   STORE_UPDATED

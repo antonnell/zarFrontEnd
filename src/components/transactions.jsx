@@ -11,15 +11,8 @@ import TableRow from "@material-ui/core/TableRow";
 import TableSortLabel from "@material-ui/core/TableSortLabel";
 import Toolbar from "@material-ui/core/Toolbar";
 import Typography from "@material-ui/core/Typography";
-import IconButton from "@material-ui/core/IconButton";
 import Tooltip from "@material-ui/core/Tooltip";
 import { lighten } from "@material-ui/core/styles/colorManipulator";
-import TextField from "@material-ui/core/TextField";
-import Grid from "@material-ui/core/Grid";
-import MenuItem from "@material-ui/core/MenuItem";
-import config from "../config";
-import ListItemText from "@material-ui/core/ListItemText";
-import { colors } from '../theme.js';
 
 function desc(a, b, orderBy) {
   if (b[orderBy] < a[orderBy]) {
@@ -56,7 +49,7 @@ class EnhancedTableHead extends React.Component {
   };
 
   render() {
-    const { order, orderBy, size } = this.props;
+    const { order, orderBy } = this.props;
     let rows = [
       {
         id: "timestamp",
@@ -142,7 +135,7 @@ const toolbarStyles = theme => ({
 });
 
 let EnhancedTableToolbar = props => {
-  const { classes, toggleFilters, theme } = props;
+  const { classes, theme } = props;
 
   return (
     <Toolbar>
@@ -203,8 +196,7 @@ class EnhancedTable extends React.Component {
       orderBy,
       selected,
       rowsPerPage,
-      page,
-      filtersVisible
+      page
     } = this.state;
     const data = this.props.transactions;
 
@@ -239,7 +231,7 @@ class EnhancedTable extends React.Component {
                 .slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
                 .map(n => {
 
-                  let url = config.explorerURL + n.transactionId
+                  // let url = config.explorerURL + n.transactionId
 
                   return (
                     <TableRow hover tabIndex={-1} key={n.transactionId}>

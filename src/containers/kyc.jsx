@@ -2,7 +2,7 @@ import React from "react";
 import KYCComponent from "../components/kyc";
 import KYCStatusComponent from "../components/kycStatus";
 
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/zarStore.js");
 const createReactClass = require("create-react-class");
 
 let KYC = createReactClass({

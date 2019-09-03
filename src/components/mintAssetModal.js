@@ -102,7 +102,7 @@ class MintModal extends Component {
               <Grid item xs={11}>
                 { typeValue === 'beneficiary' && this.renderSelect("Select Beneficiary", beneficiaryValue, beneficiaryOptions, beneficiaryError, beneficiaryErrorMessage, handleSelectChange, loading, 'beneficiary') }
                 { typeValue === 'own' && this.renderSelect("Select Your Account", ownValue, ownOptions, ownError, ownErrorMessage, handleSelectChange, loading, 'own') }
-                { typeValue === 'public' && this.renderImput("Enter Address", publicValue, publicError, publicErrorMessage, handleChange, loading, 'publicValue') }
+                { typeValue === 'public' && this.renderImput("Enter Address", publicValue, publicError, publicErrorMessage, handleChange, loading, 'public') }
               </Grid>
               <Grid item xs={11}>
                 { this.renderImput("Mint amount", mintAmountValue, mintAmountError, mintAmountErrorMessage, handleChange, loading, 'mintAmount') }

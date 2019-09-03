@@ -2,7 +2,6 @@ import React, { Component } from "react";
 import {
   Grid,
   Typography,
-  Button,
   IconButton,
   SvgIcon,
   Card
@@ -88,7 +87,6 @@ class Accounts extends Component {
       error,
       toggleViewClicked,
       viewMode,
-      accounts,
       transactions,
       balances,
       viewAssetsOpen,

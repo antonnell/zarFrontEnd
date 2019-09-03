@@ -6,7 +6,6 @@ import {
   Button,
   Card,
   CardContent,
-  CardActionArea,
 } from "@material-ui/core";
 
 class Asset extends Component {
@@ -23,12 +22,12 @@ class Asset extends Component {
       asset,
       mintAssetClicked,
       burnAssetClicked,
-      freezeAssetClicked,
+      // freezeAssetClicked,
       user,
       owner
     } = this.props
 
-    let logo = 'footer'
+    // let logo = 'footer'
 
     let bodyStyle = {
       padding: '12px 12px 12px 24px',
@@ -93,12 +92,12 @@ class Asset extends Component {
       asset,
       mintAssetClicked,
       burnAssetClicked,
-      freezeAssetClicked,
+      // freezeAssetClicked,
       user,
       owner
     } = this.props
 
-    let logo = 'footer'
+    // let logo = 'footer'
 
     return (
 

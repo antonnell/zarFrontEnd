@@ -19,9 +19,9 @@ import Snackbar from './snackbar';
 class TokenSwap extends Component {
   render() {
     const {
-      error,
-      message,
-      loading,
+      // error,
+      // message,
+      // loading,
       theme
     } = this.props
 

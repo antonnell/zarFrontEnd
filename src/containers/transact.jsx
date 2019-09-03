@@ -25,7 +25,6 @@ import {
   GET_BENEFICIARIES_RETURNED,
   GET_ASSETS,
   GET_ASSETS_RETURNED,
-  ERROR,
 } from '../constants'
 
 const createReactClass = require("create-react-class");
@@ -56,7 +55,7 @@ let Transact = createReactClass({
       })
     }
 
-    let assetValue = 'coin174876e800'
+    let assetValue = 'ftm'
     if(this.props.transactAsset) {
       assetValue = this.props.transactAsset.denom
     }
@@ -198,6 +197,13 @@ let Transact = createReactClass({
       }
     }) : []
 
+    let publicKey = accounts ? accounts.filter((account) => {
+      return account.uuid === accountValue
+    }) : null
+    if(publicKey && publicKey.length > 0) {
+      publicKey = publicKey[0].address
+    }
+
     let beneficiaryOptions = beneficiaries ? beneficiaries.map((beneficiary) => {
       return {
         description: beneficiary.name,
@@ -218,7 +224,7 @@ let Transact = createReactClass({
             accountOptions={ accountOptions }
             accountValue={ accountValue }
 
-            publicKey={ accountValue }
+            publicKey={ publicKey }
 
             onSelectChange={ this.onSelectChange }
           />
@@ -561,7 +567,7 @@ let Transact = createReactClass({
     } else if (this.state.currentScreen === 'confirm') {
       this.callSend()
     } else if (this.state.currentScreen === 'results') {
-      this.setState({ currentScreen: 'setup', activeStep: 0, accountValue: null, ownValue: null, typeValue: 'beneficiary', assetValue: null, amountValue: '', publicValue: '', beneficiaryValue: null })
+      this.setState({ currentScreen: 'setup', activeStep: 0, typeValue: 'beneficiary', amountValue: '', ownValue: null, publicValue: '', beneficiaryValue: null, referenceValue: '' })
     }
   },
 
@@ -570,10 +576,7 @@ let Transact = createReactClass({
   },
 
   callSend() {
-    let { user } = this.props
-
     let {
-      accounts,
       assetValue,
       typeValue,
       accountValue,
@@ -665,8 +668,6 @@ let Transact = createReactClass({
       beneficiaryValue,
       ownValue,
       amountValue,
-      ethAccounts,
-      binanceAccounts,
     } = this.state
 
     let error = false

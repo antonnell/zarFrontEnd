@@ -3,13 +3,12 @@ import RegisterAccountComponent from '../components/registerAccount';
 import {
   REGISTER,
   REGISTER_RETURNED,
-  ERROR,
   CREATE_ACCOUNT,
   CREATE_ACCOUNT_RETURNED,
 } from '../constants'
 
 const createReactClass = require('create-react-class');
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/zarStore.js");
 const email = require('email-validator');
 const sha256 = require('sha256');
 

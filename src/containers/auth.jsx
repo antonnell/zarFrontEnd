@@ -3,7 +3,7 @@ import AuthComponent from "../components/authComponent";
 
 import createReactClass from "create-react-class";
 
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/zarStore.js");
 
 let Auth = createReactClass({
   getInitialState() {

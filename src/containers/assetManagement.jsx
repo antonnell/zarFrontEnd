@@ -102,9 +102,7 @@ let AssetManagement = createReactClass({
   },
 
   issueAssetReturned(error, data) {
-    console.log('Issue asset returned')
-    console.log(error)
-    console.log(data)
+
     if(!data && error) {
       this.setState({ loading: false })
       this.showError(error)
@@ -121,14 +119,15 @@ let AssetManagement = createReactClass({
 
     this.setState({
       issueOpen: false,
+      error: null,
       symbol: '',
       name: '',
-      total_supply: '',
-      minting_address: '',
+      totalSupply: '',
+      mintingAddress: '',
       mintable: false,
-      owner_burnable: false,
-      holder_burnable: false,
-      from_burnable: false,
+      ownerBurnable: false,
+      holderBurnable: false,
+      fromBurnable: false,
       freezable: false
     })
   },
@@ -146,7 +145,16 @@ let AssetManagement = createReactClass({
       return
     }
 
-    this.setState({ mintOpen: false })
+    this.setState({
+      mintOpen: false,
+      error: null,
+      assetValue: '',
+      mintAmountValue: '',
+      typeValue: 'beneficiary',
+      beneficiaryValue: '',
+      ownValue: '',
+      publicValue: ''
+    })
   },
 
   burnAssetReturned(error, data) {
@@ -162,7 +170,16 @@ let AssetManagement = createReactClass({
       return
     }
 
-    this.setState({ burnOpen: false })
+    this.setState({
+      burnOpen: false,
+      error: null,
+      assetValue: '',
+      burnAmountValue: '',
+      typeValue: 'beneficiary',
+      beneficiaryValue: '',
+      ownValue: '',
+      publicValue: ''
+    })
   },
 
   showError(error) {
@@ -170,8 +187,12 @@ let AssetManagement = createReactClass({
   },
 
   handleChange(event) {
+
     let st = {}
     st[event.target.name+'Value'] = event.target.value
+
+    console.log(st)
+
     this.setState(st)
   },
 
@@ -186,7 +207,7 @@ let AssetManagement = createReactClass({
   },
 
   issueAssetClicked() {
-    this.setState({ issueOpen: true })
+    this.setState({ issueOpen: true, error: false })
   },
 
   issueAssetCloseClicked() {
@@ -282,7 +303,7 @@ let AssetManagement = createReactClass({
   },
 
   mintAssetClicked(asset) {
-    this.setState({ mintOpen: true, assetValue: asset.uuid })
+    this.setState({ mintOpen: true, assetValue: asset.uuid, error: false })
   },
 
   mintAssetCloseClicked() {
@@ -295,7 +316,6 @@ let AssetManagement = createReactClass({
     //add validation
     const {
       assetValue,
-      recipientAddressValue,
       mintAmountValue,
       typeValue,
       beneficiaryValue,
@@ -327,7 +347,7 @@ let AssetManagement = createReactClass({
   },
 
   burnAssetClicked(asset) {
-    this.setState({ burnOpen: true, assetValue: asset.uuid })
+    this.setState({ burnOpen: true, assetValue: asset.uuid, error: false })
   },
 
   burnAssetCloseClicked() {
@@ -340,14 +360,15 @@ let AssetManagement = createReactClass({
     //add validation
     const {
       assetValue,
-      recipientAddressValue,
       burnAmountValue,
+      burningAddressValue
     } = this.state
 
     const content = {
       asset_uuid: assetValue,
-      address: recipientAddressValue,
-      amount: burnAmountValue
+      amount: burnAmountValue,
+      recipient_type: 'own',
+      own_account_uuid: burningAddressValue,
     }
 
     this.setState({ loading: true })
@@ -419,7 +440,6 @@ let AssetManagement = createReactClass({
       beneficiaryErrorMessage,
 
       ownValue,
-      ownOptions,
       ownError,
       ownErrorMessage,
 

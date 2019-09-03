@@ -69,7 +69,7 @@ class ConfirmPayment extends Component {
 
     const asset = assets.filter((ass) => {
       console.log(ass)
-      return ass.value == assetValue
+      return ass.value === assetValue
     })[0].description
 
     return (
