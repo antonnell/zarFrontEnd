@@ -234,7 +234,7 @@ class EnhancedTable extends React.Component {
                   // let url = config.explorerURL + n.transactionId
 
                   return (
-                    <TableRow hover tabIndex={-1} key={n.transactionId}>
+                    <TableRow hover tabIndex={-1} key={n.uuid}>
                       <TableCell>
                         <div style={divStyle}>
                           <img

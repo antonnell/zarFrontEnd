@@ -49,8 +49,6 @@ class BurnModal extends Component {
 
     } = this.props
 
-    console.log(assetValue)
-
     return (
       <Dialog open={isOpen} onClose={handleClose} fullWidth={true} maxWidth={'md'} TransitionComponent={Transition}>
         {loading?<SectionLoader />:''}

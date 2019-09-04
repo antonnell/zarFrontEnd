@@ -70,8 +70,6 @@ class ReceivePayment extends Component {
 
   renderSelect(label, value, options, error, errorMessage, onChange, disabled, name) {
 
-    console.log(label, value, options, error, errorMessage, disabled, name)
-
     return (<FormControl error={error} fullWidth={true} >
       <Typography variant="body1" style={{
           fontSize: '12px',

@@ -77,8 +77,6 @@ let Accounts = createReactClass({
       assets
     } = this.state
 
-    console.log(assets)
-
     return (
       <AccountsComponent
         error={ error }
@@ -119,7 +117,6 @@ let Accounts = createReactClass({
     dispatcher.dispatch({ type: GET_TRANSACTIONS, content });
 
     const allAssets = store.getStore('allAssets')
-    console.log(store.getStore('allAssets'))
     if(!allAssets || allAssets.length === 0) {
       emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated)
       emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated)
@@ -131,8 +128,13 @@ let Accounts = createReactClass({
     }
   },
 
+  componentWillUnmount() {
+    emitter.removeListener(ERROR, this.showError);
+    emitter.removeListener(GET_ACCOUNTS_RETURNED, this.accountsUpdated)
+    emitter.removeListener(GET_TRANSACTIONS_RETURNED, this.transactionsUpdated)
+  },
+
   cardClicked(account) {
-    console.log(store.getStore('allAssets'))
     this.setState({ viewAssetsOpen: true, balances: account.balances, account: account })
   },
 
@@ -154,9 +156,6 @@ let Accounts = createReactClass({
   },
 
   assetsUpdated() {
-    console.log('ALL ASSETS IS UPDATED')
-    console.log(store.getStore('allAssets'))
-    console.log('ALL ASSETS IS UPDATED')
     this.setState({
       assets: store.getStore('allAssets')
     })

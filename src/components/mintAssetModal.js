@@ -67,8 +67,6 @@ class MintModal extends Component {
 
     } = this.props
 
-    console.log(assetOptions)
-
     return (
       <Dialog open={isOpen} onClose={handleClose} fullWidth={true} maxWidth={'md'} TransitionComponent={Transition}>
         {loading?<SectionLoader />:''}

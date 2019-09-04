@@ -21,7 +21,7 @@ let Beneficiaries = createReactClass({
       nameErrorMessage: "",
       emailAddress: "",
       emailAddressError: false,
-      emailAddressErrorMessage: "", 
+      emailAddressErrorMessage: "",
       mobileNumber: "",
       mobileNumberError: false,
       mobileNumberErrorMessage: "",
@@ -46,6 +46,12 @@ let Beneficiaries = createReactClass({
 
     var content = {};
     dispatcher.dispatch({ type: GET_BENEFICIARIES, content });
+  },
+
+  componentWillUnmount() {
+    emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.getBeneficiariesReturned);
+    emitter.removeListener(CREATE_BENEFICIARY_RETURNED, this.createBeneficiaryReturned);
+    emitter.removeListener(ERROR, this.showError);
   },
 
   showError(error) {

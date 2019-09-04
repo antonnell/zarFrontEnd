@@ -243,7 +243,6 @@ class App extends Component {
   }
 
   transactClicked(token, beneficiary, account) {
-    console.log(store.getStore('allAssets'))
     this.setState({ transactOpen: true, transactAsset: token, transactBeneficiary: beneficiary, transactAccount: (account ? account.uuid: null) })
   }
 

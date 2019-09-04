@@ -60,9 +60,6 @@ let Transact = createReactClass({
       assetValue = this.props.transactAsset.denom
     }
 
-    console.log(assetValue)
-    console.log(store.getStore('allAssets'))
-
     return {
       accounts: accounts,
       allAssets: store.getStore('allAssets'),
@@ -128,6 +125,13 @@ let Transact = createReactClass({
 
     emitter.removeListener(PAY_RETURNED, this.payReturned)
     emitter.on(PAY_RETURNED, this.payReturned)
+  },
+
+  componentWillUnmount() {
+    emitter.removeListener(PAY_RETURNED, this.payReturned)
+    emitter.removeListener(GET_ACCOUNTS_RETURNED, this.getAccountsReturned)
+    emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.getBeneficiariesReturned)
+    emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated)
   },
 
   getBeneficiariesReturned(error, data) {
@@ -368,7 +372,7 @@ let Transact = createReactClass({
   renderLeft() {
     switch(this.state.currentScreen) {
       case "receive":
-        return this.renderGraphic()
+        break;
       case "setup":
       case "confirm":
       case "results":

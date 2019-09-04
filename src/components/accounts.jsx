@@ -18,7 +18,7 @@ import { colors } from '../theme.js'
 
 function ListIcon(props) {
   return (
-    <SvgIcon {...props}>
+    <SvgIcon>
       <path
         fill={props.color}
         d="M9,5V9H21V5M9,19H21V15H9M9,14H21V10H9M4,9H8V5H4M4,19H8V15H4M4,14H8V10H4V14Z"
@@ -28,7 +28,7 @@ function ListIcon(props) {
 }
 function GridIcon(props) {
   return (
-    <SvgIcon {...props}>
+    <SvgIcon>
       <path
         fill={props.color}
         d="M3,11H11V3H3M3,21H11V13H3M13,21H21V13H13M13,3V11H21V3"
@@ -110,7 +110,6 @@ class Accounts extends Component {
             justify="flex-start"
             alignItems="flex-start"
             direction="row"
-            spacing={0}
             style={theme.custom.sectionTitle}
           >
             <Grid item xs={12} align='left'>

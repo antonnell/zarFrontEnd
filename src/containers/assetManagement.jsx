@@ -44,6 +44,50 @@ let AssetManagement = createReactClass({
       ],
       typeValue: 'beneficiary',
 
+      assetNameValue: '',
+      assetNameError: false,
+      assetNameErrorMessage: '',
+
+      symbolValue: '',
+      symbolError: false,
+      symbolErrorMessage: '',
+
+      totalSupplyValue: '',
+      totalSupplyError: false,
+      totalSupplyErrorMessage: '',
+
+      mintableValue: false,
+      mintableError: false,
+      mintableErrorMessage: '',
+
+      mintingAddressValue: '',
+      mintingAddressOptions: [],
+      mintingAddressError: false,
+      mintingAddressErrorMessage: '',
+
+      burningAddressValue: '',
+      burningAddressOptions: [],
+      burningAddressError: false,
+      burningAddressErrorMessage: '',
+
+      typeValue: '',
+      typeOptions: [],
+      typeError: false,
+      typeErrorMessage: '',
+
+      beneficiaryValue: '',
+      beneficiaryOptions: [],
+      beneficiaryError: false,
+      beneficiaryErrorMessage: '',
+
+      ownValue: '',
+      ownError: false,
+      ownErrorMessage: '',
+
+      publicValue: '',
+      publicError: false,
+      publicErrorMessage: '',
+
     }
   },
 
@@ -70,6 +114,17 @@ let AssetManagement = createReactClass({
     dispatcher.dispatch({ type: GET_ASSETS, content })
     dispatcher.dispatch({ type: GET_ACCOUNTS, content });
     dispatcher.dispatch({ type: GET_BENEFICIARIES, content });
+  },
+
+  componentWillUnmount() {
+    emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated);
+    emitter.removeListener(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
+    emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.beneficiariesUpdated);
+    emitter.removeListener(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
+    emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
+    emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
+    emitter.removeListener(UPLOAD_ASSET_IMAGE_RETURNED, this.uploadAssetImageReturned);
+    emitter.removeListener(ERROR, this.showError);
   },
 
   assetsUpdated() {

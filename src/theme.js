@@ -107,15 +107,15 @@ let customTheme =  {
           root: {
             paddingTop: '8px',
             paddingBottom: '8px',
-            borderRadius: '5px'
+            borderRadius: '5px',
+            '&$selected': {
+              backgroundColor: colors.lightBlue+' !important'
+            }
           },
           gutters: {
             paddingLeft: '24px',
             paddingRight: '24px'
           },
-          selected: {
-            backgroundColor: colors.lightBlue+' !important'
-          }
         },
         MuiListItemText: {
           primary: {
@@ -219,10 +219,10 @@ let customTheme =  {
         },
         MuiInputLabel: {
           root: {
-            letterSpacing: '0.5px'
-          },
-          focused: {
-            color: colors.lightBlue+" !important"
+            letterSpacing: '0.5px',
+            "&$focused": {
+              color: colors.lightBlue+" !important"
+            }
           }
         },
         MuiButton: {
@@ -335,9 +335,6 @@ let customTheme =  {
             color: colors.white+"!important"
           },
           icon: {
-            color: colors.white+"!important"
-          },
-          hover: {
             color: colors.white+"!important"
           }
         },
