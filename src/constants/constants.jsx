@@ -79,6 +79,9 @@ export const MINT_ASSET_RETURNED = '/api/v1/mintAsset_RETURNED'
 export const BURN_ASSET = '/api/v1/burnAsset'
 export const BURN_ASSET_RETURNED = '/api/v1/burnAsset_RETURNED'
 
+export const UPLOAD_ASSET_IMAGE = '/api/v1/uploadAssetImage'
+export const UPLOAD_ASSET_IMAGE_RETURNED = '/api/v/1/uploadAssetImage_RETURNED'
+
 export const SWAP = 'SWAP'
 export const SWAP_RETURNED = 'SWAP_RETURNED'
 

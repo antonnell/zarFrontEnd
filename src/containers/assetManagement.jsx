@@ -13,6 +13,8 @@ import {
   GET_ACCOUNTS_RETURNED,
   GET_BENEFICIARIES,
   GET_BENEFICIARIES_RETURNED,
+  UPLOAD_ASSET_IMAGE,
+  UPLOAD_ASSET_IMAGE_RETURNED,
   ERROR,
 } from '../constants'
 const createReactClass = require('create-react-class')
@@ -50,8 +52,9 @@ let AssetManagement = createReactClass({
     emitter.removeListener(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
     emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.beneficiariesUpdated);
     emitter.removeListener(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
-    emitter.removeListener(MINT_ASSET_RETURNED, this.mintAssetReturned);
     emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
+    emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
+    emitter.removeListener(UPLOAD_ASSET_IMAGE_RETURNED, this.uploadAssetImageReturned);
     emitter.removeListener(ERROR, this.showError);
 
     emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated);
@@ -60,6 +63,7 @@ let AssetManagement = createReactClass({
     emitter.on(ISSUE_ASSET_RETURNED, this.issueAssetReturned);
     emitter.on(MINT_ASSET_RETURNED, this.mintAssetReturned);
     emitter.on(BURN_ASSET_RETURNED, this.burnAssetReturned);
+    emitter.on(UPLOAD_ASSET_IMAGE_RETURNED, this.uploadAssetImageReturned);
     emitter.on(ERROR, this.showError);
 
     const content = {};
@@ -182,6 +186,13 @@ let AssetManagement = createReactClass({
     })
   },
 
+  uploadAssetImageReturned(error, data) {
+    console.log(error)
+    console.log(data)
+
+    this.setState({ loading: false })
+  },
+
   showError(error) {
     this.setState({ error: error.toString() })
   },
@@ -200,6 +211,46 @@ let AssetManagement = createReactClass({
     let st = {}
     st[event.target.name+'Value'] = checked
     this.setState(st)
+  },
+
+  handleUploadClicked(asset) {
+    this.setState({ uploadAsset: asset.uuid })
+    document.getElementById("imgupload").click()
+  },
+
+  onImageChange(event) {
+    event.stopPropagation();
+
+    if(event.target.files && event.target.files.length >= 1) {
+      let state = this;
+
+      setTimeout(function() {
+        state.setState({ loading: true, error: null });
+      }, 1)
+
+      let filename = event.target.files[0].name;
+      let extension = filename.substr((filename.lastIndexOf('.') + 1));
+
+      var reader = new FileReader();
+      reader.onload = function(){
+        // let res = new Uint8Array(this.result).reduce(function (data, byte) {
+        //   return data + String.fromCharCode(byte);
+        // }, '');
+
+        let res = reader.result
+        // var strImage = res.replace(/^data:image\/[a-z]+;base64,/, "");
+
+        var content = {
+          image_data: res,
+          image_extension: extension,
+          asset_uuid: state.state.uploadAsset
+        };
+
+        dispatcher.dispatch({ type: UPLOAD_ASSET_IMAGE, content });
+      }
+      // reader.readAsArrayBuffer(event.target.files[0]);
+      reader.readAsDataURL(event.target.files[0]);
+    }
   },
 
   toggleViewClicked() {
@@ -467,6 +518,9 @@ let AssetManagement = createReactClass({
         handleIssue={ this.handleIssue }
         handleMint={ this.handleMint }
         handleBurn={ this.handleBurn }
+
+        onImageChange={ this.onImageChange }
+        handleUploadClicked={ this.handleUploadClicked }
 
         user={ user }
         theme={ theme }

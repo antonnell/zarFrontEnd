@@ -17,7 +17,8 @@ let Asset = createReactClass({
       viewMode,
       mintAssetClicked,
       burnAssetClicked,
-      owner
+      owner,
+      handleUploadClicked
     } = this.props
 
     return (
@@ -28,6 +29,7 @@ let Asset = createReactClass({
         viewMode={ viewMode }
         mintAssetClicked={ mintAssetClicked }
         burnAssetClicked={ burnAssetClicked }
+        handleUploadClicked={ handleUploadClicked }
         owner={ owner }
       />
     );

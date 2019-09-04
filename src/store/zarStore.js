@@ -15,6 +15,7 @@ import {
   ISSUE_ASSET,
   MINT_ASSET,
   BURN_ASSET,
+  UPLOAD_ASSET_IMAGE,
   UNAUTHORISED,
   _RETURNED,
   STORE_UPDATED
@@ -81,6 +82,9 @@ class Store {
           case BURN_ASSET:
             this.burnAsset(payload)
             break;
+          case UPLOAD_ASSET_IMAGE:
+            this.uploadAssetImage(payload)
+            break;
           default: {
           }
         }
@@ -99,7 +103,6 @@ class Store {
   };
 
   callBasic = (payload) => {
-    console.log(payload)
     this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
       emitter.emit(payload.type+_RETURNED, err, data);
     });
@@ -187,7 +190,6 @@ class Store {
 
         this.setStore({ myAssets: data.result.filter((ass) => { return ass.user_uuid === user.uuid }) })
       }
-      console.log( this.store.allAssets )
       emitter.emit(payload.type+_RETURNED, err, data);
     });
   };
@@ -219,6 +221,19 @@ class Store {
   };
 
   burnAsset = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getPayload = {
+          type: GET_ASSETS,
+          content: {}
+        }
+        this.getAssets(getPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  uploadAssetImage = (payload) => {
     this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
       if(!err) {
         const getPayload = {

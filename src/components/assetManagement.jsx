@@ -50,7 +50,8 @@ class AssetManagement extends Component {
       user,
       mintAssetClicked,
       burnAssetClicked,
-      freezeAssetClicked
+      freezeAssetClicked,
+      handleUploadClicked
     } = this.props
 
     if(!assets) {
@@ -78,6 +79,7 @@ class AssetManagement extends Component {
               burnAssetClicked={ burnAssetClicked }
               freezeAssetClicked={ freezeAssetClicked }
               owner={ owner }
+              handleUploadClicked={ handleUploadClicked }
             />
           </Grid>
         )
@@ -93,6 +95,7 @@ class AssetManagement extends Component {
               burnAssetClicked={ burnAssetClicked }
               freezeAssetClicked={ freezeAssetClicked }
               owner={ owner }
+              handleUploadClicked={ handleUploadClicked }
             />
           </Grid>
         )
@@ -113,7 +116,8 @@ class AssetManagement extends Component {
       toggleViewClicked,
       viewMode,
       allAssets,
-      myAssets
+      myAssets,
+      onImageChange
     } = this.props
 
     return (
@@ -207,6 +211,7 @@ class AssetManagement extends Component {
         { issueOpen && this.renderIssueModal() }
         { mintOpen && this.renderMintModal() }
         { burnOpen && this.renderBurnModal() }
+        <input type="file" id="imgupload" ref="imgupload" style={{display:'none'}} accept="image/x-png,image/jpg,image/jpeg" onChange={onImageChange} />
       </Grid>
     );
   }

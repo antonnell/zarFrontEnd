@@ -94,10 +94,12 @@ class Asset extends Component {
       burnAssetClicked,
       // freezeAssetClicked,
       user,
-      owner
+      owner,
+      handleUploadClicked
     } = this.props
 
     // let logo = 'footer'
+    // url("'+this.props.user.profilePhoto+'")
 
     return (
 
@@ -107,15 +109,17 @@ class Asset extends Component {
             width: 'auto',
             height: 'auto',
             position: 'relative',
-            backgroundImage: asset.icon ? "url('"+asset.icon+"')" : '',
+            backgroundImage: asset.image_data ? "url('"+asset.image_data+"')" : '',
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
             margin: '0 auto',
             minHeight: '260px'
-           } }>
+           } }
+           onClick={ () => { if(owner === true && user && asset.user_uuid === user.uuid) { handleUploadClicked(asset) } } }
+           >
           </div>
-          <div style={{ margin: '0 auto'}}>
+          <div style={{ margin: '0 auto', paddingTop: '12px'}}>
             <Grid container >
             <Grid item xs={5} align='left'>
                 <Typography variant="h5" noWrap style={{ lineHeight: '35px', fontSize:  '39px' }}>
