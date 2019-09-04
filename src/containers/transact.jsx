@@ -595,7 +595,8 @@ let Transact = createReactClass({
       account_uuid: accountValue,
       amount: amountValue,
       reference: referenceValue,
-      asset_id: assetValue
+      asset_id: assetValue,
+      recipient_type: typeValue
     }
 
     if(typeValue === 'beneficiary') {
@@ -603,7 +604,7 @@ let Transact = createReactClass({
     }
 
     if(typeValue === 'own') {
-      content.to_address = ownValue
+      content.own_account_uuid = ownValue
     }
 
     if(typeValue === 'public') {

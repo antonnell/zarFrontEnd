@@ -70,8 +70,6 @@ let AssetManagement = createReactClass({
       burningAddressError: false,
       burningAddressErrorMessage: '',
 
-      typeValue: '',
-      typeOptions: [],
       typeError: false,
       typeErrorMessage: '',
 
@@ -242,9 +240,6 @@ let AssetManagement = createReactClass({
   },
 
   uploadAssetImageReturned(error, data) {
-    console.log(error)
-    console.log(data)
-
     this.setState({ loading: false })
   },
 
@@ -256,9 +251,6 @@ let AssetManagement = createReactClass({
 
     let st = {}
     st[event.target.name+'Value'] = event.target.value
-
-    console.log(st)
-
     this.setState(st)
   },
 
@@ -417,8 +409,6 @@ let AssetManagement = createReactClass({
   },
 
   handleMint() {
-    console.log(this.state)
-
     //add validation
     const {
       assetValue,
@@ -447,7 +437,6 @@ let AssetManagement = createReactClass({
       content.address = publicValue
     }
 
-    console.log(content)
     this.setState({ loading: true })
     dispatcher.dispatch({ type: MINT_ASSET, content })
   },
@@ -461,8 +450,6 @@ let AssetManagement = createReactClass({
   },
 
   handleBurn() {
-    console.log(this.state)
-
     //add validation
     const {
       assetValue,
