@@ -11,6 +11,7 @@ import {
 import Snackbar from './snackbar';
 import PageTitle from "./pageTitle";
 import Asset from '../containers/asset';
+import Denom from '../containers/denom';
 import PageLoader from './pageLoader';
 import IssueModal from './issueAssetModal';
 import MintModal from './mintAssetModal';
@@ -103,6 +104,50 @@ class AssetManagement extends Component {
     })
   }
 
+  renderNativeDenoms(denoms) {
+    let {
+      theme,
+      loading,
+      viewMode
+    } = this.props
+
+    if(!denoms) {
+      return null
+    }
+
+    if(denoms && denoms.length === 0 && loading !== true) {
+      return (<Grid item xs={12} align="center" style={{ minHeight: "190px", paddingTop: "100px" }} >
+        <Typography variant="h2">
+          We couldn't find any native denoms.
+        </Typography>
+      </Grid>)
+    }
+
+    return denoms.map((denom) => {
+      if(viewMode === 'List') {
+        return (
+          <Grid item xs={12} key={denom.denom} style={{ padding: '0px 24px' }}>
+            <Denom
+              denom={ denom }
+              theme={ theme }
+              viewMode={ viewMode }
+            />
+          </Grid>
+        )
+      } else {
+        return (
+          <Grid item xs={12} sm={6} lg={4} xl={3} key={denom.denom+'_'+denom.uuid} style={{ padding: '24px' }}>
+            <Denom
+              denom={ denom }
+              theme={ theme }
+              viewMode={ viewMode }
+            />
+          </Grid>
+        )
+      }
+    })
+  }
+
   render() {
 
     let {
@@ -116,6 +161,7 @@ class AssetManagement extends Component {
       toggleViewClicked,
       viewMode,
       allAssets,
+      nativeDenoms,
       myAssets,
       onImageChange
     } = this.props
@@ -140,7 +186,7 @@ class AssetManagement extends Component {
           >
             <Grid item xs={6} align='left'>
               <div style={theme.custom.inline}>
-                <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>My Assets</Typography>
+                <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>Native Denominations</Typography>
               </div>
               <div style={{ marginLeft: '15px', display: 'inline-block' }}>
                 <IconButton
@@ -162,8 +208,34 @@ class AssetManagement extends Component {
                 color="secondary"
                 onClick={ issueAssetClicked }
               >
-                Issue
+                Issue Asset
               </Button>
+            </Grid>
+          </Grid>
+        </Grid>
+        <Grid item xs={12}>
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="flex-start"
+            direction="row"
+            style={theme.custom.accountsContainer}
+          >
+            { viewMode === 'List' && this.renderDenomsHeader()}
+            {this.renderNativeDenoms(nativeDenoms)}
+          </Grid>
+        </Grid>
+        <Grid item xs={12} align="center">
+          <Grid
+            container
+            justify="flex-start"
+            alignItems="flex-start"
+            direction="row"
+            spacing={0}
+            style={theme.custom.sectionTitle}
+          >
+            <Grid item xs={12} align='left'>
+              <Typography variant='h2' align='left' style={{ lineHeight: '37px' }}>My Assets</Typography>
             </Grid>
           </Grid>
         </Grid>
@@ -179,7 +251,6 @@ class AssetManagement extends Component {
             {this.renderAssets(myAssets, true)}
           </Grid>
         </Grid>
-
         <Grid item xs={12} align="center">
           <Grid
             container
@@ -214,6 +285,40 @@ class AssetManagement extends Component {
         <input type="file" id="imgupload" ref="imgupload" style={{display:'none'}} accept="image/x-png,image/jpg,image/jpeg" onChange={onImageChange} />
       </Grid>
     );
+  }
+
+  renderDenomsHeader() {
+    let headerStyle = {
+      padding: '17px 24px',
+      backgroundColor: '#2f3031'
+    }
+    let textStyle = {
+      color: '#ffffff',
+      fontSize: '14px',
+      fontWeight: '600'
+    }
+
+    return (<Grid item xs={12} align='left' style={{ padding: '0px 24px' }}>
+      <Card style={{borderRadius: '3px'}}>
+        <Grid container>
+          <Grid item xs={6} align='left' style={headerStyle}>
+            <Typography variant="body1" style={textStyle}>
+              Name
+            </Typography>
+          </Grid>
+          <Grid item xs={3} align='left' style={headerStyle}>
+            <Typography variant="body1" style={textStyle}>
+              Symbol
+            </Typography>
+          </Grid>
+          <Grid item xs={3} align='right' style={headerStyle}>
+            <Typography variant="body1" style={textStyle}>
+              Total Supply
+            </Typography>
+          </Grid>
+        </Grid>
+      </Card>
+    </Grid>)
   }
 
   renderHeader() {

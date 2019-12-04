@@ -16,6 +16,16 @@ import {
   MINT_ASSET,
   BURN_ASSET,
   UPLOAD_ASSET_IMAGE,
+  SAVINGS_WITHDRAW,
+  SAVINGS_DEPOSIT,
+  GET_NATIVE_DENOMS,
+  GET_CSDT,
+  CREATE_CSDT,
+  DEPOSIT_CSDT,
+  WITHDRAW_CSDT,
+  GENERATE_CSDT,
+  PAYBACK_CSDT,
+  GET_CSDT_PRICES,
   UNAUTHORISED,
   _RETURNED,
   STORE_UPDATED
@@ -42,7 +52,11 @@ class Store {
       bank_account_types: [],
       transactions: [],
       allAssets: [],
-      myAssets: []
+      myAssets: [],
+      csdt: null,
+      csdtHistory: [],
+      nativeDenoms: [],
+      csdtPrices: []
     }
 
     dispatcher.register(
@@ -84,6 +98,36 @@ class Store {
             break;
           case UPLOAD_ASSET_IMAGE:
             this.uploadAssetImage(payload)
+            break;
+          case SAVINGS_WITHDRAW:
+            this.savingsWithdraw(payload)
+            break;
+          case SAVINGS_DEPOSIT:
+            this.savingsDeposit(payload)
+            break;
+          case GET_NATIVE_DENOMS:
+            this.getNativeDenoms(payload)
+            break;
+          case GET_CSDT:
+            this.getCSDT(payload)
+            break;
+          case CREATE_CSDT:
+            this.createCSDT(payload)
+            break;
+          case DEPOSIT_CSDT:
+            this.depositCSDT(payload)
+            break;
+          case WITHDRAW_CSDT:
+            this.withdrawCSDT(payload)
+            break;
+          case GENERATE_CSDT:
+            this.generateCSDT(payload)
+            break;
+          case PAYBACK_CSDT:
+            this.paybackCSDT(payload)
+            break;
+          case GET_CSDT_PRICES:
+            this.getCSDTPrices(payload)
             break;
           default: {
           }
@@ -185,7 +229,7 @@ class Store {
       if(!err) {
         this.setStore({ allAssets: data.result })
 
-        const userString = sessionStorage.getItem("zar_user");
+        const userString = sessionStorage.getItem("xar_user");
         const user = userString !== null ? JSON.parse(userString) : {}; //shouldn't be null
 
         this.setStore({ myAssets: data.result.filter((ass) => { return ass.user_uuid === user.uuid }) })
@@ -246,9 +290,147 @@ class Store {
     });
   };
 
+  savingsWithdraw = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getAccountsPayload = {
+          type: GET_ACCOUNTS,
+          content: {}
+        }
+        this.getAccounts(getAccountsPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  savingsDeposit = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        const getAccountsPayload = {
+          type: GET_ACCOUNTS,
+          content: {}
+        }
+        this.getAccounts(getAccountsPayload)
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  getNativeDenoms = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ nativeDenoms: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  getCSDT = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdt: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
+  createCSDT = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdt: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+
+      setTimeout(() => {
+        const getCSDTPayload = {
+          type: GET_CSDT,
+          content: {}
+        }
+        this.getCSDT(getCSDTPayload)
+      }, 5)
+    });
+  };
+
+  depositCSDT = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdt: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+
+      setTimeout(() => {
+        const getCSDTPayload = {
+          type: GET_CSDT,
+          content: {}
+        }
+        this.getCSDT(getCSDTPayload)
+      }, 5)
+    });
+  };
+
+  withdrawCSDT = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdt: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+
+      setTimeout(() => {
+        const getCSDTPayload = {
+          type: GET_CSDT,
+          content: {}
+        }
+        this.getCSDT(getCSDTPayload)
+      }, 5)
+    });
+  };
+
+  generateCSDT = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdt: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+
+      setTimeout(() => {
+        const getCSDTPayload = {
+          type: GET_CSDT,
+          content: {}
+        }
+        this.getCSDT(getCSDTPayload)
+      }, 5)
+    });
+  };
+
+  paybackCSDT = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdt: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+
+      setTimeout(() => {
+        const getCSDTPayload = {
+          type: GET_CSDT,
+          content: {}
+        }
+        this.getCSDT(getCSDTPayload)
+      }, 5)
+    });
+  };
+
+  getCSDTPrices = (payload) => {
+    this.callApi(payload.type, POST, payload.content, payload, (err, data) => {
+      if(!err) {
+        this.setStore({ csdtPrices: data.result })
+      }
+      emitter.emit(payload.type+_RETURNED, err, data);
+    });
+  };
+
   callApi = function (url, method, postData, payload, callback) {
 
-    const userString = sessionStorage.getItem('zar_user')
+    const userString = sessionStorage.getItem('xar_user')
     const user = userString !== null ? JSON.parse(userString) : {};
 
     var call = apiUrl + url;

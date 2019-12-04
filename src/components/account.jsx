@@ -19,97 +19,107 @@ class Account extends Component {
   }
 
   renderList() {
-    let { account, cardClicked, transactClicked } = this.props
+    const { account, cardClicked, transactClicked } = this.props
+    const ftmBalance = this.getBalance(account)
 
-    let logo = 'Bitcoin'
-
-    let bodyStyle = {
-      padding: '12px 12px 12px 24px',
-    }
-    let textStyle = {
-      color: '#2f3031',
-      fontSize: '14px',
-      fontWeight: '400'
-    }
-    let iconStyle = {
-      display: 'inline-block',
-      verticalAlign: 'middle',
-      minWidth: '42px'
-    }
-    let nameStyle = {
-      display: 'inline-block',
-      verticalAlign: 'middle',
-      width: 'calc( 100% - 42px)'
-    }
-
-    let ftmBalance = 0
-
-    if(account.balances && account.balances.length > 0) {
-      const balance = account.balances.filter((bal) => {
-        return bal.denom === 'ftm'
-      })
-
-      ftmBalance = balance.length > 0 ? parseInt(balance[0].amount) : 0
+    const styles = {
+      bodyStyle: {
+        padding: '12px 12px 12px 24px',
+      },
+      textStyle: {
+        color: '#2f3031',
+        fontSize: '14px',
+        fontWeight: '400'
+      },
+      iconStyle: {
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        minWidth: '42px'
+      },
+      nameStyle: {
+        display: 'inline-block',
+        verticalAlign: 'middle',
+        width: 'calc( 100% - 42px)'
+      }
     }
 
     return(
       <Grid item xs={12} align='left'>
         <Card style={{marginTop:'16px', borderRadius: '3px', cursor: 'pointer'}}>
           <Grid container justify="center" alignItems="center" direction="row">
-            <Grid item xs={6} align='left' style={bodyStyle} onClick={() => {
+            <Grid item xs={6} align='left' style={styles.bodyStyle} onClick={() => {
               cardClicked(account) }
             }>
-              <div style={iconStyle}>
+              <div style={styles.iconStyle}>
                 <img
                   alt=""
-                  src={ require('../assets/images/'+logo+'-logo.png') }
+                  src={ require('../assets/images/Xar-logo.png') }
                   height="30px"
                   style={{marginRight: '12px'}}
                 />
               </div>
-              <div style={nameStyle}>
+              <div style={styles.nameStyle}>
                 <Typography variant="h3" noWrap style={{ width: '100%' }}>
                   {account.name}
                 </Typography>
                 <Typography variant="subtitle2" noWrap>
-                  {account.address}
+                  { ['ZAR', 'XAR'].includes(account.account_type) ? account.address : 'Savings Account'}
                 </Typography>
               </div>
             </Grid>
-            <Grid item xs={2} align='right' style={bodyStyle} onClick={cardClicked}>
-              <Typography variant="body1" noWrap style={textStyle}>
-                {(ftmBalance ? ftmBalance.toFixed(4) : '0') + ' FTM'}
+            <Grid item xs={2} align='right' style={styles.bodyStyle} onClick={cardClicked}>
+              <Typography variant="body1" noWrap style={styles.textStyle}>
+                { ['ZAR', 'XAR'].includes(account.account_type) ? ((ftmBalance ? ftmBalance.toFixed(0) : '0') + ' UFTM') : ' UZAR'}
               </Typography>
-              <Typography variant="subtitle2" noWrap>
-                {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
-              </Typography>
+
             </Grid>
-            <Grid item xs={4} align='right' style={bodyStyle}>
-              <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(null, null, account) }}>
-                Transact
-              </Button>
-            </Grid>
+            {
+              ['ZAR', 'XAR'].includes(account.account_type) ? (<Grid item xs={4} align='right' style={styles.bodyStyle}>
+                <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(null, null, account) }}>
+                  Payments
+                </Button>
+              </Grid>)
+              :
+              (<Grid item xs={4} align='right' style={styles.bodyStyle}>
+                <Button size="small" variant="outlined" color="secondary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(null, null, account, 'Invest') }}>
+                  Deposit
+                </Button>
+                <Button size="small" variant="outlined" color="primary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(null, null, account, 'Invest') }}>
+                  Withdraw
+                </Button>
+              </Grid>)
+            }
           </Grid>
         </Card>
       </Grid>
     )
   }
+  /*
+    <Button size="small" variant="outlined" color="secondary" style={{ marginLeft: '12px' }} onClick={() => { transactClicked(null, null, account, 'Invest') }}>
+      Invest
+    </Button>*/
 
-  renderGrid() {
-    let { account, cardClicked, transactClicked } = this.props
+  /*<Typography variant="subtitle2" noWrap>
+    {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
+  </Typography>*/
 
-    let logo = 'Bitcoin'
-
+  getBalance(account) {
     let ftmBalance = 0
 
     if(account.balances && account.balances.length > 0) {
       const balance = account.balances.filter((bal) => {
-        return bal.denom === 'ftm'
+        return bal.denom === 'uftm'
       })
 
       ftmBalance = balance.length > 0 ? parseInt(balance[0].amount) : 0
     }
 
+    return ftmBalance
+  }
+
+  renderGrid() {
+    const { account, cardClicked, transactClicked } = this.props
+    const ftmBalance = this.getBalance(account)
 
     return (
 
@@ -118,17 +128,6 @@ class Account extends Component {
           cardClicked(account)
         }}>
           <CardContent style={{ position: "relative" }}>
-            <div style={ {
-              width: '150px',
-              height: '150px',
-              position: 'relative',
-              backgroundImage: 'url("' + require('../assets/images/'+logo+'-logo.png') + '")',
-              backgroundSize: 'contain',
-              backgroundRepeat: 'no-repeat',
-              backgroundPosition: 'center',
-              margin: '50px auto'
-             } }>
-            </div>
             <div style={{ margin: '0 auto'}}>
               <Grid container>
                 <Grid item xs={12} align='left'  style={{ marginBottom: '12px' }}>
@@ -136,7 +135,7 @@ class Account extends Component {
                     {account.name}
                   </Typography>
                   <Typography variant="subtitle2" noWrap>
-                    {account.address}
+                    { ['ZAR', 'XAR'].includes(account.account_type) ? account.address : 'Savings Account'}
                   </Typography>
                 </Grid>
                 <Grid item xs={4} align='left'>
@@ -145,29 +144,52 @@ class Account extends Component {
                   </Typography>
                 </Grid>
                 <Grid item xs={8} align='right'>
-                  <Typography variant="h4" noWrap style={{fontSize: '20px'}}>
-                    {(ftmBalance ? ftmBalance.toFixed(4) : '0') + ' FTM'}
+                  <Typography variant="h4" noWrap style={{fontSize: '20px', lineHeight: '39px'}}>
+                    { ['ZAR', 'XAR'].includes(account.account_type) ? ((ftmBalance ? ftmBalance.toFixed(0) : '0') + ' UFTM') : (account.balance + ' UZAR')}
                   </Typography>
-                  <Typography variant="h4" noWrap style={{color: '#888'}}>
-                    {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
-                  </Typography>
+
                 </Grid>
               </Grid>
             </div>
           </CardContent>
         </CardActionArea>
         <CardContent style={{ position: "relative" }}>
-          <Grid container style={{marginTop: '12px'}}>
-            <Grid item xs={12} align='right'>
-              <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(null, null, account) }}>
-                Transact
-              </Button>
-            </Grid>
-          </Grid>
+          {
+            ['ZAR', 'XAR'].includes(account.account_type) ? (
+              <Grid container style={{marginTop: '12px'}}>
+
+                <Grid item xs={12} align='right'>
+                  <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(null, null, account) }}>
+                    Payments
+                  </Button>
+                </Grid>
+              </Grid>)
+              :
+              (<Grid container style={{marginTop: '12px'}}>
+                <Grid item xs={6} align='left'>
+                  <Button size="small" variant="contained" color="secondary" onClick={() => { transactClicked(null, null, account, 'Invest') }}>
+                    Deposit
+                  </Button>
+                </Grid>
+                <Grid item xs={6} align='right'>
+                  <Button size="small" variant="contained" color="primary" onClick={() => { transactClicked(null, null, account, 'Invest') }}>
+                    Withdraw
+                  </Button>
+                </Grid>
+              </Grid>)
+            }
         </CardContent>
       </Card>
     );
   }
+  /*<Grid item xs={6} align='left'>
+    <Button size="small" variant="contained" color="secondary" onClick={() => { transactClicked(null, null, account, 'Invest') }}>
+      Invest
+    </Button>
+  </Grid>*/
+  /*<Typography variant="h4" noWrap style={{color: '#888'}}>
+    {"$" + (account.usdBalance ? account.usdBalance.toFixed(2) : '0')}
+  </Typography>*/
 }
 
 export default Account;

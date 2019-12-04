@@ -32,23 +32,9 @@ class ReceivePayment extends Component {
 
     return (
       <Grid container justify="space-around" alignItems="flex-start" direction="row" style={{ marginTop: '48px', minHeight: '400px' }} >
-        <Grid item xs={11} md={5} align="left" >
-          { this.renderSelect("Select Your Asset", assetValue, assetOptions, assetError, assetErrorMessage, onSelectChange, disabled, 'asset') }
-        </Grid>
-        <Grid item xs={11} md={5} align="left">
+        <Grid item xs={11} md={11} align="left">
           { this.renderSelect("Select Your Account", accountValue, accountOptions, accountError, accountErrorMessage, onSelectChange, disabled, 'account') }
         </Grid>
-
-        {publicKey &&
-          <Grid item xs={11} align="left" style={{ marginTop: '48px', marginBottom: '48px' }}>
-            <Typography variant="body1">
-              Wallet Address
-            </Typography>
-            <Typography variant="body1">
-              {publicKey}
-            </Typography>
-          </Grid>
-        }
         {publicKey &&
           <Grid item xs={11} md={5} align="left">
             <Typography variant="body1">
@@ -59,8 +45,11 @@ class ReceivePayment extends Component {
         }
         {publicKey &&
           <Grid item xs={11} md={5} align="left">
-            <Typography variant="h4" style={ { minHeight: '15px' } }>
-              Only send {assetValue} to this Address. All other assets will be lost forever.
+            <Typography variant="body1">
+              Wallet Address
+            </Typography>
+            <Typography variant="body1">
+              {publicKey}
             </Typography>
           </Grid>
         }

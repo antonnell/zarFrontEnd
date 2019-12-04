@@ -46,7 +46,7 @@ class RegisterCompleted extends Component {
           <div style={{display: 'inline-block', verticalAlign: 'top'}}>
             <Typography variant="h5" style={{lineHeight: '64px'}}>Registration Successful</Typography>
           </div>
-          <Typography variant="body1" style={ { marginTop: '24px', lineHeight: '35px', fontSize: '15px' } }>Thank you for signing up to ZAR Network. Please login to access your profile.</Typography>
+          <Typography variant="body1" style={ { marginTop: '24px', lineHeight: '35px', fontSize: '15px' } }>Thank you for signing up to XAR Network. Please login to access your profile.</Typography>
         </Grid>
       </Grid>
     );

@@ -82,8 +82,44 @@ export const BURN_ASSET_RETURNED = '/api/v1/burnAsset_RETURNED'
 export const UPLOAD_ASSET_IMAGE = '/api/v1/uploadAssetImage'
 export const UPLOAD_ASSET_IMAGE_RETURNED = '/api/v/1/uploadAssetImage_RETURNED'
 
+export const GET_NATIVE_DENOMS = '/api/v1/getNativeDenoms'
+export const GET_NATIVE_DENOMS_RETURNED = '/api/v1/getNativeDenoms_RETURNED'
+
 export const SWAP = 'SWAP'
 export const SWAP_RETURNED = 'SWAP_RETURNED'
+
+export const SAVINGS_DEPOSIT = '/api/v1/savingsDeposit'
+export const SAVINGS_DEPOSIT_RETURNED = '/api/v1/savingsDeposit_RETURNED'
+
+export const SAVINGS_WITHDRAW = '/api/v1/savingsWithdraw'
+export const SAVINGS_WITHDRAW_RETURNED = '/api/v1/savingsWithdraw_RETURNED'
+
+export const CREATE_CSDT = '/api/v1/createCSDT'
+export const CREATE_CSDT_RETURNED = '/api/v1/createCSDT_RETURNED'
+
+export const CLOSE_CSDT = '/api/v1/closeCSDT'
+export const CLOSE_CSDT_RETURNED = '/api/v1/closeCSDT_RETURNED'
+
+export const DEPOSIT_CSDT = '/api/v1/depositCSDT'
+export const DEPOSIT_CSDT_RETURNED = '/api/v1/depositCSDT_RETURNED'
+
+export const WITHDRAW_CSDT = '/api/v1/withdrawCSDT'
+export const WITHDRAW_CSDT_RETURNED = '/api/v1/withdrawCSDT_RETURNED'
+
+export const PAYBACK_CSDT = '/api/v1/paybackCSDT'
+export const PAYBACK_CSDT_RETURNED = '/api/v1/paybackCSDT_RETURNED'
+
+export const GENERATE_CSDT = '/api/v1/generateCSDT'
+export const GENERATE_CSDT_RETURNED = '/api/v1/generateCSDT_RETURNED'
+
+export const GET_CSDT = '/api/v1/getCSDT'
+export const GET_CSDT_RETURNED = '/api/v1/getCSDT_RETURNED'
+
+export const GET_CSDT_PRICES = '/api/v1/getCSDTPrices'
+export const GET_CSDT_PRICES_RETURNED = '/api/v1/getCSDTPrices_RETURNED'
+
+export const GET_CSDT_HISTORY = '/api/v1/getCSDTHistory'
+export const GET_CSDT_HISTORY_RETURNED = '/api/v1/getCSDTHistory_RETURNED'
 
 export const ERROR = 'ERROR'
 export const _RETURNED = '_RETURNED'

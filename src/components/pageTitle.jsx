@@ -9,6 +9,8 @@ class PageTItle extends Component {
       return null
     }
 
+    return null
+
     return (
       <div style={theme.custom.pageTitle}>
         <Typography variant="h6">

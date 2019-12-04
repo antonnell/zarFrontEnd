@@ -8,7 +8,7 @@ import {
 } from '../constants'
 
 const createReactClass = require('create-react-class');
-const { emitter, dispatcher } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/xarStore.js");
 const email = require('email-validator');
 const sha256 = require('sha256');
 
@@ -214,8 +214,8 @@ let RegisterAccount = createReactClass({
       this.props.setUser(user);
 
       var content = {
-        account_type: 'ZAR',
-        name: 'My ZAR Account'
+        account_type: 'XAR',
+        name: 'My XAR Account'
       };
 
       dispatcher.dispatch({ type: CREATE_ACCOUNT, content });

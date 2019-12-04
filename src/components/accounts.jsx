@@ -92,6 +92,7 @@ class Accounts extends Component {
       viewAssetsOpen,
       handleViewAssetsClose,
       assets,
+      nativeDenoms,
       transactClicked,
     } = this.props
 
@@ -152,7 +153,7 @@ class Accounts extends Component {
         </Grid>
         { loading && this.renderLoader() }
         { error && <Snackbar open={true} type={'Error'} message={error} /> }
-        { viewAssetsOpen && <ViewAssetModal balances={ balances } isOpen={ viewAssetsOpen } handleClose={ handleViewAssetsClose } assets={ assets } transactClicked={ transactClicked } /> }
+        { viewAssetsOpen && <ViewAssetModal balances={ balances } isOpen={ viewAssetsOpen } handleClose={ handleViewAssetsClose } assets={ assets } nativeDenoms={ nativeDenoms } transactClicked={ transactClicked } /> }
       </Grid>
     );
   }

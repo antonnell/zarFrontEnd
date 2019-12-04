@@ -47,7 +47,7 @@ class AppDrawer extends Component {
     return (
       <div style={ { padding: '24px', marginBottom: '8px' } }>
         <Grid container justify="center" alignItems="center" style={ { paddingTop: 24 } } direction="column">
-          <Typography variant="h1" style={ { paddingBottom: 16 } }>ZAR Network</Typography>
+          <Typography variant="h1" style={ { paddingBottom: 16 } }>XAR Network</Typography>
           <div style={ { width: '50px', height: '50px', borderRadius: '25px', background: '#ECECEC', position: 'relative', backgroundImage: 'url("' + user.profilePhoto + '")', backgroundSize: 'cover', backgroundRepeat: 'no-repeat' } }>
           </div>
           <Typography variant="h1" style={ { paddingTop: 16 } }>{ user.username }</Typography>
@@ -56,66 +56,37 @@ class AppDrawer extends Component {
     )
   }
 
-  renderBottom() {
-    return this.renderList();
-  }
-
   renderList() {
-    let { currentScreen, navClicked, theme, logUserOut } = this.props
+    let { currentScreen, navClicked, theme, logUserOut, options } = this.props
     const path = currentScreen.split('/')[0];
+    let index = 0
 
     return (
-      <List style={ { height: "calc(100% - 173px)" } }>
-        <ListSubheader disableSticky={ true }>MENU</ListSubheader>
-        <ListItem
-          selected={ ['accounts', 'binanceAccounts', 'ethAccounts'].includes(path) }
-          button
-          onClick={ event => {
-            navClicked(event, 'accounts');
-          } }
-        >
-          <ListItemText primary="Accounts" />
-        </ListItem>
-        <ListItem
-          selected={ path === 'beneficiaries' }
-          button
-          onClick={ event => {
-            navClicked(event, 'beneficiaries');
-          } }
-        >
-          <ListItemText primary="Beneficiaries" />
-        </ListItem>
-        {/*<ListItem
-          selected={ ['tokenSwap'].includes(path) }
-          button
-          onClick={ event => {
-            navClicked(event, 'tokenSwap');
-          } }
-        >
-          <ListItemText primary="Token Swap" />
-        </ListItem>*/}
-        <ListItem
-          selected={ ['assetManagement'].includes(path) }
-          button
-          onClick={ event => {
-            navClicked(event, 'assetManagement');
-          } }
-        >
-          <ListItemText primary="Asset Management" />
-        </ListItem>
-
-        <Divider />
-        <ListSubheader disableSticky={ true }>PROFILE</ListSubheader>
-        <ListItem
-          selected={ path === 'settings' }
-          button
-          onClick={ event => {
-            navClicked(event, 'settings');
-          } }
-        >
-          <ListItemText primary="Settings" />
-        </ListItem>
-        <Divider />
+      <List style={ { height: "calc(100% - 186px)" } }>
+        {
+          options.map((option) => {
+            switch (option.type) {
+              case 'header':
+                return (<ListSubheader key={option.label} disableSticky={ true }>{option.label}</ListSubheader>)
+              case 'item':
+                return (<ListItem
+                  key={option.label}
+                  selected={ option.selected.includes(path) }
+                  button
+                  onClick={ event => {
+                    navClicked(event, option.onClick);
+                  } }
+                >
+                  <ListItemText primary={option.label} />
+                </ListItem>)
+              case 'divider':
+                index++
+                return (<Divider key={index} />)
+              default:
+                return null
+            }
+          })
+        }
         <ListItem
           button
           onClick={ event => {
@@ -144,7 +115,7 @@ class AppDrawer extends Component {
     return (
       <div style={ this.props.theme.custom.drawer }>
         { this.renderTop() }
-        { this.renderBottom() }
+        { this.renderList() }
       </div>
     );
   }

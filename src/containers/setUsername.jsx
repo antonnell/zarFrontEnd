@@ -3,7 +3,7 @@ import SetUsernameComponent from "../components/setUsername";
 
 const createReactClass = require("create-react-class");
 
-const { emitter, dispatcher } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/xarStore.js");
 
 let SetUsername = createReactClass({
   getInitialState() {

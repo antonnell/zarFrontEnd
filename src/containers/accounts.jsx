@@ -8,10 +8,12 @@ import {
   GET_TRANSACTIONS_RETURNED,
   GET_ASSETS,
   GET_ASSETS_RETURNED,
+  GET_NATIVE_DENOMS,
+  GET_NATIVE_DENOMS_RETURNED,
   ERROR,
 } from '../constants'
 
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher, store } = require("../store/xarStore.js");
 
 let Accounts = createReactClass({
 
@@ -22,6 +24,7 @@ let Accounts = createReactClass({
 
       accounts: store.getStore('accounts'),
       transactions: store.getStore('transactions'),
+      nativeDenoms: store.getStore('nativeDenoms'),
 
       loading: true,
       optionsAccount: null,
@@ -49,7 +52,8 @@ let Accounts = createReactClass({
       accountTypeError: false,
       accountTypeErrorMessage: '',
 
-      viewAssetsOpen: false
+      viewAssetsOpen: false,
+      balances: []
     };
   },
 
@@ -74,7 +78,8 @@ let Accounts = createReactClass({
       viewMode,
       viewAssetsOpen,
       balances,
-      assets
+      assets,
+      nativeDenoms
     } = this.state
 
     return (
@@ -97,6 +102,7 @@ let Accounts = createReactClass({
         viewAssetsOpen={ viewAssetsOpen }
         balances={ balances }
         assets={ assets }
+        nativeDenoms={ nativeDenoms }
       />
     );
   },
@@ -126,20 +132,40 @@ let Accounts = createReactClass({
         assets: allAssets
       })
     }
+
+    const nativeDenoms = store.getStore('nativeDenoms')
+    if(!nativeDenoms || nativeDenoms.length === 0) {
+      emitter.removeListener(GET_NATIVE_DENOMS_RETURNED, this.nativeDenomsUpdated)
+      emitter.on(GET_NATIVE_DENOMS_RETURNED, this.nativeDenomsUpdated)
+      dispatcher.dispatch({ type: GET_NATIVE_DENOMS, content });
+    } else {
+      this.setState({
+        assets: nativeDenoms
+      })
+    }
   },
 
   componentWillUnmount() {
     emitter.removeListener(ERROR, this.showError);
     emitter.removeListener(GET_ACCOUNTS_RETURNED, this.accountsUpdated)
     emitter.removeListener(GET_TRANSACTIONS_RETURNED, this.transactionsUpdated)
+    emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated)
+    emitter.removeListener(GET_NATIVE_DENOMS, this.nativeDenomsUpdated)
   },
 
   cardClicked(account) {
+    // do a check to see if account is savings account, then show savings summary??
     this.setState({ viewAssetsOpen: true, balances: account.balances, account: account })
   },
 
   handleViewAssetsClose() {
     this.setState({ viewAssetsOpen: false, balances: [], account: {} })
+  },
+
+  nativeDenomsUpdated() {
+    this.setState({
+      nativeDenoms: store.getStore('nativeDenoms'),
+    })
   },
 
   accountsUpdated() {

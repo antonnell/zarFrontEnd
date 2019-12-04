@@ -8,7 +8,7 @@ import {
 
 
 const sha256 = require('sha256');
-const { emitter, dispatcher } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/xarStore.js");
 
 let Login = createReactClass({
   getInitialState() {

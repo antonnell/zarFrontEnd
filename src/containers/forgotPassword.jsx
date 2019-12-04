@@ -2,7 +2,7 @@ import React from "react";
 import ForgotPasswordComponent from "../components/forgotPassword";
 const createReactClass = require("create-react-class");
 
-const { emitter, dispatcher } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/xarStore.js");
 
 const email = require("email-validator");
 

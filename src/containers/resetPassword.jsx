@@ -2,7 +2,7 @@ import React from "react";
 import ResetPasswordComponent from "../components/resetPassword";
 const createReactClass = require("create-react-class");
 
-const { emitter, dispatcher } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/xarStore.js");
 
 let ResetPassword = createReactClass({
   getInitialState() {

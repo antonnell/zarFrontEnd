@@ -18,7 +18,7 @@ function TickIcon(props) {
   );
 }
 
-class CompletePayment extends Component {
+class InvestResults extends Component {
   renderError() {
     return (
       <Grid
@@ -50,31 +50,7 @@ class CompletePayment extends Component {
   }
 
   renderSuccess() {
-    let { theme, chain, transactionID } = this.props
-
-    let url = ''
-    switch (chain) {
-      case 'Aion':
-        url = config.aionscanURL + transactionID;
-        break;
-      case 'Binance':
-        url = config.binancescanURL + transactionID;
-        break;
-      case 'Bitcoin':
-        url = config.bitcoinscanURL + transactionID;
-        break;
-      case 'Ethereum':
-        url = config.etherscanUrl + transactionID;
-        break;
-      case 'Tezos':
-        url = config.tezosscanURL + transactionID;
-        break;
-      case 'Wanchain':
-        url = config.wanscanURL + transactionID;
-        break;
-      default:
-        break;
-    }
+    let { theme } = this.props
 
     return (
       <Grid
@@ -106,15 +82,6 @@ class CompletePayment extends Component {
             the funds will relect on your account.
           </Typography>
         </Grid>
-        <Grid item xs={10} align="left" style={{ marginTop: "36px" }}>
-          <Typography variant="body1" stlye={{ fontSize: '13px' }}>
-            You can view the progress of your transaction using the following
-            transaction ID:{" "}
-            <a href={url} target="_blank" rel="noopener noreferrer">
-              {this.props.transactionID}
-            </a>
-          </Typography>
-        </Grid>
       </Grid>
     );
   }
@@ -129,4 +96,4 @@ class CompletePayment extends Component {
   }
 }
 
-export default CompletePayment;
+export default InvestResults;

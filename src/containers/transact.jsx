@@ -3,6 +3,9 @@ import SetupPayment from "../components/setupPayment";
 import ConfirmPayment from "../components/confirmPayment";
 import CompletePayment from "../components/completePayment";
 import ReceivePayment from "../components/receivePayment";
+import Invest from "../components/investDeposit";
+import CompleteInvestment from "../components/investResults";
+import InvestWithdraw from "../components/investWithdraw";
 import {
   Stepper,
   Step,
@@ -25,12 +28,18 @@ import {
   GET_BENEFICIARIES_RETURNED,
   GET_ASSETS,
   GET_ASSETS_RETURNED,
+  GET_NATIVE_DENOMS,
+  GET_NATIVE_DENOMS_RETURNED,
+  SAVINGS_WITHDRAW,
+  SAVINGS_WITHDRAW_RETURNED,
+  SAVINGS_DEPOSIT,
+  SAVINGS_DEPOSIT_RETURNED,
 } from '../constants'
 
 const createReactClass = require("create-react-class");
 const QRCode = require("qrcode");
 
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher, store } = require("../store/xarStore.js");
 
 function Transition(props) {
   return <Slide direction="up" {...props} />;
@@ -55,7 +64,7 @@ let Transact = createReactClass({
       })
     }
 
-    let assetValue = 'ftm'
+    let assetValue = 'uftm'
     if(this.props.transactAsset) {
       assetValue = this.props.transactAsset.denom
     }
@@ -63,19 +72,24 @@ let Transact = createReactClass({
     return {
       accounts: accounts,
       allAssets: store.getStore('allAssets'),
-      assets: store.getStore('allAssets').map((asset) => {
+      assets: [...[], ...store.getStore('allAssets').map((asset) => {
         return {
           description: asset.name,
           value: asset.issue_id
         }
-      }),
+      }), ...store.getStore('nativeDenoms').map((nativeDenoms) => {
+        return {
+          description: nativeDenoms.name,
+          value: nativeDenoms.denom
+        }
+      })],
       beneficiaries: beneficiaries,
 
       loading: false,
       error: null,
 
-      tabValue: 0,
-      currentScreen: "setup",
+      tabValue: this.props.invest === true ? 2 : 0,
+      currentScreen: this.props.invest === true ? "invest" : "setup",
       steps: [
         "Set Up Payment",
         "Confirm Details",
@@ -97,6 +111,8 @@ let Transact = createReactClass({
       ownValue: null,
       publicValue: '',
       amountValue: '',
+
+      currentBalance: 0
     };
   },
 
@@ -123,15 +139,31 @@ let Transact = createReactClass({
       dispatcher.dispatch({ type: GET_ASSETS, content: {} });
     }
 
+    const nativeDenoms = store.getStore('nativeDenoms')
+    if(!nativeDenoms || nativeDenoms.length === 0) {
+      emitter.removeListener(GET_NATIVE_DENOMS_RETURNED, this.assetsUpdated)
+      emitter.on(GET_NATIVE_DENOMS_RETURNED, this.assetsUpdated)
+      dispatcher.dispatch({ type: GET_NATIVE_DENOMS, content: {} });
+    }
+
     emitter.removeListener(PAY_RETURNED, this.payReturned)
     emitter.on(PAY_RETURNED, this.payReturned)
+
+    emitter.removeListener(SAVINGS_DEPOSIT_RETURNED, this.savingsDepositReturned)
+    emitter.on(SAVINGS_DEPOSIT_RETURNED, this.savingsDepositReturned)
+
+    emitter.removeListener(SAVINGS_WITHDRAW_RETURNED, this.savingsWithdrawReturned)
+    emitter.on(SAVINGS_WITHDRAW_RETURNED, this.savingsWithdrawReturned)
   },
 
   componentWillUnmount() {
     emitter.removeListener(PAY_RETURNED, this.payReturned)
+    emitter.removeListener(SAVINGS_DEPOSIT_RETURNED, this.savingsDepositReturned)
+    emitter.removeListener(SAVINGS_WITHDRAW_RETURNED, this.savingsWithdrawReturned)
     emitter.removeListener(GET_ACCOUNTS_RETURNED, this.getAccountsReturned)
     emitter.removeListener(GET_BENEFICIARIES_RETURNED, this.getBeneficiariesReturned)
     emitter.removeListener(GET_ASSETS_RETURNED, this.assetsUpdated)
+    emitter.removeListener(GET_NATIVE_DENOMS_RETURNED, this.assetsUpdated)
   },
 
   getBeneficiariesReturned(error, data) {
@@ -143,12 +175,18 @@ let Transact = createReactClass({
   assetsUpdated(error, data) {
     this.setState({
       allAssets: store.getStore('allAssets'),
-      assets: store.getStore('allAssets').map((asset) => {
+      nativeDenoms: store.getStore('nativeDenoms'),
+      assets: [...[], ...store.getStore('allAssets').map((asset) => {
         return {
           description: asset.name,
           value: asset.issue_id
         }
-      })
+      }), ...store.getStore('nativeDenoms').map((nativeDenoms) => {
+        return {
+          description: nativeDenoms.name,
+          value: nativeDenoms.denom
+        }
+      })]
     })
   },
 
@@ -189,7 +227,8 @@ let Transact = createReactClass({
       referenceValue,
       referenceError,
       referenceErrorMessage,
-      beneficiaries
+      beneficiaries,
+      currentBalance
     } = this.state
 
     let accountOptions = accounts ? accounts.map((account) => {
@@ -300,6 +339,55 @@ let Transact = createReactClass({
             chain={ this.state.chain }
           />
         );
+      case "invest":
+        return (
+          <Invest
+            theme={ theme }
+            error={ this.state.error }
+
+            accountOptions={ accountOptions }
+            accountValue={ accountValue }
+            accountError={ accountError }
+            accountErrorMessage={ accountErrorMessage }
+            amountValue={ amountValue }
+            amountError={ amountError }
+            amountErrorMessage={ amountErrorMessage }
+
+            currentBalance={ currentBalance }
+
+            onSelectChange={ this.onSelectChange }
+            onChange={ this.onChange }
+          />
+        );
+      case "investWithdraw":
+        return (
+          <InvestWithdraw
+            theme={ theme }
+            error={ this.state.error }
+
+            accountOptions={ accountOptions }
+            accountValue={ accountValue }
+            accountError={ accountError }
+            accountErrorMessage={ accountErrorMessage }
+            amountValue={ amountValue }
+            amountError={ amountError }
+            amountErrorMessage={ amountErrorMessage }
+
+            currentBalance={ currentBalance }
+
+            onSelectChange={ this.onSelectChange }
+            onChange={ this.onChange }
+          />
+        );
+      case "investResults":
+        return (
+          <CompleteInvestment
+            theme={ theme }
+            error={ this.state.error }
+            transactionID={ this.state.transactionID }
+            chain={ this.state.chain }
+          />
+        );
       default:
         return (
           <SetupPayment
@@ -371,12 +459,42 @@ let Transact = createReactClass({
 
   renderLeft() {
     switch(this.state.currentScreen) {
-      case "receive":
-        break;
       case "setup":
       case "confirm":
       case "results":
         return this.renderStepper()
+      case "receive":
+        return (
+          <Stepper
+            orientation="vertical"
+            steps={1}
+            activeStep={0}
+            style={{ background: "inherit", padding: "0px" }}
+          >
+            <Step key={'Receive'}>
+              <StepLabel>
+              Receive
+              </StepLabel>
+              <StepContent>{}</StepContent>
+            </Step>
+          </Stepper>)
+      case "invest":
+      case "investWithdraw":
+      case "investResults":
+        return (
+          <Stepper
+            orientation="vertical"
+            steps={1}
+            activeStep={0}
+            style={{ background: "inherit", padding: "0px" }}
+          >
+            <Step key={'Invest'}>
+              <StepLabel>
+              Invest
+              </StepLabel>
+              <StepContent>{}</StepContent>
+            </Step>
+          </Stepper>)
       default:
         break;
     }
@@ -395,6 +513,11 @@ let Transact = createReactClass({
       </Tabs>
     )
   },
+
+  /*
+  <Tab label="Deposit Savings" />
+  <Tab label="Withdraw Savings" />
+  */
 
   renderAction() {
     switch(this.state.currentScreen) {
@@ -446,6 +569,41 @@ let Transact = createReactClass({
             Send another payment
           </Button>
         )
+      case "invest":
+        return (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={ this.onContinue }
+            size="large"
+            disabled={ this.state.loading }
+          >
+            Invest ZAR
+          </Button>
+        )
+      case "investWithdraw":
+        return (
+          <Button
+            variant="contained"
+            color="secondary"
+            onClick={ this.onContinue }
+            size="large"
+            disabled={ this.state.loading }
+          >
+            Withdraw ZAR
+          </Button>
+        )
+      case "investResults":
+        return (
+          <Button
+            variant="text"
+            color="primary"
+            onClick={ this.onContinue }
+            size="large"
+          >
+            Close
+          </Button>
+        )
       default:
         break;
     }
@@ -483,9 +641,29 @@ let Transact = createReactClass({
   },
 
   handleTabChange(event, tabValue) {
+
+    let currentScreen = 'setup'
+
+    switch (tabValue) {
+      case 0:
+        currentScreen = 'setup'
+        break;
+      case 1:
+        currentScreen = 'receive'
+        break;
+      case 2:
+        currentScreen = 'invest'
+        break;
+      case 3:
+        currentScreen = 'investWithdraw'
+        break;
+      default:
+        currentScreen = 'setup'
+    }
+
     this.setState({
       tabValue,
-      currentScreen: (tabValue===0?"setup":tabValue===1?"receive":"request")
+      currentScreen
     });
 
     if(tabValue === 1) {
@@ -572,11 +750,53 @@ let Transact = createReactClass({
       this.callSend()
     } else if (this.state.currentScreen === 'results') {
       this.setState({ currentScreen: 'setup', activeStep: 0, typeValue: 'beneficiary', amountValue: '', ownValue: null, publicValue: '', beneficiaryValue: null, referenceValue: '' })
+    } else if (this.state.currentScreen === 'invest') {
+      if(this.validateSavingsDeposit()) {
+        this.callSavingsDeposit()
+      }
+    } else if (this.state.currentScreen === 'investWithdraw') {
+      if(this.validateSavingsWithdraw()) {
+        this.callSavingsWithdraw()
+      }
+    } else if (this.state.currentScreen === 'investResults') {
+      this.props.transactClosed()
     }
   },
 
   onBack() {
-    this.setState({ currentScreen: 'setup', activeStep: 0 })
+    this.setState({ currentScreen: ['confirm', 'results'].includes(this.state.currentScreen)?'setup':'invest', activeStep: 0 })
+  },
+
+  callSavingsDeposit() {
+    let {
+      accountValue,
+      amountValue,
+    } = this.state
+
+    let content = {
+      account_uuid: accountValue,
+      amount: amountValue,
+    }
+
+    this.setState({ loading: true });
+
+    dispatcher.dispatch({ type: SAVINGS_DEPOSIT, content });
+  },
+
+  callSavingsWithdraw() {
+    let {
+      accountValue,
+      amountValue,
+    } = this.state
+
+    let content = {
+      account_uuid: accountValue,
+      amount: amountValue,
+    }
+
+    this.setState({ loading: true });
+
+    dispatcher.dispatch({ type: SAVINGS_WITHDRAW, content });
   },
 
   callSend() {
@@ -624,7 +844,6 @@ let Transact = createReactClass({
         activeStep: 2,
         error: error.toString()
       });
-
       return
     }
 
@@ -645,6 +864,147 @@ let Transact = createReactClass({
         transactionID: null
       });
     }
+  },
+
+  savingsDepositReturned(error, data) {
+    if(error) {
+      this.setState({
+        loading: false,
+        currentScreen: "investResults",
+        activeStep: 2,
+        error: error.toString()
+      });
+      return
+    }
+
+    if (data.success) {
+      this.setState({
+        loading: false,
+        currentScreen: "investResults",
+        activeStep: 1,
+        error: null
+      });
+    } else {
+      this.setState({
+        loading: false,
+        currentScreen: "investResults",
+        activeStep: 1,
+        error: data.result,
+      });
+    }
+  },
+
+  savingsWithdrawReturned(error, data) {
+    if(error) {
+      this.setState({
+        loading: false,
+        currentScreen: "investResults",
+        activeStep: 2,
+        error: error.toString()
+      });
+      return
+    }
+
+    if (data.success) {
+      this.setState({
+        loading: false,
+        currentScreen: "investResults",
+        activeStep: 1,
+        error: null
+      });
+    } else {
+      this.setState({
+        loading: false,
+        currentScreen: "investResults",
+        activeStep: 1,
+        error: data.result,
+      });
+    }
+  },
+
+  validateSavingsWithdraw() {
+    this.setState({
+      accountError: null,
+      accountErrorMessage: '',
+      amountError: null,
+      amountErrorMessage: '',
+    })
+
+    let {
+      accountValue,
+      amountValue,
+      currentBalance,
+    } = this.state
+
+    let error = false
+
+    if(!accountValue) {
+      this.setState({ accountError: true, accountErrorMessage: 'Account is a required field' })
+      error = true
+    }
+
+    if(!amountValue || amountValue === "" || amountValue <= 0) {
+      this.setState({ amountError: true, amountErrorMessage: 'Amount is a required field' })
+      error = true
+    } else {
+      if(!this.isNumeric(amountValue)) {
+        this.setState({ amountError: true, amountErrorMessage: 'Amount needs to be numeric' })
+        error = true
+      }
+      if(parseFloat(amountValue) >  parseFloat(currentBalance)) {
+        this.setState({ amountError: true, amountErrorMessage: 'Amount > current balance' })
+        error = true
+      }
+    }
+
+    return !error
+  },
+
+  validateSavingsDeposit() {
+    this.setState({
+      accountError: null,
+      accountErrorMessage: '',
+      amountError: null,
+      amountErrorMessage: '',
+    })
+
+    let {
+      accountValue,
+      amountValue,
+      accounts
+    } = this.state
+
+    let walletBalance = accounts ? accounts.filter((account) => {
+      return account.uuid === accountValue
+    }) : null
+    if(walletBalance && walletBalance.length > 0) {
+      walletBalance = walletBalance[0].balance
+    } else {
+      walletBalance = 0
+    }
+
+    let error = false
+
+    if(!accountValue) {
+      this.setState({ accountError: true, accountErrorMessage: 'Account is a required field' })
+      error = true
+    }
+
+    if(!amountValue || amountValue === "" || amountValue <= 0) {
+      this.setState({ amountError: true, amountErrorMessage: 'Amount is a required field' })
+      error = true
+    } else {
+      if(!this.isNumeric(amountValue)) {
+        this.setState({ amountError: true, amountErrorMessage: 'Amount needs to be numeric' })
+        error = true
+      }
+      if(parseFloat(amountValue) >  parseFloat(walletBalance)) {
+        this.setState({ amountError: true, amountErrorMessage: 'Amount > current balance' })
+        error = true
+      }
+    }
+
+    return !error
   },
 
   validateSetup() {

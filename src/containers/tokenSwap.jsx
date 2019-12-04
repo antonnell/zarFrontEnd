@@ -2,7 +2,7 @@ import React from 'react'
 import TokenSwapComponent from '../components/tokenSwap'
 const createReactClass = require('create-react-class')
 
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher, store } = require("../store/xarStore.js");
 
 let TokenSwap = createReactClass({
   getInitialState() {

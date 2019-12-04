@@ -18,17 +18,25 @@ function Transition(props) {
 class ViewAssetsModal extends Component {
 
   renderAssets() {
-    let { balances, assets } = this.props
+    let { balances, assets, nativeDenoms } = this.props
 
     if(balances && balances.length > 0 ) {
       return balances.map((balance) => {
 
-        const asset = assets ? assets.filter((asset) => {
-          return asset.issue_id === balance.denom
+        const nativeDenom = nativeDenoms ? nativeDenoms.filter((nativeDenom) => {
+          return nativeDenom.denom === balance.denom
         }) : []
-        if(asset.length > 0) {
-          balance.name = asset[0].name
-          balance.symbol = asset[0].symbol
+        if(nativeDenom.length > 0) {
+          balance.name = nativeDenom[0].name
+          balance.symbol = nativeDenom[0].denom
+        } else {
+          const asset = assets ? assets.filter((asset) => {
+            return asset.issue_id === balance.denom
+          }) : []
+          if(asset.length > 0) {
+            balance.name = asset[0].name
+            balance.symbol = asset[0].symbol
+          }
         }
 
         return this.renderAsset(balance)
@@ -103,7 +111,7 @@ class ViewAssetsModal extends Component {
             </Grid>
             <Grid item xs={4} align='left' style={bodyStyle}>
               <Typography variant="body1" style={textStyle}>
-                { parseFloat( asset.amount != null ? parseInt(asset.amount) : 0 ).toFixed(4) + ' ' + asset.symbol }
+                { parseFloat( asset.amount != null ? parseInt(asset.amount) : 0 ).toFixed(0) + ' ' + asset.symbol }
               </Typography>
             </Grid>
             <Grid item xs={3} align='right' style={bodyStyle}>

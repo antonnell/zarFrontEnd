@@ -501,7 +501,7 @@ let customTheme =  {
         bottom: '0px',
         position: 'absolute'
       },
-      welcomeZar: {
+      welcomeXar: {
         fontSize: '40px',
         letterSpacing: '2px',
         color: colors.white,

@@ -22,16 +22,16 @@ class Enable2FA extends Component {
         </Grid>
         <Grid item xs={12} sm={10} align='left'>
           <Typography variant="body1" style={{marginTop: '48px'}}>
-            1. Add ZAR Network to Google Authenticator
+            1. Add XAR Network to Google Authenticator
           </Typography>
           <Typography variant="body1" style={{marginTop: '6px'}}>
-            Open Google Authenticator and add ZAR Network by scanning the QR Code shown.
+            Open Google Authenticator and add XAR Network by scanning the QR Code shown.
           </Typography>
           <Typography variant="body1" style={{marginTop: '24px'}}>
             2. Enter the 6 digit code that Google Authenticator generates
           </Typography>
           <Typography variant="body1" style={{marginTop: '6px'}}>
-            Verify that ZAR Network is added correctly in Google Authenticator by entering the 6 digit code which Google Authenticator generates for ZAR Network below, and then click Enable.
+            Verify that XAR Network is added correctly in Google Authenticator by entering the 6 digit code which Google Authenticator generates for XAR Network below, and then click Enable.
           </Typography>
         </Grid>
         <Grid item xs={8} style={{position: 'relative', minHeight: '228px', marginTop: '50px'}} align='center'>

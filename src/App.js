@@ -16,18 +16,19 @@ import Beneficiaries from './containers/beneficiaries.jsx';
 import SetUsername from './containers/setUsername.jsx';
 import Settings from './containers/settings.jsx';
 import Transact from './containers/transact';
-import TokenSwap from './containers/tokenSwap.jsx';
+// import TokenSwap from './containers/tokenSwap.jsx';
+import CSDT from './containers/csdt.jsx';
 import AssetManagement from './containers/assetManagement.jsx';
 
-const { emitter, store } = require("./store/zarStore.js");
+const { emitter, store } = require("./store/xarStore.js");
 
 const setInitialUser = () => {
-  const userString = sessionStorage.getItem("zar_user");
+  const userString = sessionStorage.getItem("xar_user");
   return userString !== null ? JSON.parse(userString) : null;
 };
 
 const setInitialTheme = () => {
-  let themeString = localStorage.getItem("zar_theme");
+  let themeString = localStorage.getItem("xar_theme");
   return themeString !== null ? themeString : "light";
 };
 
@@ -40,6 +41,7 @@ class App extends Component {
     currentTheme: setInitialTheme(),
     theme: customTheme[setInitialTheme()],
     transactOpen: false,
+    investOpen: false,
     transactAsset: null,
     transactBeneficiary: null,
     transactAccount: null,
@@ -63,7 +65,7 @@ class App extends Component {
 
   UNSAFE_componentWillMount() {
     var user = null;
-    var userString = sessionStorage.getItem("zar_user");
+    var userString = sessionStorage.getItem("xar_user");
     if (userString) {
       user = JSON.parse(userString);
       this.setUser(user);
@@ -148,7 +150,7 @@ class App extends Component {
 
   setUser(user) {
     this.setState({ user });
-    sessionStorage.setItem("zar_user", JSON.stringify(user));
+    sessionStorage.setItem("xar_user", JSON.stringify(user));
 
     if(user) {
       //get all things.
@@ -176,7 +178,7 @@ class App extends Component {
     }
 
     if (["", "welcome", "logOut"].includes(currentScreen)) {
-      sessionStorage.removeItem("zar_user");
+      sessionStorage.removeItem("xar_user");
       this.resetStores()
       this.setState({
         drawerOpen: false,
@@ -228,7 +230,7 @@ class App extends Component {
   }
 
   renderTransact() {
-    const { transactOpen, transactAsset, transactBeneficiary, transactAccount, theme, user, supportedERC20Tokens } = this.state
+    const { transactOpen, transactAsset, transactBeneficiary, transactAccount, theme, user, supportedERC20Tokens, investOpen } = this.state
 
     return <Transact
       user={ user }
@@ -239,11 +241,12 @@ class App extends Component {
       transactBeneficiary={ transactBeneficiary }
       transactAccount={ transactAccount }
       supportedERC20Tokens={ supportedERC20Tokens }
+      invest={ investOpen }
     />
   }
 
-  transactClicked(token, beneficiary, account) {
-    this.setState({ transactOpen: true, transactAsset: token, transactBeneficiary: beneficiary, transactAccount: (account ? account.uuid: null) })
+  transactClicked(token, beneficiary, account, reason) {
+    this.setState({ transactOpen: true, transactAsset: token, transactBeneficiary: beneficiary, transactAccount: (account ? account.uuid: null), investOpen: reason==='Invest' ? true: false })
   }
 
   transactClosed() {
@@ -285,30 +288,60 @@ class App extends Component {
           } }
         >
           { this.renderDrawer() }
-          <Grid
-            container
-            justify="space-around"
-            alignItems="flex-start"
-            direction="row"
-            style={ {
-              minHeight: "924px",
-              position: "relative",
-              width: ["xs", "sm"].includes(this.state.size) ? '100vw' : this.state.size === "md" ? 'calc(100vw - 325px)' : 'calc(100vw - 402px)',
-              marginLeft: ["xs", "sm"].includes(this.state.size) ? "0px" : this.state.size === "md" ? "24px" : "100px",
-              marginRight: ["xs", "sm"].includes(this.state.size) ? "0px" : '24px'
-            } }
-          >
-            <Grid item xs={ 12 } style={ { flex: 1, height: "100%"  } }>
-              { this.state.user == null ? null : this.renderAppBar() }
-              <div style={ {
-                  paddingLeft: ["xs", "sm"].includes(this.state.size) ? "24px" : "0px",
-                  paddingRight: ["xs", "sm"].includes(this.state.size) ? "24px" : "0px"
-                } }
-              >
-                { this.renderScreen() }
-              </div>
+
+          { ['csdt'].includes(path) ?
+            <Grid
+              container
+              justify="space-around"
+              alignItems="flex-start"
+              direction="row"
+              style={ {
+                minHeight: "924px",
+                position: "relative",
+                width: ["xs", "sm"].includes(this.state.size) ? '100vw' : this.state.size === "md" ? 'calc(100vw - 325px)' : 'calc(100vw - 325px)',
+                marginLeft: ["xs", "sm"].includes(this.state.size) ? '0px' : "48px",
+                marginRight: ["xs", "sm"].includes(this.state.size) ? '0px' : "0px"
+              } }
+            >
+              <Grid item xs={ 12 } style={ { flex: 1, height: "100%"  } }>
+                { this.state.user == null ? null : this.renderAppBar() }
+                <div style={ {
+                    paddingLeft: "0px",
+                    paddingRight: "0px",
+                    height: '100%'
+                  } }
+                >
+                  { this.renderScreen() }
+                </div>
+              </Grid>
             </Grid>
-          </Grid>
+            :
+            <Grid
+              container
+              justify="space-around"
+              alignItems="flex-start"
+              direction="row"
+              style={ {
+                minHeight: "924px",
+                position: "relative",
+                width: ["xs", "sm"].includes(this.state.size) ? '100vw' : this.state.size === "md" ? 'calc(100vw - 325px)' : 'calc(100vw - 402px)',
+                marginLeft: ["xs", "sm"].includes(this.state.size) ? "0px" : this.state.size === "md" ? "24px" : "100px",
+                marginRight: ["xs", "sm"].includes(this.state.size) ? "0px" : '24px'
+              } }
+            >
+              <Grid item xs={ 12 } style={ { flex: 1, height: "100%"  } }>
+                { this.state.user == null ? null : this.renderAppBar() }
+                <div style={ {
+                    paddingLeft: ["xs", "sm"].includes(this.state.size) ? "24px" : "0px",
+                    paddingRight: ["xs", "sm"].includes(this.state.size) ? "24px" : "0px"
+                  } }
+                >
+                  { this.renderScreen() }
+                </div>
+              </Grid>
+            </Grid>
+          }
+
         </div>
         { this.state.transactOpen && this.renderTransact() }
       </MuiThemeProvider>
@@ -356,9 +389,9 @@ class App extends Component {
             size={ this.state.size }
           />
         );
-      case 'tokenSwap':
+      case 'csdt':
         return (
-          <TokenSwap
+          <CSDT
             theme={ this.state.theme }
             user={ this.state.user }
           />

@@ -9,7 +9,7 @@ import {
 } from '../constants'
 
 const createReactClass = require('create-react-class')
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher, store } = require("../store/xarStore.js");
 
 let Beneficiaries = createReactClass({
   getInitialState() {

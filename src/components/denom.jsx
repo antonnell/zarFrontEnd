@@ -8,7 +8,7 @@ import {
   CardContent,
 } from "@material-ui/core";
 
-class Asset extends Component {
+class Denom extends Component {
   render() {
     if(this.props.viewMode === 'List') {
       return this.renderList()
@@ -19,12 +19,7 @@ class Asset extends Component {
 
   renderList() {
     let {
-      asset,
-      mintAssetClicked,
-      burnAssetClicked,
-      // freezeAssetClicked,
-      user,
-      owner
+      denom,
     } = this.props
 
     // let logo = 'footer'
@@ -52,35 +47,31 @@ class Asset extends Component {
       <Grid item xs={12} align='left'>
         <Card style={{marginTop:'16px', borderRadius: '3px'}}>
           <Grid container justify="center" alignItems="center" direction="row">
-            <Grid item xs={4} align='left' style={bodyStyle} >
+            <Grid item xs={6} align='left' style={bodyStyle} >
               <div style={iconStyle}>
                 <img
                   alt=""
-                  src={ asset.image_data ? asset.image_data : '' }
+                  src={ denom.icon ? denom.icon : '' }
                   width="30px"
                   style={{marginRight: '12px'}}
                 />
               </div>
               <div style={nameStyle}>
                 <Typography variant="h3" noWrap style={{ width: '100%' }}>
-                  {asset.name}
+                  { denom.name }
                 </Typography>
               </div>
             </Grid>
-            <Grid item xs={2} align='right' style={bodyStyle} >
+            <Grid item xs={2} style={bodyStyle} >
               <Typography variant="body1" noWrap style={textStyle}>
-                {asset.total_supply + ' ' + asset.symbol}
+                { denom.denom.toUpperCase() }
               </Typography>
             </Grid>
-            { owner === true && user && asset.user_uuid === user.uuid && <Grid item xs={6} align='right' style={bodyStyle}>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { burnAssetClicked(asset); } }>
-                Burn
-              </Button>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { mintAssetClicked(asset); } }>
-                Mint
-              </Button>
-            </Grid>}
-            { (owner !== true || asset.user_uuid !== user.uuid) && <Grid item xs={6} align='right' style={bodyStyle}></Grid> }
+            <Grid item xs={4} align='right' style={bodyStyle} >
+              <Typography variant="body1" noWrap style={textStyle}>
+                { denom.amount + ' ' + denom.denom }
+              </Typography>
+            </Grid>
           </Grid>
         </Card>
       </Grid>
@@ -89,73 +80,46 @@ class Asset extends Component {
 
   renderGrid() {
     let {
-      asset,
-      mintAssetClicked,
-      burnAssetClicked,
-      // freezeAssetClicked,
-      user,
-      owner,
-      handleUploadClicked
+      denom,
     } = this.props
 
-    // let logo = 'footer'
-    // url("'+this.props.user.profilePhoto+'")
-
     return (
-
       <Card>
         <CardContent style={{ position: "relative" }}>
           <div style={ {
             width: 'auto',
             height: 'auto',
             position: 'relative',
-            backgroundImage: asset.image_data ? "url('"+asset.image_data+"')" : '',
+            backgroundImage: denom.image_data ? "url('"+denom.image_data+"')" : '',
             backgroundSize: 'contain',
             backgroundRepeat: 'no-repeat',
             backgroundPosition: 'center',
             margin: '0 auto',
             minHeight: '260px'
            } }
-           onClick={ () => { if(owner === true && user && asset.user_uuid === user.uuid) { handleUploadClicked(asset) } } }
            >
           </div>
           <div style={{ margin: '0 auto', paddingTop: '12px'}}>
             <Grid container >
-            <Grid item xs={5} align='left'>
+              <Grid item xs={6} align='left'>
                 <Typography variant="h5" noWrap style={{ lineHeight: '35px', fontSize:  '39px' }}>
-                  { asset.symbol }
+                  { denom.denom.toUpperCase() }
                 </Typography>
               </Grid>
-              <Grid item xs={7} align='right'>
+              <Grid item xs={6} align='right'>
                 <Typography variant="h2" noWrap>
                   Total Supply
                 </Typography>
                 <Typography variant="subtitle2" noWrap>
-                  { asset.total_supply + ' ' + asset.symbol }
+                  { denom.amount + ' ' + denom.denom }
                 </Typography>
               </Grid>
             </Grid>
           </div>
         </CardContent>
-        { owner === true && user && asset.user_uuid === user.uuid && <CardContent style={{ position: "relative" }}>
-          <Grid container style={{marginTop: '12px'}}>
-            <Grid item xs={4} align='left'>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { burnAssetClicked(asset); } }>
-                Burn
-              </Button>
-            </Grid>
-            <Grid item xs={4} align='center'>
-            </Grid>
-            <Grid item xs={4} align='right'>
-              <Button style={{ border: 'none' }} size="small" variant="text" color="primary" onClick={ () => { mintAssetClicked(asset); } }>
-                Mint
-              </Button>
-            </Grid>
-          </Grid>
-        </CardContent>}
       </Card>
     );
   }
 }
 
-export default Asset;
+export default Denom;

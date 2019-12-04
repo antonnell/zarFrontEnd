@@ -6,7 +6,7 @@ const createReactClass = require("create-react-class");
 
 var QRCode = require("qrcode");
 
-const { emitter, dispatcher } = require("../store/zarStore.js");
+const { emitter, dispatcher } = require("../store/xarStore.js");
 
 let Manage2FA = createReactClass({
   getInitialState() {

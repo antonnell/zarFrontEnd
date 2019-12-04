@@ -15,11 +15,13 @@ import {
   GET_BENEFICIARIES_RETURNED,
   UPLOAD_ASSET_IMAGE,
   UPLOAD_ASSET_IMAGE_RETURNED,
+  GET_NATIVE_DENOMS,
+  GET_NATIVE_DENOMS_RETURNED,
   ERROR,
 } from '../constants'
 const createReactClass = require('create-react-class')
 
-const { emitter, dispatcher, store } = require("../store/zarStore.js");
+const { emitter, dispatcher, store } = require("../store/xarStore.js");
 
 let AssetManagement = createReactClass({
   getInitialState() {
@@ -28,6 +30,7 @@ let AssetManagement = createReactClass({
       error: false,
       allAssets: null,
       myAssets: null,
+      nativeDenoms: null,
       assetOptions: [],
       accountOptions: [],
       viewMode: 'Grid',
@@ -98,6 +101,7 @@ let AssetManagement = createReactClass({
     emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
     emitter.removeListener(UPLOAD_ASSET_IMAGE_RETURNED, this.uploadAssetImageReturned);
     emitter.removeListener(ERROR, this.showError);
+    emitter.removeListener(GET_NATIVE_DENOMS_RETURNED, this.nativeDenomsUpdated)
 
     emitter.on(GET_ASSETS_RETURNED, this.assetsUpdated);
     emitter.on(GET_ACCOUNTS_RETURNED, this.accountsUpdated);
@@ -107,11 +111,13 @@ let AssetManagement = createReactClass({
     emitter.on(BURN_ASSET_RETURNED, this.burnAssetReturned);
     emitter.on(UPLOAD_ASSET_IMAGE_RETURNED, this.uploadAssetImageReturned);
     emitter.on(ERROR, this.showError);
+    emitter.on(GET_NATIVE_DENOMS_RETURNED, this.nativeDenomsUpdated)
 
     const content = {};
     dispatcher.dispatch({ type: GET_ASSETS, content })
     dispatcher.dispatch({ type: GET_ACCOUNTS, content });
     dispatcher.dispatch({ type: GET_BENEFICIARIES, content });
+    dispatcher.dispatch({ type: GET_NATIVE_DENOMS, content });
   },
 
   componentWillUnmount() {
@@ -123,6 +129,7 @@ let AssetManagement = createReactClass({
     emitter.removeListener(BURN_ASSET_RETURNED, this.burnAssetReturned);
     emitter.removeListener(UPLOAD_ASSET_IMAGE_RETURNED, this.uploadAssetImageReturned);
     emitter.removeListener(ERROR, this.showError);
+    emitter.removeListener(GET_NATIVE_DENOMS_RETURNED, this.nativeDenomsUpdated)
   },
 
   assetsUpdated() {
@@ -131,6 +138,12 @@ let AssetManagement = createReactClass({
       myAssets: store.getStore('myAssets'),
       assetOptions: store.getStore('myAssets').map((asset) => { return { value: asset.uuid, description: asset.name }; }),
       loading: false
+    })
+  },
+
+  nativeDenomsUpdated() {
+    this.setState({
+      nativeDenoms: store.getStore('nativeDenoms'),
     })
   },
 
@@ -484,6 +497,7 @@ let AssetManagement = createReactClass({
     const {
       allAssets,
       myAssets,
+      nativeDenoms,
       loading,
       error,
       viewMode,
@@ -568,6 +582,7 @@ let AssetManagement = createReactClass({
         theme={ theme }
         allAssets={ allAssets }
         myAssets={ myAssets }
+        nativeDenoms={ nativeDenoms }
         loading={ loading }
         viewMode={ viewMode }
         issueOpen={ issueOpen }
